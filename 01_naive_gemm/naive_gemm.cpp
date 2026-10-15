@@ -235,28 +235,30 @@ int run_expert(int expert_id, int m, int n, int k, bool zero_edges) {
 }
 
 int main(int argc, char** argv) {
-    // Optional command line: ./naive_gemm.out M N K [--zero-edges]
-    int m = 3, n = 4, k = 5;
-    bool zero_edges = argc == 5 && std::string(argv[4]) == "--zero-edges";
-    if (argc != 1 && argc != 4 && !zero_edges) {
-        std::cerr << "Usage: " << argv[0] << " [M N K [--zero-edges]]\n";
+    // M0 and M1 are the token counts of the two experts; N and K are shared.
+    // Optional command line: ./naive_gemm.out M0 M1 N K [--zero-edges]
+    int m0 = 3, m1 = 5, n = 4, k = 5;
+    bool zero_edges = argc == 6 && std::string(argv[5]) == "--zero-edges";
+    if (argc != 1 && argc != 5 && !zero_edges) {
+        std::cerr << "Usage: " << argv[0] << " [M0 M1 N K [--zero-edges]]\n";
         return EXIT_FAILURE;
     }
     try {
-        if (argc >= 4) {
-            m = parse_dimension(argv[1]);
-            n = parse_dimension(argv[2]);
-            k = parse_dimension(argv[3]);
+        if (argc >= 5) {
+            m0 = parse_dimension(argv[1]);
+            m1 = parse_dimension(argv[2]);
+            n = parse_dimension(argv[3]);
+            k = parse_dimension(argv[4]);
         }
     } catch (const std::exception& error) {
         std::cerr << "Invalid shape: " << error.what() << '\n';
         return EXIT_FAILURE;
     }
 
-    // Keep both experts at the same shape for this lesson.
-    // Their input values, weights, scales and reference results are independent.
-    int expert0_status = run_expert(0, m, n, k, zero_edges);
-    int expert1_status = run_expert(1, m, n, k, zero_edges);
+    // Each call uses its own M for A, A_scale, C, launch grid and CPU reference.
+    // Both experts keep independent weights even though N and K are shared.
+    int expert0_status = run_expert(0, m0, n, k, zero_edges);
+    int expert1_status = run_expert(1, m1, n, k, zero_edges);
     bool passed = expert0_status == EXIT_SUCCESS && expert1_status == EXIT_SUCCESS;
     std::cout << "\nTwo experts, two separate kernel launches: "
               << (passed ? "PASS" : "FAIL") << '\n';
