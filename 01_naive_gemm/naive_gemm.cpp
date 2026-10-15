@@ -21,34 +21,34 @@
         }                                                                \
     } while (0)
 
-// A descriptor contains GPU addresses, not CPU vector addresses.
-// Basic layout: each expert owns separate packed row-major A[M,K], B[K,N],
-// C[M,N], with FP32 row scales [M] and column scales [N]; zero points are zero.
-// Copy the descriptor array after uploading the nonempty experts' buffers.
-// M=0 means an empty expert: all pointers may be null and must not be read.
-struct DeviceExpert {
+// Contiguous INT8 NT contract (FP32 per-token/per-channel scales):
+// A[T,K], B[G,N,K], C[T,N], A_scale[T], B_scale[G,N], offsets[G+1].
+// offsets[g+1]-offsets[g] is expert g's M; repeated offsets mean an empty expert.
+struct DeviceContiguous {
     int8_t *a = nullptr, *b = nullptr;
     float *a_scale = nullptr, *b_scale = nullptr, *c = nullptr;
-    int m = 0, n = 0, k = 0;
+    int32_t* offsets = nullptr;
 };
 
-// All matrices are row-major. One thread computes one output element.
-// z selects the expert; x/y select its output column/row.
-__global__ void naive_grouped_int8_gemm(const DeviceExpert* groups, int num_groups) {
+// One launch, still one output element per thread. B is physically [G,N,K].
+__global__ void naive_contiguous_int8_gemm(DeviceContiguous data,
+                                          int num_groups, int n, int k) {
     int group = blockIdx.z;
     if (group >= num_groups) return;
-    const DeviceExpert& e = groups[group];
+    int begin = data.offsets[group];
+    int m = data.offsets[group + 1] - begin;
     int col = blockIdx.x * blockDim.x + threadIdx.x;
     int row = blockIdx.y * blockDim.y + threadIdx.y;
-    // The grid covers max(M): smaller experts skip surplus rows/blocks.
-    if (row >= e.m || col >= e.n) return;
+    if (row >= m || col >= n) return;
+    int global_row = begin + row;
 
     int32_t sum = 0;
-    for (int p = 0; p < e.k; ++p) {
-        sum += static_cast<int32_t>(e.a[row * e.k + p]) *
-               static_cast<int32_t>(e.b[p * e.n + col]);
+    for (int p = 0; p < k; ++p) {
+        sum += static_cast<int32_t>(data.a[global_row * k + p]) *
+               static_cast<int32_t>(data.b[(group * n + col) * k + p]);
     }
-    e.c[row * e.n + col] = static_cast<float>(sum) * e.a_scale[row] * e.b_scale[col];
+    data.c[global_row * n + col] = static_cast<float>(sum) *
+                                 data.a_scale[global_row] * data.b_scale[group * n + col];
 }
 
 struct HostExpert {
@@ -181,31 +181,67 @@ HostExpert prepare_expert(int expert_id, int m, int n, int k, bool zero_edges) {
     return h;
 }
 
-// Allocate independent GPU buffers; the returned descriptor stays on CPU for now.
-DeviceExpert upload_expert(const HostExpert& h) {
-    DeviceExpert d;
-    d.m = h.m; d.n = h.n; d.k = h.k;
-    if (h.m == 0) return d; // Null pointers; no zero-byte allocations/copies.
+// Keep the old per-expert [K,N] CPU arrays as an independent reference.
+// Only the packed GPU input changes to the NT weight layout [G,N,K].
+struct HostContiguous {
+    std::vector<int8_t> a, b;
+    std::vector<float> a_scale, b_scale, c;
+};
+
+std::vector<int32_t> make_offsets(const std::vector<int>& counts) {
+    std::vector<int32_t> offsets(1, 0);
+    for (int count : counts) offsets.push_back(offsets.back() + count);
+    return offsets;
+}
+
+HostContiguous pack_contiguous(const std::vector<HostExpert>& experts,
+                               const std::vector<int32_t>& offsets, int n, int k) {
+    HostContiguous packed;
+    int total_m = offsets.back();
+    packed.a.resize(total_m * k);
+    packed.b.assign(experts.size() * n * k, 0);
+    packed.a_scale.resize(total_m);
+    packed.b_scale.assign(experts.size() * n, 1.0f);
+    packed.c.assign(total_m * n, std::numeric_limits<float>::quiet_NaN());
+    for (size_t group = 0; group < experts.size(); ++group) {
+        const auto& h = experts[group];
+        if (h.m == 0) continue; // Empty weights keep their reserved zero-filled slot.
+        std::copy(h.a.begin(), h.a.end(), packed.a.begin() + offsets[group] * k);
+        std::copy(h.a_scale.begin(), h.a_scale.end(), packed.a_scale.begin() + offsets[group]);
+        std::copy(h.b_scale.begin(), h.b_scale.end(), packed.b_scale.begin() + group * n);
+        // Same mathematical weights, different physical layout: [K,N] -> [N,K].
+        for (int col = 0; col < n; ++col)
+            for (int p = 0; p < k; ++p)
+                packed.b[(group * n + col) * k + p] = h.b[p * n + col];
+    }
+    return packed;
+}
+
+DeviceContiguous upload_contiguous(const HostContiguous& h,
+                                   const std::vector<int32_t>& offsets) {
+    DeviceContiguous d;
     MC_CHECK(mcMalloc(reinterpret_cast<void**>(&d.a), h.a.size() * sizeof(int8_t)));
     MC_CHECK(mcMalloc(reinterpret_cast<void**>(&d.b), h.b.size() * sizeof(int8_t)));
     MC_CHECK(mcMalloc(reinterpret_cast<void**>(&d.a_scale), h.a_scale.size() * sizeof(float)));
     MC_CHECK(mcMalloc(reinterpret_cast<void**>(&d.b_scale), h.b_scale.size() * sizeof(float)));
     MC_CHECK(mcMalloc(reinterpret_cast<void**>(&d.c), h.c.size() * sizeof(float)));
+    MC_CHECK(mcMalloc(reinterpret_cast<void**>(&d.offsets), offsets.size() * sizeof(int32_t)));
     MC_CHECK(mcMemcpy(d.a, h.a.data(), h.a.size() * sizeof(int8_t), mcMemcpyHostToDevice));
     MC_CHECK(mcMemcpy(d.b, h.b.data(), h.b.size() * sizeof(int8_t), mcMemcpyHostToDevice));
     MC_CHECK(mcMemcpy(d.a_scale, h.a_scale.data(), h.a_scale.size() * sizeof(float), mcMemcpyHostToDevice));
     MC_CHECK(mcMemcpy(d.b_scale, h.b_scale.data(), h.b_scale.size() * sizeof(float), mcMemcpyHostToDevice));
     MC_CHECK(mcMemcpy(d.c, h.c.data(), h.c.size() * sizeof(float), mcMemcpyHostToDevice));
+    MC_CHECK(mcMemcpy(d.offsets, offsets.data(), offsets.size() * sizeof(int32_t), mcMemcpyHostToDevice));
     return d;
 }
 
-void free_expert(const DeviceExpert& d) {
-    if (d.m == 0) return;
+void free_contiguous(const DeviceContiguous& d) {
     MC_CHECK(mcFree(d.a));
     MC_CHECK(mcFree(d.b));
     MC_CHECK(mcFree(d.a_scale));
     MC_CHECK(mcFree(d.b_scale));
     MC_CHECK(mcFree(d.c));
+    MC_CHECK(mcFree(d.offsets));
 }
 
 int check_expert(int expert_id, const HostExpert& h, bool zero_edges) {
@@ -312,6 +348,12 @@ int main(int argc, char** argv) {
 
     int num_groups = static_cast<int>(tokens.size());
     int max_m = *std::max_element(tokens.begin(), tokens.end());
+    auto offsets = make_offsets(tokens);
+    std::cout << "Contiguous NT: A[" << offsets.back() << ',' << k << "], B["
+              << num_groups << ',' << n << ',' << k << "], C["
+              << offsets.back() << ',' << n << "]\noffsets:";
+    for (int32_t offset : offsets) std::cout << ' ' << offset;
+    std::cout << '\n';
     std::vector<HostExpert> experts;
     for (int group = 0; group < num_groups; ++group)
         experts.push_back(prepare_expert(group, tokens[group], n, k, zero_edges));
@@ -328,15 +370,9 @@ int main(int argc, char** argv) {
         return passed ? EXIT_SUCCESS : EXIT_FAILURE;
     }
 
+    auto packed = pack_contiguous(experts, offsets, n, k);
     MC_CHECK(mcSetDevice(0));
-    std::vector<DeviceExpert> groups;
-    for (const auto& expert : experts) groups.push_back(upload_expert(expert));
-
-    // A GPU-readable table of pointers, dimensions and scale pointers.
-    DeviceExpert* d_groups = nullptr;
-    size_t group_bytes = groups.size() * sizeof(DeviceExpert);
-    MC_CHECK(mcMalloc(reinterpret_cast<void**>(&d_groups), group_bytes));
-    MC_CHECK(mcMemcpy(d_groups, groups.data(), group_bytes, mcMemcpyHostToDevice));
+    auto device = upload_contiguous(packed, offsets);
 
     dim3 block(16, 16);
     dim3 grid((n + block.x - 1) / block.x,
@@ -344,22 +380,23 @@ int main(int argc, char** argv) {
     std::cout << "Grouped launch: block=(" << block.x << ',' << block.y
               << "), grid=(" << grid.x << ',' << grid.y << ',' << grid.z << ")\n";
     // Exactly ONE GEMM kernel launch whenever at least one expert is nonempty.
-    naive_grouped_int8_gemm<<<grid, block>>>(d_groups, num_groups);
+    naive_contiguous_int8_gemm<<<grid, block>>>(device, num_groups, n, k);
     MC_CHECK(mcGetLastError());
     MC_CHECK(mcDeviceSynchronize());
 
+    MC_CHECK(mcMemcpy(packed.c.data(), device.c, packed.c.size() * sizeof(float),
+                      mcMemcpyDeviceToHost));
+    free_contiguous(device);
     bool passed = true;
     for (int group = 0; group < num_groups; ++group) {
         auto& h = experts[group];
-        if (h.m != 0)
-            MC_CHECK(mcMemcpy(h.c.data(), groups[group].c,
-                              h.c.size() * sizeof(float), mcMemcpyDeviceToHost));
+        // Return each contiguous slice to its CPU reference object for verification.
+        std::copy(packed.c.begin() + offsets[group] * n,
+                  packed.c.begin() + offsets[group + 1] * n, h.c.begin());
         // Always check every expert, even after a previous one failed.
         int status = check_expert(group, h, zero_edges);
         if (status != EXIT_SUCCESS) passed = false;
-        free_expert(groups[group]);
     }
-    MC_CHECK(mcFree(d_groups));
     std::cout << "\nExperts=" << num_groups << ", GEMM kernel launches=1\n"
               << "Grouped result: " << (passed ? "PASS" : "FAIL") << '\n';
     return passed ? EXIT_SUCCESS : EXIT_FAILURE;

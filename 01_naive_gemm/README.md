@@ -1,46 +1,68 @@
-# 朴素 INT8 grouped GEMM：基础布局、多专家与空专家
+# INT8 grouped GEMM：contiguous NT 布局
 
-本课采用**每个专家独立缓冲区 + GPU 专家信息表**的简单布局。支持 1～64 个专家，各专家 M 可不同，N、K 相同。非空任务只启动一次 GEMM kernel，逐专家对照 CPU；本课不要求 contiguous/masked 接口。
+本步把各专家的独立 GPU 缓冲区改成按专家顺序拼接的 contiguous 张量，并把权重从 [K,N] 改为 [N,K] 的物理存储。计算继续使用一个朴素 kernel，尚未进入硬件加速阶段。
 
-## 基础数据布局约定
+## 本步选择的接口语义
 
-设专家编号为 g，所有矩阵按行紧密存储，不带额外行间距，不转置，不做 max(M) 填充。
+对齐本仓库 C500 INT8 后端 `c500_int8/deep_gemm_maca/api.py` 中 `m_grouped_int8_gemm_nt_contiguous` 的张量布局、CPU counts 分组方式、FP32 scale 和输出类型：
 
-| 数据 | 类型 | 形状 | 元素位置 |
+| 数据 | 类型 | 形状 | 含义 |
 |---|---|---|---|
-| A_g | INT8 | [M_g,K] | row*K+p |
-| B_g | INT8 | [K,N] | p*N+col |
-| A_scale_g | FP32 | [M_g] | row |
-| B_scale_g | FP32 | [N] | col |
-| C_g | FP32 | [M_g,N] | row*N+col |
+| A | INT8 | [T,K] | 按专家编号拼接的有效 token，T=sum(counts) |
+| B | INT8 | [G,N,K] | 每专家一组权重，最后一维 K 连续 |
+| A_scale | FP32 | [T] | 每个 token 一个 scale |
+| B_scale | FP32 | [G,N] | 每专家、每输出通道一个 scale |
+| C | FP32 | [T,N] | 与 A 保持相同的拼接行顺序 |
+| counts | CPU 整数列表 | [G] | 各专家的有效行数，包括 0 |
+| offsets | GPU INT32 | [G+1] | counts 的前缀和，从 0 开始，末项为 T |
 
-零点均为 0，INT32 累加；`C_g[row,col] = float(sum(A_g[row,p]*B_g[p,col])) * A_scale_g[row] * B_scale_g[col]`。每个专家有独立的权重和 scale。输出维持该专家输入行的顺序；本例不定义跨专家的原始 token 顺序，也不实现路由或还原。
+这是 INT8 扩展约定，不是上游 DeepGEMM FP8 API 的直接替代。上游 FP8/FP4 使用不同的分块 scale 格式；其逐行 grouped_layout、带对齐的 PSUM 格式也不能当作这里的 offsets。该步骤只对齐所选 INT8 接口的数据语义，不提供 Python 绑定或完整 ABI。
 
-`HostExpert` 保存 CPU 数组；`DeviceExpert` 保存 M/N/K 和 GPU 指针。先上传非空专家的实际数据，再复制信息表到 `d_groups`。复制信息表不会自动复制指针指向的数据，表内不能放 CPU vector 的地址。不同专家的有效输出区域互不重叠。
+教学版继续允许 N/K 的任意尾部；已有 mctlass 加速后端当前要求 N 为 128 的倍数、K 为 256 的倍数。后续接入硬件加速时再明确这些限制或实现尾部处理。
 
-这里“按行紧密存储”只是单个矩阵的内存约定，不代表已经适配 DeepGEMM 的 contiguous 接口；权重目前仍是 B[K,N]，也不是 NT 接口的 B[N,K]。
+## 专家区间与地址计算
 
-## 一次启动如何覆盖所有专家
+例如 `counts=[3,0,5,17]`，得到：
+
+```text
+offsets = [0,3,3,8,25]
+E0 使用 A/C 的行 [0,3)
+E1 使用 A/C 的行 [3,3)  —— 空专家
+E2 使用 A/C 的行 [3,8)
+E3 使用 A/C 的行 [8,25)
+```
+
+这里不按 block 大小填充行，也不重新排列每个专家内部的 token。CPU `make_offsets` 生成区间；`pack_contiguous` 拼接 A 和 A_scale，并把原有权重逐元素转置存储。CPU 参考保留原始独立数组及 B[K,N]，帮助发现拼接或转置错误。
+
+kernel 内部：
 
 ```cpp
 int group = blockIdx.z;
-const DeviceExpert& e = groups[group];
-int col = blockIdx.x * blockDim.x + threadIdx.x;
-int row = blockIdx.y * blockDim.y + threadIdx.y;
-if (row >= e.m || col >= e.n) return;
+int begin = data.offsets[group];
+int m = data.offsets[group + 1] - begin;
+// row/col 由 blockIdx.x/y、threadIdx.x/y 计算。
+if (row >= m || col >= n) return;
+int global_row = begin + row;
 ```
 
-block=(16,16)，grid=(ceil(N/16), ceil(max(M_g)/16), 专家数)。z 选择专家，x/y 选择输出位置。M、N 的尾部线程会退出；K 按实际长度循环，无需整除 16。较小专家会有整块线程退出，尚未优化空转和负载均衡。各 block 的执行次序由 GPU 调度，不保证专家编号顺序。
+点积读取位置为：
 
-## 空专家约定
+```cpp
+A[global_row * K + p]
+B[(group * N + col) * K + p]
+```
 
-- M_g=0 表示没有 token，A、A_scale 和 C 都没有元素。不能用一行零数据代替。
-- 该专家的 DeviceExpert 保留 M/N/K，所有指针设为 nullptr；本次调用也省略未使用的 B 和 B_scale 分配。
-- 混合输入仍保留空专家的编号，kernel 在边界判断处退出，不访问空指针；CPU 不执行零字节分配或拷贝。
-- 所有专家均为空时，跳过 GPU 分配、拷贝、同步和 kernel 启动，逐专家验证空输出并成功返回。
-- 零个专家（空列表）暂不支持，作为非法参数拒绝。
+因此数学上计算 `A_g × B_g^T`。权重数值没有改变，只改变物理排列；输出仍等价于上一课的 A[M,K] × B[K,N]。不能仅交换 N/K 参数而不转换数据。
 
-非空输出在启动前填入 NaN，用于发现漏算，即使该元素的参考结果为零。空输出按空结果约定验证；非空输出保留逐元素 CPU 对照。
+block=(16,16)，grid=(ceil(N/16),ceil(max(counts)/16),G)。这一步保留原来的 z 方向分组调度；拼接内存不会自动消除小专家的空转 block，也不代表已优化性能。
+
+## 空专家与输出约定
+
+- M_g=0 对应相等的两个 offsets，不占 A、A_scale、C 的行。
+- B 和 B_scale 仍保留该专家的位置，以保持 [G,N,K]、[G,N] 的形状。本演示中未使用的权重槽位填 0、scale 填 1；kernel 不读取它们。
+- 只要有非空专家，一次 GEMM 启动覆盖所有专家。边界检查在读取矩阵和 scale 前完成。
+- 全部专家为空时，T=0，跳过所有 GPU 操作，逐专家检查空结果，成功返回；空专家列表仍拒绝。
+- GPU 输出预先填入 NaN 以检查漏算。拷回 C 后按 offsets 切回各专家，分别与 CPU 参考比较。
 
 ## 量化怎么做
 
@@ -58,7 +80,8 @@ q = static_cast<int8_t>(std::clamp(std::round(x / scale), -127.0f, 127.0f));
 GPU kernel 的写回公式仍然是：
 
 ```cpp
-e.c[row * e.n + col] = static_cast<float>(sum) * e.a_scale[row] * e.b_scale[col];
+data.c[global_row * n + col] = static_cast<float>(sum) *
+                             data.a_scale[global_row] * data.b_scale[group * n + col];
 ```
 
 两个 scale 沿 K 不变，所以可以放在整数点积完成后相乘。量化在 CPU 上完成；此步骤用于理解流程，不包含 GPU 量化 kernel。
@@ -91,13 +114,12 @@ export LD_LIBRARY_PATH=/opt/maca/lib:/opt/mxdriver/lib:${LD_LIBRARY_PATH:-}
 
 ## 建议阅读顺序
 
-1. `DeviceExpert` 与上面的布局表：GPU 如何找到每个专家的输入和 scale。
-2. `parse_tokens`、`main`：专家列表、max(M)、全空分支、信息表大小。
-3. `prepare_expert`、`upload_expert`：空专家为什么直接返回。
-4. `naive_grouped_int8_gemm`：z 选专家，边界判断发生在读写矩阵之前。
-5. `check_expert`：空输出约定与非空输出的 CPU 对照。
+1. `make_offsets`：从 token 数得到专家区间，理解重复偏移为什么表示空专家。
+2. `pack_contiguous`：A/scale 如何拼接，B 如何从 [K,N] 转为 [N,K]。
+3. `naive_contiguous_int8_gemm`：局部 row 如何变成 global_row，三个新下标怎么计算。
+4. `main`：单次启动后，如何按 offsets 取回各专家输出。
 
-当前是功能教学版本，未实现完整 FFN、路由通信、DeepGEMM contiguous/masked 接口或硬件矩阵指令优化；未做性能计时。
+本轮实现 contiguous 数据语义；masked、分块复用、INT8 矩阵指令和性能测试是后续小步。也尚未提供完整 MoE 的路由、激活和合并。
 
 ## 历史单专家 C500 实测（2026-10-15，提交 9ef6455）
 
@@ -169,7 +191,7 @@ MACA 编译成功，10 次运行（含默认参数与显式默认参数）× 2 �
 
 所有专家 mismatches=0；检查了每个专家的 shape、输出元素数以及统一 grid 的尺寸。源码中唯一的 GEMM 启动位于专家检查循环之前。6 类非法参数检查通过。以上结果不表示性能提升，也不表示已完成 DeepGEMM 接口适配。
 
-## 当前基础布局与空专家实测（2026-10-15）
+## 历史独立缓冲区与空专家实测（2026-10-15，提交 87ce61e）
 
 在 C500 服务器编译并验证 26 组新接口用例，共 201 个专家条目：96 个非空专家逐元素通过 CPU INT64/FP64 参考检查，105 个空专家通过空输出约定检查。所有非空任务启动一次 GEMM kernel，全空任务启动零次。全部 mismatches=0。
 
@@ -202,3 +224,19 @@ fi
 ```
 
 这些是功能验证，不包含性能目标验收或 contiguous/masked 适配验收。
+
+## 当前 contiguous NT 实测（2026-10-15）
+
+在 C500 上编译并运行 26 组用例，覆盖 1～64 个专家、空专家位于首/中/尾、全空、尾部尺寸和强不均衡 M。所有非空专家逐元素通过 CPU INT64/FP64 对照，空专家输出检查通过。
+
+每组额外与上一提交 `87ce61e` 的独立缓冲区可执行文件比较：打印的计算误差、量化误差及小矩阵输出均一致。测试对 offsets 的每个值、A/B/C 总形状做了独立前缀和断言；18 组非法参数和 2 组旧调用格式也通过。
+
+例如 `--tokens 3,0,5,17 19 23` 输出：
+
+```text
+Contiguous NT: A[25,23], B[4,19,23], C[25,19]
+offsets: 0 3 3 8 25
+Grouped launch: block=(16,16), grid=(2,2,4)
+```
+
+使用 N=19、K=23 等非方形权重检查转置索引；前缀和不对齐 16 的用例检查拼接区间，空专家槽位检查权重编号是否被错误压缩。数据规模和随机种子沿用上一课测试记录。这一步尚未计时，不据此声称性能提升。
