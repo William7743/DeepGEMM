@@ -1,0 +1,27 @@
+{
+  "timestamp": "2026-10-15T15:10:42.123196+08:00",
+  "instance": "C500 16GB sGPU",
+  "compute_quota_percent": 25,
+  "vram_quota_mib": 16000,
+  "contiguous_checks": 69,
+  "masked_checks": 53,
+  "benchmark_combinations": 30,
+  "full_pipeline_exit_code": 0,
+  "graph_followup_exit_code": 0,
+  "validation_sequence": [
+    "bash run_checks.sh passed with 51 masked checks",
+    "graph capture/replay tests added; complete masked suite passed with 53 checks"
+  ],
+  "source_sha256": {
+    "native/grouped_int8.cpp": "53ecbea2cd3766d6da2c52180c959d38b9e653675ff6fd961b20fe461cdf73c5",
+    "deep_gemm_maca/api.py": "3560390b8868149561fca9879f46b46ea311defdead59e538923d83db05d7187",
+    "deep_gemm_maca/masked.py": "da6aac7223421b200e2fd81e05a80171ce00579e1a9397c789f21bdb9493b0ef",
+    "deep_gemm_maca/__init__.py": "01423766081909c59e30d5e7e4d038d52b68a48ac7a5c2a603da1c95462bd0bf",
+    "tests/test_grouped.py": "af31f7cfcf73a5a613ba0610fd96040fdbb9ec4a9493cc6bf4700a80b6ae14c5",
+    "tests/test_masked.py": "ceb44f41851d4458494e0dd241a65b533995707acd79aa3af625fda9d478553a",
+    "benchmarks/bench_grouped.py": "237913c5b7f261347f3c90116e98cbd3c171e500be6ca453d3e44243f70e6e56",
+    "run_checks.sh": "78ad067bc137364424b86990a4752c0a3d5548edfa2bed8c62129f2ce5463086"
+  },
+  "binary_sha256": "ea563b488fa94b6f3a61014b7a193dcbb2571a025ab2966e0c459a8c836a4b8a",
+  "performance_scope": "25% compute slice, synthetic shapes, GPU events may contain host launch gaps"
+}

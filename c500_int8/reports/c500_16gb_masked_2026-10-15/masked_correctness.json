@@ -1,0 +1,419 @@
+{
+  "status": "PASS",
+  "gpu_status": "PASS",
+  "cases": [
+    {
+      "name": "tile_16_one_row_block_hint",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "tile_16_manual_selection",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "tile_32_one_row_block_hint",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "tile_32_manual_selection",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "tile_64_one_row_block_hint",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "tile_64_manual_selection",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "tile_128_one_row_block_hint",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "tile_128_manual_selection",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "empty_capacity",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "hint_above_capacity",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "zero_hint_does_not_zero_grid",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "large_weight_guard_valid_boundary",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "reject_zero_experts",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "reject_negative_capacity",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "reject_n_tail",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "reject_k_tail",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "reject_accumulator_overflow",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "reject_weight_index_overflow",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "reject_activation_index_overflow",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "reject_bad_tile",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "reject_negative_hint",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "reject_bool_hint",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "tile_16_ragged_and_undersized_hint",
+      "status": "PASS",
+      "masked_m": [
+        0,
+        1,
+        15,
+        17,
+        35
+      ],
+      "max_abs_error": 0.0004914430573990103,
+      "max_relative_error_away_from_zero": 1.0669181217317348e-07,
+      "padding_unchanged": true,
+      "tile_m": 16,
+      "expected_m": 1
+    },
+    {
+      "name": "tile_32_ragged_and_undersized_hint",
+      "status": "PASS",
+      "masked_m": [
+        0,
+        1,
+        31,
+        33,
+        67
+      ],
+      "max_abs_error": 0.0005015440419811057,
+      "max_relative_error_away_from_zero": 1.061718410399186e-07,
+      "padding_unchanged": true,
+      "tile_m": 32,
+      "expected_m": 1
+    },
+    {
+      "name": "tile_64_ragged_and_undersized_hint",
+      "status": "PASS",
+      "masked_m": [
+        0,
+        1,
+        63,
+        65,
+        131
+      ],
+      "max_abs_error": 0.0005564804796449607,
+      "max_relative_error_away_from_zero": 1.1144952589072761e-07,
+      "padding_unchanged": true,
+      "tile_m": 64,
+      "expected_m": 1
+    },
+    {
+      "name": "tile_128_ragged_and_undersized_hint",
+      "status": "PASS",
+      "masked_m": [
+        0,
+        1,
+        127,
+        129,
+        259
+      ],
+      "max_abs_error": 0.0006728460757585708,
+      "max_relative_error_away_from_zero": 1.1205071225353582e-07,
+      "padding_unchanged": true,
+      "tile_m": 128,
+      "expected_m": 1
+    },
+    {
+      "name": "multiple_nk_tiles",
+      "status": "PASS",
+      "masked_m": [
+        1,
+        0,
+        19
+      ],
+      "max_abs_error": 0.0007667127902095672,
+      "max_relative_error_away_from_zero": 1.0362298000447378e-07,
+      "padding_unchanged": true,
+      "capacity": 19,
+      "n": 256,
+      "k": 512
+    },
+    {
+      "name": "capacity_above_640",
+      "status": "PASS",
+      "masked_m": [
+        0,
+        641,
+        643
+      ],
+      "max_abs_error": 0.0007319233736780006,
+      "max_relative_error_away_from_zero": 1.1180791676769753e-07,
+      "padding_unchanged": true,
+      "capacity": 643,
+      "n": 128,
+      "k": 256
+    },
+    {
+      "name": "signed_extremes",
+      "status": "PASS",
+      "masked_m": [
+        1,
+        3
+      ],
+      "max_abs_error": 0.11514956434257329,
+      "max_relative_error_away_from_zero": 9.600785826067916e-08,
+      "padding_unchanged": true,
+      "capacity": 3,
+      "n": 128,
+      "k": 4096
+    },
+    {
+      "name": "all_empty",
+      "status": "PASS",
+      "masked_m": [
+        0,
+        0,
+        0
+      ],
+      "max_abs_error": 0.0,
+      "max_relative_error_away_from_zero": 0.0,
+      "padding_unchanged": true,
+      "capacity": 17,
+      "n": 128,
+      "k": 256
+    },
+    {
+      "name": "zero_capacity",
+      "status": "PASS",
+      "masked_m": [
+        0,
+        0
+      ],
+      "max_abs_error": 0.0,
+      "max_relative_error_away_from_zero": 0.0,
+      "padding_unchanged": true,
+      "capacity": 0,
+      "n": 128,
+      "k": 256
+    },
+    {
+      "name": "new_output_zero_padding",
+      "status": "PASS",
+      "masked_m": [
+        0,
+        1,
+        7
+      ],
+      "max_abs_error": 0.0003094968451478053,
+      "max_relative_error_away_from_zero": 1.0114897822159687e-07,
+      "padding_unchanged": true
+    },
+    {
+      "name": "dynamic_gpu_lengths",
+      "status": "PASS",
+      "masked_m": [
+        17,
+        2,
+        0
+      ],
+      "max_abs_error": 0.00044342823821352795,
+      "max_relative_error_away_from_zero": 9.40885876443257e-08,
+      "padding_unchanged": true
+    },
+    {
+      "name": "nondefault_stream",
+      "status": "PASS",
+      "masked_m": [
+        17,
+        2,
+        0
+      ],
+      "max_abs_error": 0.00044342823821352795,
+      "max_relative_error_away_from_zero": 9.40885876443257e-08,
+      "padding_unchanged": true
+    },
+    {
+      "name": "asynchronous_length_lifetime",
+      "status": "PASS",
+      "masked_m": [
+        17,
+        2,
+        0
+      ],
+      "max_abs_error": 0.00044342823821352795,
+      "max_relative_error_away_from_zero": 9.40885876443257e-08,
+      "padding_unchanged": true
+    },
+    {
+      "name": "graph_capture_replay",
+      "status": "PASS",
+      "masked_m": [
+        17,
+        2,
+        0
+      ],
+      "max_abs_error": 0.00044342823821352795,
+      "max_relative_error_away_from_zero": 9.40885876443257e-08,
+      "padding_unchanged": true
+    },
+    {
+      "name": "graph_replay_dynamic_gpu_lengths",
+      "status": "PASS",
+      "masked_m": [
+        1,
+        0,
+        17
+      ],
+      "max_abs_error": 0.00036134227138973074,
+      "max_relative_error_away_from_zero": 1.0625659995857746e-07,
+      "padding_unchanged": true
+    },
+    {
+      "name": "reject_a_dtype",
+      "status": "PASS",
+      "execution": "input rejection"
+    },
+    {
+      "name": "reject_b_dtype",
+      "status": "PASS",
+      "execution": "input rejection"
+    },
+    {
+      "name": "reject_scale_dtype",
+      "status": "PASS",
+      "execution": "input rejection"
+    },
+    {
+      "name": "reject_mask_dtype",
+      "status": "PASS",
+      "execution": "input rejection"
+    },
+    {
+      "name": "reject_mask_shape",
+      "status": "PASS",
+      "execution": "input rejection"
+    },
+    {
+      "name": "reject_cpu_mask",
+      "status": "PASS",
+      "execution": "input rejection"
+    },
+    {
+      "name": "reject_negative_length",
+      "status": "PASS",
+      "execution": "input rejection"
+    },
+    {
+      "name": "reject_excessive_length",
+      "status": "PASS",
+      "execution": "input rejection"
+    },
+    {
+      "name": "reject_a_rank",
+      "status": "PASS",
+      "execution": "input rejection"
+    },
+    {
+      "name": "reject_out_shape",
+      "status": "PASS",
+      "execution": "input rejection"
+    },
+    {
+      "name": "reject_noncontiguous_a",
+      "status": "PASS",
+      "execution": "input rejection"
+    },
+    {
+      "name": "reject_noncontiguous_mask",
+      "status": "PASS",
+      "execution": "input rejection"
+    },
+    {
+      "name": "reject_grad_scale",
+      "status": "PASS",
+      "execution": "input rejection"
+    },
+    {
+      "name": "reject_validate_mask_nonbool",
+      "status": "PASS",
+      "execution": "input rejection"
+    },
+    {
+      "name": "reject_output_scale_alias",
+      "status": "PASS",
+      "execution": "input rejection"
+    },
+    {
+      "name": "reject_output_length_alias",
+      "status": "PASS",
+      "execution": "input rejection"
+    }
+  ],
+  "oracle": "same INT8 inputs; CPU INT64 dot and FP64 scales",
+  "tolerance": {
+    "rtol": 0.001,
+    "atol": 1e-06,
+    "near_zero_threshold": 1e-06
+  },
+  "scope": "synthetic masked operator checks, not project acceptance",
+  "cpu_metadata_passed_cases": 22,
+  "environment": {
+    "torch": "2.8.0+metax3.7.1.3",
+    "device": "cuda:0",
+    "device_name": "MetaX C500"
+  },
+  "passed_cases": 53
+}

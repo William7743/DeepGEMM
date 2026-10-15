@@ -8,7 +8,7 @@ For consecutive expert segments, compute::
 The inputs are already quantized signed INT8 with symmetric zero point 0.
 Scales and output are FP32. This adapter neither quantizes inputs nor silently
 falls back to a floating-point GEMM. It takes explicit CPU ``counts``, not the
-upstream DeepGEMM FP8 ``grouped_layout`` argument. Masked GEMM is not supported.
+upstream DeepGEMM FP8 ``grouped_layout`` argument. The masked API is in masked.py.
 
 ``prepare_grouped`` prepares reusable GPU metadata without JIT compilation.
 Keep routing/count preparation outside the timed GEMM region. Plan metadata
@@ -209,6 +209,8 @@ def _load_native():
             library.dg_maca_gemm.restype = ctypes.c_int32
             library.dg_maca_last_error.argtypes = []
             library.dg_maca_last_error.restype = ctypes.c_char_p
+            library.dg_maca_masked_gemm.argtypes = [ctypes.c_void_p] * 6 + [ctypes.c_int32] * 6 + [ctypes.c_void_p]
+            library.dg_maca_masked_gemm.restype = ctypes.c_int32
         except (OSError, AttributeError) as exc:
             raise RuntimeError(
                 f"Cannot load MACA backend {_NATIVE_PATH}: {exc}. "

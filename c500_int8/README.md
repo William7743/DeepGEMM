@@ -1,6 +1,6 @@
 # C500：MoE INT8 W8A8 grouped GEMM 适配原型
 
-**状态（2026-10-15）：16 GB C500 实例已运行原生 INT8 后端，69 项检查通过，其中包含 11 个数值场景；15 个合成 shape/配置组合完成计时。实例计算配额为 25%，独享整卡性能待验证。**
+**状态（2026-10-15）：16 GB C500 实例上，contiguous 通过 69 项检查，masked 通过 53 项检查（含图捕获和动态长度重放）；两种布局各完成 15 个合成 shape/配置组合计时。实例计算配额为 25%，独享整卡性能待验证。**
 
 这是借鉴 DeepGEMM 分组计算语义、新增的独立 MACA INT8 后端。本分支基于上游版本 `1fc9c66975ee322d628b3288534ca0e9ce12a64d`。上游提供 FP8/FP4/BF16 等接口，没有可直接迁移的公开 INT8 W8A8 grouped API；本实现不是其 FP8 API 的直接替换，也没有移植 NVIDIA PTX/TMA 指令。
 
@@ -10,7 +10,8 @@
 - 使用 MACA SDK 自带 mctlass 的 INT8 矩阵指令实现，INT32 累加、FP32 反量化输出。Python 不执行浮点 GEMM fallback。
 - 提供 M tile 16、32、64、128；自动选择采用按平均专家行数的初始启发式，尚未调优。
 - 支持当前 mcPyTorch stream 和预先准备的分组 metadata。
-- 暂未实现路由、量化、激活、Top-k 合并、通信、masked API 和完整 fused MoE。
+- 支持 masked 布局：每专家固定容量的输入缓冲区，加 GPU 上的有效行数数组；无需 CPU 打包 token。
+- 暂未实现路由、量化、激活、Top-k 合并、通信和完整 fused MoE。
 
 SDK 中原有 Python grouped 包装偏向 BF16 输出。本原型直接实例化原生模板，采用 FP32 输出，避免 BF16 输出舍入本身干扰逐元素 `1e-3` 的精度检查。
 
@@ -70,6 +71,44 @@ torch.cuda.synchronize()
 
 plan 可复用，内部 tensor 应视为只读。动态路由变化时需重新准备 plan；准备和传输的成本应在端到端 MoE 性能中另外计入。
 
+## Masked 布局与动态路由
+
+`m_grouped_int8_gemm_nt_masked` 接受以下连续的同设备张量：
+
+```text
+A:        INT8    [G, capacity, K]
+B:        INT8    [G, N, K]
+A_scale:  FP32   [G, capacity]
+B_scale:  FP32   [G, N]
+masked_m: INT32  [G]               GPU 上各专家的有效前缀行数
+D:        FP32   [G, capacity, N]
+```
+
+对每个专家 e，仅写入 `D[e, :masked_m[e]]`，计算公式和反量化规则与 contiguous 一致。调用者提供的 `out` 的其余行保持原值；`out=None` 时输出先初始化为零，padding 行为零。N/K、指针对齐、INT32 索引和累加限制与 contiguous 一致。
+
+```python
+from deep_gemm_maca import m_grouped_int8_gemm_nt_masked
+
+# a/b/sa/sb 已按上述三维/二维布局准备。
+masked_m = torch.tensor([17, 0, 33, 8], dtype=torch.int32, device=a.device)
+out = m_grouped_int8_gemm_nt_masked(a, b, sa, sb, masked_m, expected_m=8)
+```
+
+`expected_m` 只影响 tile 选择和每专家的行方向 block 数。实际有效行数更大时，同一个 block 循环处理后续 tile，不能把这个提示当成截断长度。此调度由本后端实现，复用 SDK 原生 INT8 MMA 和 FP32 epilogue，支持四种 M tile。
+
+默认 `validate_mask=True` 会检查 `0 <= masked_m <= capacity`，为此向 CPU 同步一个布尔值。上游已保证长度合法时，可传 `validate_mask=False` 保持调用异步；GPU 上原地更新长度后，无需重建 CPU plan。此路径要求调用者保证数据和长度在当前 stream 上就绪。非法长度仍由原生边界保护跳过，输出不作正确性保证，不能把它当作合法路由。
+
+已验证 `torch.cuda.CUDAGraph` 捕获/重放及重放时动态更新长度。捕获前先在图外调用一次以完成原生库加载，在图内使用 `validate_mask=False` 和预先分配的输出。图重放期间保持输入、输出、scale、`masked_m` 存活且地址不变，长度通过 GPU 张量原地更新。
+
+计时用预先分配的输出、在计时区域外检查长度，再以 `validate_mask=False` 启动。输出分配/清零和长度检查不计入该原生 GEMM 计时。选择 masked 的命令为：
+
+```bash
+python3 tests/test_masked.py --json reports/masked_correctness.json
+python3 benchmarks/bench_grouped.py --layout masked --output reports/masked_benchmark.json
+```
+
+shape JSON 可额外指定 `layout`、`capacity` 和 `expected_m`；默认 capacity 为该 shape 中最大的专家行数，默认提示为 `ceil(sum(counts)/G)`。TOPS 使用有效行数计算，padding 不计入有效操作量。
+
 ## 验证和性能口径
 
 正确性 oracle 使用相同 INT8 输入进行 CPU INT64 点积，并用 FP64 计算 scale。这测量算子实现误差；与量化前浮点网络的误差是另一个问题。测试输出会明确相对误差分母和零值处理方式。项目文档只给出 `1e-3`，最终仍需要项目方确认参考实现及误差聚合定义；上游 DeepGEMM 的 `calc_diff` 也不能直接等同于逐元素相对误差。
@@ -82,11 +121,14 @@ plan 可复用，内部 tensor 应视为只读。动态路由变化时需重新�
 
 实测报告保存在 [reports/c500_16gb_2026-10-15/](reports/c500_16gb_2026-10-15/)。性能数据对应 25% 计算配额，不能外推整卡，也不能用于宣布 C500/A100 比例达标。GPU 不可见时可运行 `tools/diagnose.py` 检查运行时设备计数及 sGPU 分配，只有实际 GPU 分配/求和成功后才能开始实卡测试。
 
+新增 masked 支持后的回归报告位于 [reports/c500_16gb_masked_2026-10-15/](reports/c500_16gb_masked_2026-10-15/)。该版本 contiguous 69 项、masked 53 项检查通过，两种布局各 15 个配置组合计时成功。masked 的 15 个数值场景中，非近零最大逐元素相对误差约为 `1.12e-7`。报告附当前原生/接口/测试源码 SHA256；早期报告仍对应其原始版本，不能混用源码哈希。
+
 ## 代码入口
 
 - `native/grouped_int8.cpp`：C ABI、四种模板实例化、原生 launch 和边界检查。
 - `deep_gemm_maca/api.py`：输入校验、counts plan、stream 和 tensor 生命周期。
 - `tests/test_grouped.py`：独立 CPU oracle、边界和 stream 测试。
+- `tests/test_masked.py`：masked 数值、尾部保留、GPU 动态行数及 stream 测试。
 - `benchmarks/bench_grouped.py`：合成 shape 性能采集。
 - `tools/diagnose.py`：只读诊断。
 
