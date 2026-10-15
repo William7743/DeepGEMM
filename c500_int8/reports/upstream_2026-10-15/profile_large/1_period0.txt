@@ -1,0 +1,36 @@
+##############################
+Sub-module: Summary
+------------------------------
+Name: Total Cycles
+Description: cycles use by kernel
+Value: 14,188.73(Kcycles)
+------------------------------
+Name: AP busy Duty
+Description: average AP busy duty of total cycles
+Value: 79.54%
+##############################
+Sub-module: Memory Statistics
+------------------------------
+Name: Global Memory Read bytes
+Description: bytes read from global memory
+Value: 12,555,946,304.0byte
+------------------------------
+Name: Global Memory Write bytes
+Description: bytes write from global memory
+Value: 855,220,896.0byte
+##############################
+Sub-module: Occupancy
+------------------------------
+Name: Achieved waves
+Description: number of achieved waves
+Value: 52,800.0
+##############################
+Sub-module: GPU Throughput Statistics
+------------------------------
+Name: AP MMA Duty ratio
+Description: MMA Duty ratio relative to AP active
+Value: 64.64%
+------------------------------
+Name: L2C Duty ratio
+Description: L2C Duty ratio relative to L2C active
+Value: 44.45%

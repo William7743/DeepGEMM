@@ -1,0 +1,40 @@
+{
+  "status": "PASS",
+  "trace_source": "int8_small-408853.json",
+  "trace_source_sha256": "c5bc83eab27d6568e19bfbd7f63422944952807ccf0ad8647666dacfd91d9cac",
+  "raw_duration_unit": "ns",
+  "shape": "masked_g32_m20_n6144_k7168",
+  "tile_m": 32,
+  "kernel_symbol": "_ZN12_GLOBAL__N_113masked_kernelIN7mctlass4gemm6kernel25MacaContiguousGemmGroupedINS2_11threadblock34MacaContiguousGroupedMmaMultistageINS2_9GemmShapeILi32ELi128ELi256EEENS7_ILi32ELi32ELi256EEENS1_9transform11threadblock32MacaPredicatedTileAccessIteratorINS1_11MatrixShapeILi32ELi256EEEaNS1_6layout8RowMajorELi1ENS1_5ArrayIaLi16ELb0EEELb0EEENSC_INSD_ILi256ELi128EEEaNSF_11ColumnMajorELi0ESI_Lb0EEEiSG_NS5_9MmaPolicyINS2_4warp15MacaMmaTensorOpIS9_aSG_aSL_iSG_NSO_17MmaTensorOpPolicyINS1_4arch3MmaINS7_ILi16ELi16ELi16EEELi32EaSG_aSL_iSG_NSR_21OpMultiplyAddSaturateEEENSD_ILi1ELi1EEEEELi1ELb0ELi1ELi1EbEENSD_ILi0ELi0EEESZ_Li1EEELi4ELb1EbEENS1_8epilogue11threadblock42MacaContiguousGroupGemmEpilogueDirectStoreIS8_SY_S11_Li1ENS12_6thread26MacaLinearCombinationScaleIiLi4EffLNS15_9ScaleType13ScaleBiasKindE11ELNS17_4KindE0ELNS1_15FloatRoundStyleE2EEEiSG_ibEENS5_37GemmBatchedIdentityThreadblockSwizzleELb0EbEEEEvPKaS1G_PfPKiiiiNT_16EpilogueOutputOp6ParamsE",
+  "warmup_count": 3,
+  "measured_count": 3,
+  "grid": {
+    "x": 1,
+    "y": 48,
+    "z": 32
+  },
+  "block": {
+    "x": 256,
+    "y": 1,
+    "z": 1
+  },
+  "memory_resources": {
+    "dynamic_shared": 0,
+    "private_per_thread": 0,
+    "private_total": 0,
+    "registers_per_thread": 198,
+    "static_shared": 24576
+  },
+  "mtreg_occupancy_percent": 38,
+  "shared_memory_occupancy_percent": 37,
+  "kernel_durations_us": [
+    952.32,
+    952.064,
+    971.52,
+    955.648,
+    950.784,
+    956.416
+  ],
+  "measured_kernel_median_us": 955.648,
+  "scope": "mcTracer individual GPU kernel events; occupancy fields are resource estimates, not measured achieved occupancy"
+}

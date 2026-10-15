@@ -1,0 +1,1830 @@
+{
+    "perf_counters": {
+        "0": [
+            {
+                "CE": {
+                    "generic": {
+                        "CE_PERF_BUSY_CYCLES": 3693606057
+                    }
+                },
+                "ISU": {
+                    "dpcId0,blockId0": {
+                        "AP_PERF_ISU_AP_BUSY": 23999297,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 304
+                    },
+                    "dpcId0,blockId1": {
+                        "AP_PERF_ISU_AP_BUSY": 24015090,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId0,blockId2": {
+                        "AP_PERF_ISU_AP_BUSY": 24012023,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId0,blockId3": {
+                        "AP_PERF_ISU_AP_BUSY": 24018079,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId0,blockId4": {
+                        "AP_PERF_ISU_AP_BUSY": 24011225,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId0,blockId5": {
+                        "AP_PERF_ISU_AP_BUSY": 24031939,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId0,blockId6": {
+                        "AP_PERF_ISU_AP_BUSY": 23938935,
+                        "AP_PERF_INST_CYCLES_MMA": 3325952,
+                        "AP_PERF_WAVES": 312
+                    },
+                    "dpcId0,blockId7": {
+                        "AP_PERF_ISU_AP_BUSY": 23992654,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 316
+                    },
+                    "dpcId0,blockId8": {
+                        "AP_PERF_ISU_AP_BUSY": 24000908,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 316
+                    },
+                    "dpcId0,blockId9": {
+                        "AP_PERF_ISU_AP_BUSY": 23961323,
+                        "AP_PERF_INST_CYCLES_MMA": 3325952,
+                        "AP_PERF_WAVES": 312
+                    },
+                    "dpcId0,blockId10": {
+                        "AP_PERF_ISU_AP_BUSY": 23969805,
+                        "AP_PERF_INST_CYCLES_MMA": 3325952,
+                        "AP_PERF_WAVES": 312
+                    },
+                    "dpcId0,blockId11": {
+                        "AP_PERF_ISU_AP_BUSY": 23969135,
+                        "AP_PERF_INST_CYCLES_MMA": 3325952,
+                        "AP_PERF_WAVES": 296
+                    },
+                    "dpcId0,blockId12": {
+                        "AP_PERF_ISU_AP_BUSY": 23961904,
+                        "AP_PERF_INST_CYCLES_MMA": 3325952,
+                        "AP_PERF_WAVES": 296
+                    },
+                    "dpcId1,blockId0": {
+                        "AP_PERF_ISU_AP_BUSY": 24010623,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId1,blockId1": {
+                        "AP_PERF_ISU_AP_BUSY": 23965852,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 316
+                    },
+                    "dpcId1,blockId2": {
+                        "AP_PERF_ISU_AP_BUSY": 24025044,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId1,blockId3": {
+                        "AP_PERF_ISU_AP_BUSY": 24017692,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId1,blockId4": {
+                        "AP_PERF_ISU_AP_BUSY": 23974284,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 316
+                    },
+                    "dpcId1,blockId5": {
+                        "AP_PERF_ISU_AP_BUSY": 23986798,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 316
+                    },
+                    "dpcId1,blockId6": {
+                        "AP_PERF_ISU_AP_BUSY": 23991541,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 316
+                    },
+                    "dpcId1,blockId7": {
+                        "AP_PERF_ISU_AP_BUSY": 23999157,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 300
+                    },
+                    "dpcId1,blockId8": {
+                        "AP_PERF_ISU_AP_BUSY": 23997308,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 300
+                    },
+                    "dpcId1,blockId9": {
+                        "AP_PERF_ISU_AP_BUSY": 23924000,
+                        "AP_PERF_INST_CYCLES_MMA": 3268608,
+                        "AP_PERF_WAVES": 292
+                    },
+                    "dpcId1,blockId10": {
+                        "AP_PERF_ISU_AP_BUSY": 24052846,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 316
+                    },
+                    "dpcId1,blockId11": {
+                        "AP_PERF_ISU_AP_BUSY": 23964555,
+                        "AP_PERF_INST_CYCLES_MMA": 3325952,
+                        "AP_PERF_WAVES": 312
+                    },
+                    "dpcId1,blockId12": {
+                        "AP_PERF_ISU_AP_BUSY": 24055763,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId2,blockId0": {
+                        "AP_PERF_ISU_AP_BUSY": 23991146,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId2,blockId1": {
+                        "AP_PERF_ISU_AP_BUSY": 24010526,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId2,blockId2": {
+                        "AP_PERF_ISU_AP_BUSY": 24010722,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId2,blockId3": {
+                        "AP_PERF_ISU_AP_BUSY": 24002395,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId2,blockId4": {
+                        "AP_PERF_ISU_AP_BUSY": 24024156,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId2,blockId5": {
+                        "AP_PERF_ISU_AP_BUSY": 23981242,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 316
+                    },
+                    "dpcId2,blockId6": {
+                        "AP_PERF_ISU_AP_BUSY": 23931413,
+                        "AP_PERF_INST_CYCLES_MMA": 3325952,
+                        "AP_PERF_WAVES": 312
+                    },
+                    "dpcId2,blockId7": {
+                        "AP_PERF_ISU_AP_BUSY": 24016924,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 316
+                    },
+                    "dpcId2,blockId8": {
+                        "AP_PERF_ISU_AP_BUSY": 23984304,
+                        "AP_PERF_INST_CYCLES_MMA": 3325952,
+                        "AP_PERF_WAVES": 312
+                    },
+                    "dpcId2,blockId9": {
+                        "AP_PERF_ISU_AP_BUSY": 23963246,
+                        "AP_PERF_INST_CYCLES_MMA": 3325952,
+                        "AP_PERF_WAVES": 296
+                    },
+                    "dpcId2,blockId10": {
+                        "AP_PERF_ISU_AP_BUSY": 24001521,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 300
+                    },
+                    "dpcId2,blockId11": {
+                        "AP_PERF_ISU_AP_BUSY": 24014503,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 300
+                    },
+                    "dpcId2,blockId12": {
+                        "AP_PERF_ISU_AP_BUSY": 23996884,
+                        "AP_PERF_INST_CYCLES_MMA": 3325952,
+                        "AP_PERF_WAVES": 312
+                    },
+                    "dpcId3,blockId0": {
+                        "AP_PERF_ISU_AP_BUSY": 24014811,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 304
+                    },
+                    "dpcId3,blockId1": {
+                        "AP_PERF_ISU_AP_BUSY": 24012831,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 304
+                    },
+                    "dpcId3,blockId2": {
+                        "AP_PERF_ISU_AP_BUSY": 23980593,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 300
+                    },
+                    "dpcId3,blockId3": {
+                        "AP_PERF_ISU_AP_BUSY": 24019614,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId3,blockId4": {
+                        "AP_PERF_ISU_AP_BUSY": 24020044,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId3,blockId5": {
+                        "AP_PERF_ISU_AP_BUSY": 23978503,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 316
+                    },
+                    "dpcId3,blockId6": {
+                        "AP_PERF_ISU_AP_BUSY": 24022973,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId3,blockId7": {
+                        "AP_PERF_ISU_AP_BUSY": 24041186,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId3,blockId8": {
+                        "AP_PERF_ISU_AP_BUSY": 23997343,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 316
+                    },
+                    "dpcId3,blockId9": {
+                        "AP_PERF_ISU_AP_BUSY": 23999710,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 316
+                    },
+                    "dpcId3,blockId10": {
+                        "AP_PERF_ISU_AP_BUSY": 23961285,
+                        "AP_PERF_INST_CYCLES_MMA": 3325952,
+                        "AP_PERF_WAVES": 312
+                    },
+                    "dpcId3,blockId11": {
+                        "AP_PERF_ISU_AP_BUSY": 23932398,
+                        "AP_PERF_INST_CYCLES_MMA": 3268608,
+                        "AP_PERF_WAVES": 308
+                    },
+                    "dpcId3,blockId12": {
+                        "AP_PERF_ISU_AP_BUSY": 23934105,
+                        "AP_PERF_INST_CYCLES_MMA": 3268608,
+                        "AP_PERF_WAVES": 308
+                    },
+                    "dpcId4,blockId0": {
+                        "AP_PERF_ISU_AP_BUSY": 23996670,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 304
+                    },
+                    "dpcId4,blockId1": {
+                        "AP_PERF_ISU_AP_BUSY": 24006130,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 304
+                    },
+                    "dpcId4,blockId2": {
+                        "AP_PERF_ISU_AP_BUSY": 24012515,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 304
+                    },
+                    "dpcId4,blockId3": {
+                        "AP_PERF_ISU_AP_BUSY": 24014810,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId4,blockId4": {
+                        "AP_PERF_ISU_AP_BUSY": 24020690,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId4,blockId5": {
+                        "AP_PERF_ISU_AP_BUSY": 24018251,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId4,blockId6": {
+                        "AP_PERF_ISU_AP_BUSY": 23978474,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 316
+                    },
+                    "dpcId4,blockId7": {
+                        "AP_PERF_ISU_AP_BUSY": 23977376,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 316
+                    },
+                    "dpcId4,blockId8": {
+                        "AP_PERF_ISU_AP_BUSY": 23980232,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 316
+                    },
+                    "dpcId4,blockId9": {
+                        "AP_PERF_ISU_AP_BUSY": 23949202,
+                        "AP_PERF_INST_CYCLES_MMA": 3325952,
+                        "AP_PERF_WAVES": 312
+                    },
+                    "dpcId4,blockId10": {
+                        "AP_PERF_ISU_AP_BUSY": 24008885,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 316
+                    },
+                    "dpcId4,blockId11": {
+                        "AP_PERF_ISU_AP_BUSY": 23914967,
+                        "AP_PERF_INST_CYCLES_MMA": 3268608,
+                        "AP_PERF_WAVES": 308
+                    },
+                    "dpcId4,blockId12": {
+                        "AP_PERF_ISU_AP_BUSY": 23905174,
+                        "AP_PERF_INST_CYCLES_MMA": 3268608,
+                        "AP_PERF_WAVES": 308
+                    },
+                    "dpcId5,blockId0": {
+                        "AP_PERF_ISU_AP_BUSY": 23959714,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 316
+                    },
+                    "dpcId5,blockId1": {
+                        "AP_PERF_ISU_AP_BUSY": 23973531,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 300
+                    },
+                    "dpcId5,blockId2": {
+                        "AP_PERF_ISU_AP_BUSY": 23999357,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 304
+                    },
+                    "dpcId5,blockId3": {
+                        "AP_PERF_ISU_AP_BUSY": 24006980,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 304
+                    },
+                    "dpcId5,blockId4": {
+                        "AP_PERF_ISU_AP_BUSY": 23966742,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 316
+                    },
+                    "dpcId5,blockId5": {
+                        "AP_PERF_ISU_AP_BUSY": 24026149,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId5,blockId6": {
+                        "AP_PERF_ISU_AP_BUSY": 24034869,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId5,blockId7": {
+                        "AP_PERF_ISU_AP_BUSY": 24036970,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId5,blockId8": {
+                        "AP_PERF_ISU_AP_BUSY": 23935309,
+                        "AP_PERF_INST_CYCLES_MMA": 3325952,
+                        "AP_PERF_WAVES": 312
+                    },
+                    "dpcId5,blockId9": {
+                        "AP_PERF_ISU_AP_BUSY": 23954947,
+                        "AP_PERF_INST_CYCLES_MMA": 3325952,
+                        "AP_PERF_WAVES": 312
+                    },
+                    "dpcId5,blockId10": {
+                        "AP_PERF_ISU_AP_BUSY": 24020296,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 316
+                    },
+                    "dpcId5,blockId11": {
+                        "AP_PERF_ISU_AP_BUSY": 23934696,
+                        "AP_PERF_INST_CYCLES_MMA": 3268608,
+                        "AP_PERF_WAVES": 308
+                    },
+                    "dpcId5,blockId12": {
+                        "AP_PERF_ISU_AP_BUSY": 24016661,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 316
+                    },
+                    "dpcId6,blockId0": {
+                        "AP_PERF_ISU_AP_BUSY": 23990404,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId6,blockId1": {
+                        "AP_PERF_ISU_AP_BUSY": 24005030,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 304
+                    },
+                    "dpcId6,blockId2": {
+                        "AP_PERF_ISU_AP_BUSY": 24009339,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 304
+                    },
+                    "dpcId6,blockId3": {
+                        "AP_PERF_ISU_AP_BUSY": 23974757,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 300
+                    },
+                    "dpcId6,blockId4": {
+                        "AP_PERF_ISU_AP_BUSY": 24013670,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId6,blockId5": {
+                        "AP_PERF_ISU_AP_BUSY": 24026077,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId6,blockId6": {
+                        "AP_PERF_ISU_AP_BUSY": 24019398,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId6,blockId7": {
+                        "AP_PERF_ISU_AP_BUSY": 23938292,
+                        "AP_PERF_INST_CYCLES_MMA": 3325952,
+                        "AP_PERF_WAVES": 312
+                    },
+                    "dpcId6,blockId8": {
+                        "AP_PERF_ISU_AP_BUSY": 23949014,
+                        "AP_PERF_INST_CYCLES_MMA": 3325952,
+                        "AP_PERF_WAVES": 312
+                    },
+                    "dpcId6,blockId9": {
+                        "AP_PERF_ISU_AP_BUSY": 24044924,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId6,blockId10": {
+                        "AP_PERF_ISU_AP_BUSY": 23995554,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 316
+                    },
+                    "dpcId6,blockId11": {
+                        "AP_PERF_ISU_AP_BUSY": 23956231,
+                        "AP_PERF_INST_CYCLES_MMA": 3325952,
+                        "AP_PERF_WAVES": 312
+                    },
+                    "dpcId6,blockId12": {
+                        "AP_PERF_ISU_AP_BUSY": 23870867,
+                        "AP_PERF_INST_CYCLES_MMA": 3211264,
+                        "AP_PERF_WAVES": 304
+                    },
+                    "dpcId7,blockId0": {
+                        "AP_PERF_ISU_AP_BUSY": 23993899,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 304
+                    },
+                    "dpcId7,blockId1": {
+                        "AP_PERF_ISU_AP_BUSY": 24010048,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId7,blockId2": {
+                        "AP_PERF_ISU_AP_BUSY": 24018629,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId7,blockId3": {
+                        "AP_PERF_ISU_AP_BUSY": 24001360,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId7,blockId4": {
+                        "AP_PERF_ISU_AP_BUSY": 23935701,
+                        "AP_PERF_INST_CYCLES_MMA": 3325952,
+                        "AP_PERF_WAVES": 312
+                    },
+                    "dpcId7,blockId5": {
+                        "AP_PERF_ISU_AP_BUSY": 24025485,
+                        "AP_PERF_INST_CYCLES_MMA": 3440640,
+                        "AP_PERF_WAVES": 320
+                    },
+                    "dpcId7,blockId6": {
+                        "AP_PERF_ISU_AP_BUSY": 23978158,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 316
+                    },
+                    "dpcId7,blockId7": {
+                        "AP_PERF_ISU_AP_BUSY": 23940019,
+                        "AP_PERF_INST_CYCLES_MMA": 3325952,
+                        "AP_PERF_WAVES": 312
+                    },
+                    "dpcId7,blockId8": {
+                        "AP_PERF_ISU_AP_BUSY": 23997335,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 316
+                    },
+                    "dpcId7,blockId9": {
+                        "AP_PERF_ISU_AP_BUSY": 23952874,
+                        "AP_PERF_INST_CYCLES_MMA": 3325952,
+                        "AP_PERF_WAVES": 312
+                    },
+                    "dpcId7,blockId10": {
+                        "AP_PERF_ISU_AP_BUSY": 23965428,
+                        "AP_PERF_INST_CYCLES_MMA": 3325952,
+                        "AP_PERF_WAVES": 312
+                    },
+                    "dpcId7,blockId11": {
+                        "AP_PERF_ISU_AP_BUSY": 23994189,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 300
+                    },
+                    "dpcId7,blockId12": {
+                        "AP_PERF_ISU_AP_BUSY": 24001666,
+                        "AP_PERF_INST_CYCLES_MMA": 3383296,
+                        "AP_PERF_WAVES": 300
+                    }
+                },
+                "L2C": {
+                    "dpcId0,blockId0": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 1384936,
+                        "perf_dnoc_wrreq_128B": 588743,
+                        "perf_dnoc_rdreq_64B": 28,
+                        "perf_req": 2804061,
+                        "perf_dnoc_wrreq_32B_low": 1,
+                        "perf_dnoc_wrreq_32B_high": 1,
+                        "1_b1": 3694877378,
+                        "perf_dnoc_wrreq_64B": 251
+                    },
+                    "dpcId0,blockId1": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 1384957,
+                        "perf_dnoc_wrreq_128B": 588738,
+                        "perf_dnoc_rdreq_64B": 88,
+                        "perf_req": 2803995,
+                        "perf_dnoc_wrreq_32B_low": 2,
+                        "perf_dnoc_wrreq_32B_high": 2,
+                        "1_b1": 3694905866,
+                        "perf_dnoc_wrreq_64B": 282
+                    },
+                    "dpcId0,blockId2": {
+                        "perf_dnoc_rdreq_32B": 1,
+                        "perf_dnoc_rdreq_128B": 1384892,
+                        "perf_dnoc_wrreq_128B": 588730,
+                        "perf_dnoc_rdreq_64B": 24,
+                        "perf_req": 2804825,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 3694922714,
+                        "perf_dnoc_wrreq_64B": 256
+                    },
+                    "dpcId0,blockId3": {
+                        "perf_dnoc_rdreq_32B": 2,
+                        "perf_dnoc_rdreq_128B": 1384922,
+                        "perf_dnoc_wrreq_128B": 588750,
+                        "perf_dnoc_rdreq_64B": 24,
+                        "perf_req": 2804825,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 3694939150,
+                        "perf_dnoc_wrreq_64B": 263
+                    },
+                    "dpcId1,blockId0": {
+                        "perf_dnoc_rdreq_32B": 1,
+                        "perf_dnoc_rdreq_128B": 1385028,
+                        "perf_dnoc_wrreq_128B": 588734,
+                        "perf_dnoc_rdreq_64B": 140,
+                        "perf_req": 2802896,
+                        "perf_dnoc_wrreq_32B_low": 1,
+                        "perf_dnoc_wrreq_32B_high": 1,
+                        "1_b1": 3694956207,
+                        "perf_dnoc_wrreq_64B": 248
+                    },
+                    "dpcId1,blockId1": {
+                        "perf_dnoc_rdreq_32B": 1,
+                        "perf_dnoc_rdreq_128B": 1384930,
+                        "perf_dnoc_wrreq_128B": 588732,
+                        "perf_dnoc_rdreq_64B": 24,
+                        "perf_req": 2802009,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 3694972791,
+                        "perf_dnoc_wrreq_64B": 274
+                    },
+                    "dpcId1,blockId2": {
+                        "perf_dnoc_rdreq_32B": 1,
+                        "perf_dnoc_rdreq_128B": 1384979,
+                        "perf_dnoc_wrreq_128B": 588756,
+                        "perf_dnoc_rdreq_64B": 140,
+                        "perf_req": 2800592,
+                        "perf_dnoc_wrreq_32B_low": 1,
+                        "perf_dnoc_wrreq_32B_high": 1,
+                        "1_b1": 3694989088,
+                        "perf_dnoc_wrreq_64B": 282
+                    },
+                    "dpcId1,blockId3": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 1384979,
+                        "perf_dnoc_wrreq_128B": 588742,
+                        "perf_dnoc_rdreq_64B": 84,
+                        "perf_req": 2803608,
+                        "perf_dnoc_wrreq_32B_low": 1,
+                        "perf_dnoc_wrreq_32B_high": 1,
+                        "1_b1": 3695005044,
+                        "perf_dnoc_wrreq_64B": 282
+                    },
+                    "dpcId2,blockId0": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 1385075,
+                        "perf_dnoc_wrreq_128B": 588744,
+                        "perf_dnoc_rdreq_64B": 52,
+                        "perf_req": 2801785,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 3695021464,
+                        "perf_dnoc_wrreq_64B": 286
+                    },
+                    "dpcId2,blockId1": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 1385042,
+                        "perf_dnoc_wrreq_128B": 588734,
+                        "perf_dnoc_rdreq_64B": 36,
+                        "perf_req": 2805209,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 3695037834,
+                        "perf_dnoc_wrreq_64B": 272
+                    },
+                    "dpcId2,blockId2": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 1384970,
+                        "perf_dnoc_wrreq_128B": 588745,
+                        "perf_dnoc_rdreq_64B": 28,
+                        "perf_req": 2805209,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 3695053980,
+                        "perf_dnoc_wrreq_64B": 279
+                    },
+                    "dpcId2,blockId3": {
+                        "perf_dnoc_rdreq_32B": 6,
+                        "perf_dnoc_rdreq_128B": 1384998,
+                        "perf_dnoc_wrreq_128B": 588728,
+                        "perf_dnoc_rdreq_64B": 32,
+                        "perf_req": 2805221,
+                        "perf_dnoc_wrreq_32B_low": 6,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 3695070264,
+                        "perf_dnoc_wrreq_64B": 271
+                    },
+                    "dpcId3,blockId0": {
+                        "perf_dnoc_rdreq_32B": 1,
+                        "perf_dnoc_rdreq_128B": 1385041,
+                        "perf_dnoc_wrreq_128B": 588750,
+                        "perf_dnoc_rdreq_64B": 28,
+                        "perf_req": 2802524,
+                        "perf_dnoc_wrreq_32B_low": 1,
+                        "perf_dnoc_wrreq_32B_high": 1,
+                        "1_b1": 3695086757,
+                        "perf_dnoc_wrreq_64B": 265
+                    },
+                    "dpcId3,blockId1": {
+                        "perf_dnoc_rdreq_32B": 2,
+                        "perf_dnoc_rdreq_128B": 1385038,
+                        "perf_dnoc_wrreq_128B": 588724,
+                        "perf_dnoc_rdreq_64B": 25,
+                        "perf_req": 2802524,
+                        "perf_dnoc_wrreq_32B_low": 1,
+                        "perf_dnoc_wrreq_32B_high": 1,
+                        "1_b1": 3695103256,
+                        "perf_dnoc_wrreq_64B": 258
+                    },
+                    "dpcId3,blockId2": {
+                        "perf_dnoc_rdreq_32B": 1,
+                        "perf_dnoc_rdreq_128B": 1385015,
+                        "perf_dnoc_wrreq_128B": 588746,
+                        "perf_dnoc_rdreq_64B": 28,
+                        "perf_req": 2805596,
+                        "perf_dnoc_wrreq_32B_low": 1,
+                        "perf_dnoc_wrreq_32B_high": 1,
+                        "1_b1": 3695126531,
+                        "perf_dnoc_wrreq_64B": 255
+                    },
+                    "dpcId3,blockId3": {
+                        "perf_dnoc_rdreq_32B": 1,
+                        "perf_dnoc_rdreq_128B": 1384937,
+                        "perf_dnoc_wrreq_128B": 588730,
+                        "perf_dnoc_rdreq_64B": 35,
+                        "perf_req": 2805599,
+                        "perf_dnoc_wrreq_32B_low": 2,
+                        "perf_dnoc_wrreq_32B_high": 2,
+                        "1_b1": 3695142451,
+                        "perf_dnoc_wrreq_64B": 282
+                    },
+                    "dpcId4,blockId0": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 1384879,
+                        "perf_dnoc_wrreq_128B": 588737,
+                        "perf_dnoc_rdreq_64B": 39,
+                        "perf_req": 2794464,
+                        "perf_dnoc_wrreq_32B_low": 17,
+                        "perf_dnoc_wrreq_32B_high": 6,
+                        "1_b1": 3695159023,
+                        "perf_dnoc_wrreq_64B": 297
+                    },
+                    "dpcId4,blockId1": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 1384926,
+                        "perf_dnoc_wrreq_128B": 588744,
+                        "perf_dnoc_rdreq_64B": 16,
+                        "perf_req": 2794203,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 3695175098,
+                        "perf_dnoc_wrreq_64B": 276
+                    },
+                    "dpcId4,blockId2": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 1384912,
+                        "perf_dnoc_wrreq_128B": 588729,
+                        "perf_dnoc_rdreq_64B": 18,
+                        "perf_req": 2795081,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 3695191522,
+                        "perf_dnoc_wrreq_64B": 267
+                    },
+                    "dpcId4,blockId3": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 1384928,
+                        "perf_dnoc_wrreq_128B": 588734,
+                        "perf_dnoc_rdreq_64B": 16,
+                        "perf_req": 2796315,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 3695207513,
+                        "perf_dnoc_wrreq_64B": 278
+                    },
+                    "dpcId5,blockId0": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 1384911,
+                        "perf_dnoc_wrreq_128B": 588726,
+                        "perf_dnoc_rdreq_64B": 17,
+                        "perf_req": 2802868,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 3695223625,
+                        "perf_dnoc_wrreq_64B": 281
+                    },
+                    "dpcId5,blockId1": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 1384877,
+                        "perf_dnoc_wrreq_128B": 588746,
+                        "perf_dnoc_rdreq_64B": 16,
+                        "perf_req": 2799773,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 3695239843,
+                        "perf_dnoc_wrreq_64B": 262
+                    },
+                    "dpcId5,blockId2": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 1384932,
+                        "perf_dnoc_wrreq_128B": 588733,
+                        "perf_dnoc_rdreq_64B": 17,
+                        "perf_req": 2799790,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 3695256070,
+                        "perf_dnoc_wrreq_64B": 258
+                    },
+                    "dpcId5,blockId3": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 1384837,
+                        "perf_dnoc_wrreq_128B": 588736,
+                        "perf_dnoc_rdreq_64B": 16,
+                        "perf_req": 2799769,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 3695272332,
+                        "perf_dnoc_wrreq_64B": 262
+                    },
+                    "dpcId6,blockId0": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 1384849,
+                        "perf_dnoc_wrreq_128B": 588747,
+                        "perf_dnoc_rdreq_64B": 9,
+                        "perf_req": 2799121,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 3695289199,
+                        "perf_dnoc_wrreq_64B": 288
+                    },
+                    "dpcId6,blockId1": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 1384879,
+                        "perf_dnoc_wrreq_128B": 588749,
+                        "perf_dnoc_rdreq_64B": 8,
+                        "perf_req": 2798297,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 3695305444,
+                        "perf_dnoc_wrreq_64B": 251
+                    },
+                    "dpcId6,blockId2": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 1384918,
+                        "perf_dnoc_wrreq_128B": 588739,
+                        "perf_dnoc_rdreq_64B": 9,
+                        "perf_req": 2799889,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 3695321634,
+                        "perf_dnoc_wrreq_64B": 286
+                    },
+                    "dpcId6,blockId3": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 1384950,
+                        "perf_dnoc_wrreq_128B": 588743,
+                        "perf_dnoc_rdreq_64B": 8,
+                        "perf_req": 2799844,
+                        "perf_dnoc_wrreq_32B_low": 4,
+                        "perf_dnoc_wrreq_32B_high": 7,
+                        "1_b1": 3695337537,
+                        "perf_dnoc_wrreq_64B": 276
+                    },
+                    "dpcId7,blockId0": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 1384849,
+                        "perf_dnoc_wrreq_128B": 588744,
+                        "perf_dnoc_rdreq_64B": 25,
+                        "perf_req": 2800273,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 3695353877,
+                        "perf_dnoc_wrreq_64B": 250
+                    },
+                    "dpcId7,blockId1": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 1384949,
+                        "perf_dnoc_wrreq_128B": 588743,
+                        "perf_dnoc_rdreq_64B": 24,
+                        "perf_req": 2801753,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 3695369935,
+                        "perf_dnoc_wrreq_64B": 289
+                    },
+                    "dpcId7,blockId2": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 1384886,
+                        "perf_dnoc_wrreq_128B": 588738,
+                        "perf_dnoc_rdreq_64B": 25,
+                        "perf_req": 2799649,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 3695386042,
+                        "perf_dnoc_wrreq_64B": 298
+                    },
+                    "dpcId7,blockId3": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 1384938,
+                        "perf_dnoc_wrreq_128B": 588736,
+                        "perf_dnoc_rdreq_64B": 8,
+                        "perf_req": 2801945,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 3695552574,
+                        "perf_dnoc_wrreq_64B": 256
+                    }
+                }
+            },
+            {
+                "CE": {
+                    "generic": {
+                        "CE_PERF_BUSY_CYCLES": 3853717
+                    }
+                },
+                "ISU": {
+                    "dpcId0,blockId0": {
+                        "AP_PERF_ISU_AP_BUSY": 1055022,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId0,blockId1": {
+                        "AP_PERF_ISU_AP_BUSY": 1058202,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId0,blockId2": {
+                        "AP_PERF_ISU_AP_BUSY": 1058526,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId0,blockId3": {
+                        "AP_PERF_ISU_AP_BUSY": 1051230,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId0,blockId4": {
+                        "AP_PERF_ISU_AP_BUSY": 1051142,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId0,blockId5": {
+                        "AP_PERF_ISU_AP_BUSY": 1055836,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId0,blockId6": {
+                        "AP_PERF_ISU_AP_BUSY": 1055912,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId0,blockId7": {
+                        "AP_PERF_ISU_AP_BUSY": 1063662,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId0,blockId8": {
+                        "AP_PERF_ISU_AP_BUSY": 1060910,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId0,blockId9": {
+                        "AP_PERF_ISU_AP_BUSY": 1014936,
+                        "AP_PERF_INST_CYCLES_MMA": 802816,
+                        "AP_PERF_WAVES": 56
+                    },
+                    "dpcId0,blockId10": {
+                        "AP_PERF_ISU_AP_BUSY": 1011514,
+                        "AP_PERF_INST_CYCLES_MMA": 802816,
+                        "AP_PERF_WAVES": 56
+                    },
+                    "dpcId0,blockId11": {
+                        "AP_PERF_ISU_AP_BUSY": 1014254,
+                        "AP_PERF_INST_CYCLES_MMA": 802816,
+                        "AP_PERF_WAVES": 56
+                    },
+                    "dpcId0,blockId12": {
+                        "AP_PERF_ISU_AP_BUSY": 1061286,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId1,blockId0": {
+                        "AP_PERF_ISU_AP_BUSY": 1061196,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId1,blockId1": {
+                        "AP_PERF_ISU_AP_BUSY": 1057252,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId1,blockId2": {
+                        "AP_PERF_ISU_AP_BUSY": 1051006,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId1,blockId3": {
+                        "AP_PERF_ISU_AP_BUSY": 1050684,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId1,blockId4": {
+                        "AP_PERF_ISU_AP_BUSY": 1059962,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId1,blockId5": {
+                        "AP_PERF_ISU_AP_BUSY": 1009314,
+                        "AP_PERF_INST_CYCLES_MMA": 802816,
+                        "AP_PERF_WAVES": 56
+                    },
+                    "dpcId1,blockId6": {
+                        "AP_PERF_ISU_AP_BUSY": 1057302,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId1,blockId7": {
+                        "AP_PERF_ISU_AP_BUSY": 1016644,
+                        "AP_PERF_INST_CYCLES_MMA": 802816,
+                        "AP_PERF_WAVES": 56
+                    },
+                    "dpcId1,blockId8": {
+                        "AP_PERF_ISU_AP_BUSY": 1056916,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId1,blockId9": {
+                        "AP_PERF_ISU_AP_BUSY": 1061530,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId1,blockId10": {
+                        "AP_PERF_ISU_AP_BUSY": 1062640,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId1,blockId11": {
+                        "AP_PERF_ISU_AP_BUSY": 1014784,
+                        "AP_PERF_INST_CYCLES_MMA": 802816,
+                        "AP_PERF_WAVES": 56
+                    },
+                    "dpcId1,blockId12": {
+                        "AP_PERF_ISU_AP_BUSY": 1057908,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId2,blockId0": {
+                        "AP_PERF_ISU_AP_BUSY": 1052626,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId2,blockId1": {
+                        "AP_PERF_ISU_AP_BUSY": 1056402,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId2,blockId2": {
+                        "AP_PERF_ISU_AP_BUSY": 1053620,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId2,blockId3": {
+                        "AP_PERF_ISU_AP_BUSY": 1055624,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId2,blockId4": {
+                        "AP_PERF_ISU_AP_BUSY": 1055468,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId2,blockId5": {
+                        "AP_PERF_ISU_AP_BUSY": 1058550,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId2,blockId6": {
+                        "AP_PERF_ISU_AP_BUSY": 1008626,
+                        "AP_PERF_INST_CYCLES_MMA": 802816,
+                        "AP_PERF_WAVES": 56
+                    },
+                    "dpcId2,blockId7": {
+                        "AP_PERF_ISU_AP_BUSY": 1058688,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId2,blockId8": {
+                        "AP_PERF_ISU_AP_BUSY": 1059738,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId2,blockId9": {
+                        "AP_PERF_ISU_AP_BUSY": 1019284,
+                        "AP_PERF_INST_CYCLES_MMA": 802816,
+                        "AP_PERF_WAVES": 56
+                    },
+                    "dpcId2,blockId10": {
+                        "AP_PERF_ISU_AP_BUSY": 1014630,
+                        "AP_PERF_INST_CYCLES_MMA": 802816,
+                        "AP_PERF_WAVES": 56
+                    },
+                    "dpcId2,blockId11": {
+                        "AP_PERF_ISU_AP_BUSY": 1059040,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId2,blockId12": {
+                        "AP_PERF_ISU_AP_BUSY": 1060224,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId3,blockId0": {
+                        "AP_PERF_ISU_AP_BUSY": 1062910,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId3,blockId1": {
+                        "AP_PERF_ISU_AP_BUSY": 1064530,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId3,blockId2": {
+                        "AP_PERF_ISU_AP_BUSY": 1034464,
+                        "AP_PERF_INST_CYCLES_MMA": 802816,
+                        "AP_PERF_WAVES": 56
+                    },
+                    "dpcId3,blockId3": {
+                        "AP_PERF_ISU_AP_BUSY": 1054330,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId3,blockId4": {
+                        "AP_PERF_ISU_AP_BUSY": 1053280,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId3,blockId5": {
+                        "AP_PERF_ISU_AP_BUSY": 1065156,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId3,blockId6": {
+                        "AP_PERF_ISU_AP_BUSY": 1054216,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId3,blockId7": {
+                        "AP_PERF_ISU_AP_BUSY": 1059220,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId3,blockId8": {
+                        "AP_PERF_ISU_AP_BUSY": 1015072,
+                        "AP_PERF_INST_CYCLES_MMA": 802816,
+                        "AP_PERF_WAVES": 56
+                    },
+                    "dpcId3,blockId9": {
+                        "AP_PERF_ISU_AP_BUSY": 1060136,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId3,blockId10": {
+                        "AP_PERF_ISU_AP_BUSY": 1062982,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId3,blockId11": {
+                        "AP_PERF_ISU_AP_BUSY": 1066914,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId3,blockId12": {
+                        "AP_PERF_ISU_AP_BUSY": 1015508,
+                        "AP_PERF_INST_CYCLES_MMA": 802816,
+                        "AP_PERF_WAVES": 56
+                    },
+                    "dpcId4,blockId0": {
+                        "AP_PERF_ISU_AP_BUSY": 1054438,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId4,blockId1": {
+                        "AP_PERF_ISU_AP_BUSY": 1054162,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId4,blockId2": {
+                        "AP_PERF_ISU_AP_BUSY": 1053602,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId4,blockId3": {
+                        "AP_PERF_ISU_AP_BUSY": 1056500,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId4,blockId4": {
+                        "AP_PERF_ISU_AP_BUSY": 1053890,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId4,blockId5": {
+                        "AP_PERF_ISU_AP_BUSY": 1052524,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId4,blockId6": {
+                        "AP_PERF_ISU_AP_BUSY": 1053884,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId4,blockId7": {
+                        "AP_PERF_ISU_AP_BUSY": 1059480,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId4,blockId8": {
+                        "AP_PERF_ISU_AP_BUSY": 1005694,
+                        "AP_PERF_INST_CYCLES_MMA": 802816,
+                        "AP_PERF_WAVES": 56
+                    },
+                    "dpcId4,blockId9": {
+                        "AP_PERF_ISU_AP_BUSY": 1052668,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId4,blockId10": {
+                        "AP_PERF_ISU_AP_BUSY": 1057630,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId4,blockId11": {
+                        "AP_PERF_ISU_AP_BUSY": 1009108,
+                        "AP_PERF_INST_CYCLES_MMA": 802816,
+                        "AP_PERF_WAVES": 56
+                    },
+                    "dpcId4,blockId12": {
+                        "AP_PERF_ISU_AP_BUSY": 1013382,
+                        "AP_PERF_INST_CYCLES_MMA": 802816,
+                        "AP_PERF_WAVES": 56
+                    },
+                    "dpcId5,blockId0": {
+                        "AP_PERF_ISU_AP_BUSY": 1056626,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId5,blockId1": {
+                        "AP_PERF_ISU_AP_BUSY": 1055840,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId5,blockId2": {
+                        "AP_PERF_ISU_AP_BUSY": 1051178,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId5,blockId3": {
+                        "AP_PERF_ISU_AP_BUSY": 1054198,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId5,blockId4": {
+                        "AP_PERF_ISU_AP_BUSY": 1051236,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId5,blockId5": {
+                        "AP_PERF_ISU_AP_BUSY": 1052774,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId5,blockId6": {
+                        "AP_PERF_ISU_AP_BUSY": 1056470,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId5,blockId7": {
+                        "AP_PERF_ISU_AP_BUSY": 1058090,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId5,blockId8": {
+                        "AP_PERF_ISU_AP_BUSY": 1057124,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId5,blockId9": {
+                        "AP_PERF_ISU_AP_BUSY": 1017862,
+                        "AP_PERF_INST_CYCLES_MMA": 802816,
+                        "AP_PERF_WAVES": 56
+                    },
+                    "dpcId5,blockId10": {
+                        "AP_PERF_ISU_AP_BUSY": 1060056,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId5,blockId11": {
+                        "AP_PERF_ISU_AP_BUSY": 1021050,
+                        "AP_PERF_INST_CYCLES_MMA": 802816,
+                        "AP_PERF_WAVES": 56
+                    },
+                    "dpcId5,blockId12": {
+                        "AP_PERF_ISU_AP_BUSY": 1033304,
+                        "AP_PERF_INST_CYCLES_MMA": 802816,
+                        "AP_PERF_WAVES": 56
+                    },
+                    "dpcId6,blockId0": {
+                        "AP_PERF_ISU_AP_BUSY": 1051150,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId6,blockId1": {
+                        "AP_PERF_ISU_AP_BUSY": 1051876,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId6,blockId2": {
+                        "AP_PERF_ISU_AP_BUSY": 1054736,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId6,blockId3": {
+                        "AP_PERF_ISU_AP_BUSY": 1053130,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId6,blockId4": {
+                        "AP_PERF_ISU_AP_BUSY": 1055370,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId6,blockId5": {
+                        "AP_PERF_ISU_AP_BUSY": 1050908,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId6,blockId6": {
+                        "AP_PERF_ISU_AP_BUSY": 1054212,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId6,blockId7": {
+                        "AP_PERF_ISU_AP_BUSY": 1009106,
+                        "AP_PERF_INST_CYCLES_MMA": 802816,
+                        "AP_PERF_WAVES": 56
+                    },
+                    "dpcId6,blockId8": {
+                        "AP_PERF_ISU_AP_BUSY": 1058538,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId6,blockId9": {
+                        "AP_PERF_ISU_AP_BUSY": 1055834,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId6,blockId10": {
+                        "AP_PERF_ISU_AP_BUSY": 1053090,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId6,blockId11": {
+                        "AP_PERF_ISU_AP_BUSY": 1009918,
+                        "AP_PERF_INST_CYCLES_MMA": 802816,
+                        "AP_PERF_WAVES": 56
+                    },
+                    "dpcId6,blockId12": {
+                        "AP_PERF_ISU_AP_BUSY": 1015126,
+                        "AP_PERF_INST_CYCLES_MMA": 802816,
+                        "AP_PERF_WAVES": 56
+                    },
+                    "dpcId7,blockId0": {
+                        "AP_PERF_ISU_AP_BUSY": 1052438,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId7,blockId1": {
+                        "AP_PERF_ISU_AP_BUSY": 1055538,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId7,blockId2": {
+                        "AP_PERF_ISU_AP_BUSY": 1053522,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId7,blockId3": {
+                        "AP_PERF_ISU_AP_BUSY": 1051142,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId7,blockId4": {
+                        "AP_PERF_ISU_AP_BUSY": 1053328,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId7,blockId5": {
+                        "AP_PERF_ISU_AP_BUSY": 1055222,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId7,blockId6": {
+                        "AP_PERF_ISU_AP_BUSY": 1053878,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId7,blockId7": {
+                        "AP_PERF_ISU_AP_BUSY": 1005412,
+                        "AP_PERF_INST_CYCLES_MMA": 802816,
+                        "AP_PERF_WAVES": 56
+                    },
+                    "dpcId7,blockId8": {
+                        "AP_PERF_ISU_AP_BUSY": 1052952,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId7,blockId9": {
+                        "AP_PERF_ISU_AP_BUSY": 1010934,
+                        "AP_PERF_INST_CYCLES_MMA": 802816,
+                        "AP_PERF_WAVES": 56
+                    },
+                    "dpcId7,blockId10": {
+                        "AP_PERF_ISU_AP_BUSY": 1054816,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId7,blockId11": {
+                        "AP_PERF_ISU_AP_BUSY": 1055348,
+                        "AP_PERF_INST_CYCLES_MMA": 860160,
+                        "AP_PERF_WAVES": 60
+                    },
+                    "dpcId7,blockId12": {
+                        "AP_PERF_ISU_AP_BUSY": 1010968,
+                        "AP_PERF_INST_CYCLES_MMA": 802816,
+                        "AP_PERF_WAVES": 56
+                    }
+                },
+                "L2C": {
+                    "dpcId0,blockId0": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346139,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 5,
+                        "perf_req": 414027,
+                        "perf_dnoc_wrreq_32B_low": 1,
+                        "perf_dnoc_wrreq_32B_high": 1,
+                        "1_b1": 1990979,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId0,blockId1": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346120,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 63,
+                        "perf_req": 414053,
+                        "perf_dnoc_wrreq_32B_low": 1,
+                        "perf_dnoc_wrreq_32B_high": 1,
+                        "1_b1": 1989527,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId0,blockId2": {
+                        "perf_dnoc_rdreq_32B": 1,
+                        "perf_dnoc_rdreq_128B": 346126,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 4,
+                        "perf_req": 414215,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1988871,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId0,blockId3": {
+                        "perf_dnoc_rdreq_32B": 1,
+                        "perf_dnoc_rdreq_128B": 346115,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 4,
+                        "perf_req": 414215,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1988747,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId1,blockId0": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346167,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 4,
+                        "perf_req": 413703,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1988770,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId1,blockId1": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346150,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 4,
+                        "perf_req": 413511,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1989419,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId1,blockId2": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346141,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 4,
+                        "perf_req": 413127,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1989348,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId1,blockId3": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346129,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 4,
+                        "perf_req": 413895,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1989835,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId2,blockId0": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346191,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 8,
+                        "perf_req": 413543,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1990298,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId2,blockId1": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346165,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 9,
+                        "perf_req": 414311,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1990340,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId2,blockId2": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346140,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 8,
+                        "perf_req": 414311,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1990411,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId2,blockId3": {
+                        "perf_dnoc_rdreq_32B": 2,
+                        "perf_dnoc_rdreq_128B": 346169,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 8,
+                        "perf_req": 414315,
+                        "perf_dnoc_wrreq_32B_low": 2,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1990453,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId3,blockId0": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346182,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 4,
+                        "perf_req": 413639,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1991170,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId3,blockId1": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346167,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 4,
+                        "perf_req": 413639,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1991376,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId3,blockId2": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346162,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 4,
+                        "perf_req": 414407,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1991957,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId3,blockId3": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346134,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 7,
+                        "perf_req": 414407,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1992109,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId4,blockId0": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346123,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 7,
+                        "perf_req": 411549,
+                        "perf_dnoc_wrreq_32B_low": 4,
+                        "perf_dnoc_wrreq_32B_high": 2,
+                        "1_b1": 1992353,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId4,blockId1": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346130,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 4,
+                        "perf_req": 411623,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1992495,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId4,blockId2": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346138,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 4,
+                        "perf_req": 411815,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1992451,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId4,blockId3": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346133,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 4,
+                        "perf_req": 412199,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1992668,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId5,blockId0": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346114,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 4,
+                        "perf_req": 413831,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1992793,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId5,blockId1": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346137,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 4,
+                        "perf_req": 413064,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1993087,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId5,blockId2": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346127,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 4,
+                        "perf_req": 413063,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1993015,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId5,blockId3": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346112,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 4,
+                        "perf_req": 413063,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1993261,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId6,blockId0": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346134,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 0,
+                        "perf_req": 412775,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1993665,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId6,blockId1": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346157,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 0,
+                        "perf_req": 412583,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1993608,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId6,blockId2": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346137,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 0,
+                        "perf_req": 412967,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1994017,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId6,blockId3": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346127,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 0,
+                        "perf_req": 412969,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 2,
+                        "1_b1": 1993984,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId7,blockId0": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346117,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 4,
+                        "perf_req": 413119,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1993965,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId7,blockId1": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346137,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 4,
+                        "perf_req": 413447,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1993962,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId7,blockId2": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346149,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 5,
+                        "perf_req": 412871,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1994683,
+                        "perf_dnoc_wrreq_64B": 0
+                    },
+                    "dpcId7,blockId3": {
+                        "perf_dnoc_rdreq_32B": 0,
+                        "perf_dnoc_rdreq_128B": 346148,
+                        "perf_dnoc_wrreq_128B": 3762,
+                        "perf_dnoc_rdreq_64B": 0,
+                        "perf_req": 413447,
+                        "perf_dnoc_wrreq_32B_low": 0,
+                        "perf_dnoc_wrreq_32B_high": 0,
+                        "1_b1": 1994607,
+                        "perf_dnoc_wrreq_64B": 0
+                    }
+                },
+                "args": {
+                    "processIndex": [
+                        0
+                    ]
+                }
+            }
+        ]
+    },
+    "umd_data": {},
+    "device_info": {
+        "320": {
+            "gpu_id": "59030",
+            "cpu_cores_count": 0,
+            "mem_banks_count": 1,
+            "direct_link_count": 0,
+            "indirect_link_count": 0,
+            "vendor_id": 39321,
+            "device_id": 16385,
+            "drm_render_minor": 134,
+            "isa_major": 10,
+            "isa_minor": 0,
+            "is_vf": 0,
+            "max_vf_nums": 8,
+            "domain": 0,
+            "location_id": 14080,
+            "num_sdma_engines": 5,
+            "num_sdma_queues_per_engine": 9,
+            "num_vpue_cores": 1,
+            "num_vpud_cores": 8,
+            "caches_count": 157,
+            "peu_id_base": 0,
+            "peu_count": 416,
+            "max_waves_per_peu": 8,
+            "wsm_size_in_kb": 64,
+            "wave_front_size": 64,
+            "dpc_count": 8,
+            "dpc0_ap_mask": 8191,
+            "dpc1_ap_mask": 73727,
+            "dpc2_ap_mask": 139263,
+            "dpc3_ap_mask": 204799,
+            "dpc4_ap_mask": 270335,
+            "dpc5_ap_mask": 335871,
+            "dpc6_ap_mask": 401407,
+            "dpc7_ap_mask": 466943,
+            "dpc_arrays": 1,
+            "ap_per_dpc": 13,
+            "peu_per_ap": 4,
+            "pri_mem_per_thread": 4,
+            "max_slots_private_ap": 32,
+            "num_ce_queues": 16,
+            "max_engine_clk_gpu": 1600,
+            "max_engine_clk_cpu": 3600,
+            "mgpu_id": 0,
+            "topology_id": 2,
+            "socket_id": 2,
+            "hbmecc": 1,
+            "local_mem_size": 16777216000,
+            "capability": 4432512,
+            "maxprocess": 10
+        }
+    }
+}

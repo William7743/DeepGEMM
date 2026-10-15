@@ -119,11 +119,25 @@ shape JSON 可额外指定 `layout`、`capacity` 和 `expected_m`；默认 capac
 
 16 GB 实例已验证 `mcGetDeviceCount=1`，PyTorch 的 GPU 分配与求和成功。运行 `python3 tests/test_grouped.py`，69 项检查通过，包括 26 项 CPU metadata 检查，以及数值、stream、生命周期和非法参数检查。11 个数值场景中，非近零参考值的最大逐元素相对误差约为 `1.11e-7`；这仅证明报告中这些合成场景的算子结果正确，不构成官方 shape 集合或模型精度验收。
 
-实测报告保存在 [reports/c500_16gb_2026-10-15/](reports/c500_16gb_2026-10-15/)。性能数据对应 25% 计算配额，不能外推整卡，也不能用于宣布 C500/A100 比例达标。GPU 不可见时可运行 `tools/diagnose.py` 检查运行时设备计数及 sGPU 分配，只有实际 GPU 分配/求和成功后才能开始实卡测试。
+实测报告保存在 [reports/c500_16gb_2026-10-15/](reports/c500_16gb_2026-10-15/)。实例登记 25% 计算配额，但后续查询发现调度模式为 `best effort`，不能把该配额解释成固定四分之一硬件算力，不能乘四外推整卡，也不能用于宣布 C500/A100 比例达标。GPU 不可见时可运行 `tools/diagnose.py` 检查运行时设备计数及 sGPU 分配，只有实际 GPU 分配/求和成功后才能开始实卡测试。
 
 新增 masked 支持后的回归报告位于 [reports/c500_16gb_masked_2026-10-15/](reports/c500_16gb_masked_2026-10-15/)。该版本 contiguous 69 项、masked 53 项检查通过，两种布局各 15 个配置组合计时成功。masked 的 15 个数值场景中，非近零最大逐元素相对误差约为 `1.12e-7`。报告附当前原生/接口/测试源码 SHA256；早期报告仍对应其原始版本，不能混用源码哈希。
 
 ## 代码入口
+
+上游 24 组 M-grouped 尺寸的 INT8 测试及性能分析见 [reports/upstream_2026-10-15/README.md](reports/upstream_2026-10-15/README.md)。尺寸和固定随机路由计数保存在 `benchmarks/upstream_shapes.json`，来源为上游生成器，属于合成测试，不是模型运行采集数据。
+
+```bash
+python3 benchmarks/upstream_shapes.py
+python3 benchmarks/bench_grouped.py --shapes benchmarks/upstream_shapes.json \
+  --max-mib 7000 --timing graph --graph-batch 10 --warmup 5 --repeat 20 \
+  --json reports/upstream_graph.json
+# 性能分析应与计时分开执行；需服务器安装 mcProfiler。
+bash benchmarks/run_profile.sh 0 128
+bash benchmarks/run_profile.sh 16 32
+```
+
+图计时复用相同输入/输出缓冲区，每次重放 10 个 GEMM，以总时间除以 10；这是热缓存稳态口径，仍含图调度，不等于冷缓存或完整 MoE 延迟。单次 eager 计时仍可用 `--timing eager`。
 
 - `native/grouped_int8.cpp`：C ABI、四种模板实例化、原生 launch 和边界检查。
 - `deep_gemm_maca/api.py`：输入校验、counts plan、stream 和 tensor 生命周期。

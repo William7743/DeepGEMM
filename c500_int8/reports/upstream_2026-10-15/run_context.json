@@ -1,0 +1,41 @@
+{
+  "timestamp": "2026-10-15T15:58:53.122527+08:00",
+  "upstream_commit": "1fc9c66975ee322d628b3288534ca0e9ce12a64d",
+  "kernel_commit": "82f697b28544fe34bba18142bd631837bd89ca9c",
+  "gpu": "C500 sGPU",
+  "vram_quota_mib": 16000,
+  "registered_compute_quota_percent": 25,
+  "scheduler": "best effort",
+  "timeslice_ms": 10,
+  "profiler_version": "3.8.1.4",
+  "tracer_version": "3.7.1.5",
+  "benchmark_exit_code": 0,
+  "benchmark_combinations": 120,
+  "profiler_large_exit_code": 0,
+  "profiler_small_exit_code": 0,
+  "sha256": {
+    "benchmarks/bench_grouped.py": "ce8ded459f9dfef3e3663f8bf8b46cc6655a09d09aa04dbf3ec52d5913fd13a9",
+    "benchmarks/upstream_shapes.py": "5af7201301cdf7c2523e9fb1d764f66fa4ed3a8464e56880b92571ac8cf9ee0b",
+    "benchmarks/upstream_shapes.json": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+    "benchmarks/profile_grouped.py": "5f77bd2dbefdf385d0ea65d31a875f6ac460a3dc8e0bafb6e42b1d367022bde7",
+    "benchmarks/run_profile.sh": "76afdcd330f38264365c2fb47173cf78869cb3e5db02bf575f071dcb53a309f1",
+    "native/grouped_int8.cpp": "53ecbea2cd3766d6da2c52180c959d38b9e653675ff6fd961b20fe461cdf73c5",
+    "native/libdeep_gemm_maca.so": "ea563b488fa94b6f3a61014b7a193dcbb2571a025ab2966e0c459a8c836a4b8a"
+  },
+  "profiler_small_batch20_exit_code": 0,
+  "tracer_small_exit_code": 0,
+  "profiler_scoped_repetitions": {
+    "profile_large": 1,
+    "profile_small": 1,
+    "profile_small_batch20": 20
+  },
+  "committed_source_sha256": {
+    "benchmarks/bench_grouped.py": "ce8ded459f9dfef3e3663f8bf8b46cc6655a09d09aa04dbf3ec52d5913fd13a9",
+    "benchmarks/upstream_shapes.py": "5af7201301cdf7c2523e9fb1d764f66fa4ed3a8464e56880b92571ac8cf9ee0b",
+    "benchmarks/upstream_shapes.json": "dfd03ec3a85afa75170f6fc9ad1c8c0c5ec5f5ee02a86a853dd1f9ec251dec5f",
+    "benchmarks/profile_grouped.py": "5f77bd2dbefdf385d0ea65d31a875f6ac460a3dc8e0bafb6e42b1d367022bde7",
+    "benchmarks/run_profile.sh": "76afdcd330f38264365c2fb47173cf78869cb3e5db02bf575f071dcb53a309f1",
+    "native/grouped_int8.cpp": "53ecbea2cd3766d6da2c52180c959d38b9e653675ff6fd961b20fe461cdf73c5"
+  },
+  "newline_normalization": "Executed upstream_shapes.json used CRLF; Git stores LF. Parsed shape contents are identical. sha256 records executed bytes; committed_source_sha256 records Git blobs."
+}

@@ -1,0 +1,52 @@
+{
+    "Summary": [
+        {
+            "data": 14188.726,
+            "isError": false,
+            "message": "",
+            "name": "Total Cycles"
+        },
+        {
+            "data": 79.54381527982146,
+            "isError": false,
+            "message": "",
+            "name": "AP busy Duty"
+        }
+    ],
+    "Memory Statistics": [
+        {
+            "data": 12555946304.0,
+            "isError": false,
+            "message": "",
+            "name": "Global Memory Read bytes"
+        },
+        {
+            "data": 855220896.0,
+            "isError": false,
+            "message": "",
+            "name": "Global Memory Write bytes"
+        }
+    ],
+    "Occupancy": [
+        {
+            "data": 52800.0,
+            "isError": false,
+            "message": "",
+            "name": "Achieved waves"
+        }
+    ],
+    "GPU Throughput Statistics": [
+        {
+            "data": 64.64269458221214,
+            "isError": false,
+            "message": "",
+            "name": "AP MMA Duty ratio"
+        },
+        {
+            "data": 44.45497603015937,
+            "isError": false,
+            "message": "",
+            "name": "L2C Duty ratio"
+        }
+    ]
+}

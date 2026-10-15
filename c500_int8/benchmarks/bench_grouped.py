@@ -87,7 +87,8 @@ def measure(torch, np, device, shape, tile, args, rng):
 
     # Check boundary/middle samples for every nonempty expert before timing.
     # Full numerical coverage belongs to tests/test_grouped.py, not this timer.
-    actual = out.cpu().numpy()
+    # Transfer only sampled scalars: masked capacity buffers can occupy GiBs.
+    # These synchronizations are all outside the timing interval.
     sampled, max_abs, max_rel = 0, 0.0, 0.0
     offset = 0
     for expert, count in enumerate(counts):
@@ -99,7 +100,7 @@ def measure(torch, np, device, shape, tile, args, rng):
                     scale = sa_cpu[expert, local_row] if layout == "masked" else sa_cpu[row]
                     acc = int(ar.astype(np.int64) @ b_cpu[expert, column].astype(np.int64))
                     ref = acc * float(scale) * float(sb_cpu[expert, column])
-                    got = float(actual[expert, local_row, column] if layout == "masked" else actual[row, column])
+                    got = float(out[expert, local_row, column].item() if layout == "masked" else out[row, column].item())
                     error = abs(got - ref)
                     if not np.isfinite(got) or error > 1e-6 + 1e-3 * abs(ref):
                         raise AssertionError(f"sample mismatch expert={expert}, row={row}, col={column}: {got} vs {ref}")
@@ -111,13 +112,25 @@ def measure(torch, np, device, shape, tile, args, rng):
     for _ in range(args.warmup):
         launch()
     torch.cuda.synchronize(device)
+    timed_launch = launch
+    launches_per_sample = 1
+    if args.timing == "graph":
+        graph = torch.cuda.CUDAGraph()
+        with torch.cuda.graph(graph):
+            for _ in range(args.graph_batch):
+                launch()
+        timed_launch = graph.replay
+        launches_per_sample = args.graph_batch
+        for _ in range(args.warmup):
+            timed_launch()
+        torch.cuda.synchronize(device)
     events = [(torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)) for _ in range(args.repeat)]
     for start, end in events:
         start.record()
-        launch()
+        timed_launch()
         end.record()
     torch.cuda.synchronize(device)
-    milliseconds = [start.elapsed_time(end) for start, end in events]
+    milliseconds = [start.elapsed_time(end) / launches_per_sample for start, end in events]
     if any(not np.isfinite(ms) or ms <= 0 for ms in milliseconds):
         raise RuntimeError(f"GPU event timing produced invalid durations: {milliseconds}")
     median = statistics.median(milliseconds)
@@ -132,6 +145,7 @@ def measure(torch, np, device, shape, tile, args, rng):
         "row_blocks": config["row_blocks"] if layout == "masked" else None,
         "requested_tile_m": tile, "selected_tile_m": selected_tile,
         "tensor_bytes": tensor_bytes, "warmup": args.warmup, "repeat": args.repeat,
+        "timing_mode": args.timing, "launches_per_sample": launches_per_sample,
         "latency_ms": {"median": median, "min": min(milliseconds), "max": max(milliseconds),
                        "p90": float(np.percentile(milliseconds, 90)), "samples": milliseconds},
         "int8_tops_from_median": operations / (median * 1e9),
@@ -150,11 +164,14 @@ def main():
     parser.add_argument("--tiles", default="0,16,32,64,128", help="comma-separated 0,16,32,64,128; 0 selects the heuristic")
     parser.add_argument("--warmup", type=int, default=5)
     parser.add_argument("--repeat", type=int, default=20)
+    parser.add_argument("--timing", choices=("eager", "graph"), default="eager")
+    parser.add_argument("--graph-batch", type=int, default=10,
+                        help="same-buffer launches per graph; reported time divided by this count")
     parser.add_argument("--max-mib", type=int, default=256, help="maximum input/output tensor bytes per case, in MiB")
     parser.add_argument("--shapes", type=Path)
     parser.add_argument("--json", "--output", dest="json", type=Path)
     args = parser.parse_args()
-    if not (1 <= args.warmup <= 100 and 1 <= args.repeat <= 1000 and args.max_mib > 0):
+    if not (1 <= args.warmup <= 100 and 1 <= args.repeat <= 1000 and args.max_mib > 0 and 1 <= args.graph_batch <= 100):
         parser.error("warmup must be 1..100, repeat 1..1000, max-mib > 0")
     try:
         tiles = list(dict.fromkeys(int(x) for x in args.tiles.split(",")))
@@ -168,6 +185,8 @@ def main():
         "excluded_from_timing": ["input generation", "host/device transfer", "plan preparation", "output allocation", "correctness checks"],
         "interpretation": "synthetic or explicitly supplied shapes; no A100/H200 baseline, utilization target, or project acceptance claim",
     }
+    if args.timing == "graph":
+        report["timing"] = "GPU events around replay of repeated native GEMMs, divided by graph_batch; same buffers, hot-cache steady-state, includes graph scheduling"
     try:
         import numpy as np
         import torch
@@ -205,6 +224,10 @@ def main():
                 result = measure(torch, np, device, shape, tile, args, np.random.default_rng(seed))
                 result["input_seed"] = seed
                 report["results"].append(result)
+                # Keep completed cases if a later shape or the process fails.
+                if args.json:
+                    args.json.parent.mkdir(parents=True, exist_ok=True)
+                    args.json.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     except Exception as error:
         report.update(status="FAIL", error=f"{type(error).__name__}: {error}")
         traceback.print_exc()

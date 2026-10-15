@@ -1,0 +1,33 @@
+mx-smi  version: 2.3.1
+
+=================== MetaX System Management Interface Log ===================
+Timestamp                                         : Thu Oct 15 07:50:43 2026
+
+Attached GPUs                                     : 1
+GPU#0  MXC500  0000:37:00.0
+        sched class                               : best effort
+
+End of Log
+mx-smi  version: 2.3.1
+
+=================== MetaX System Management Interface Log ===================
+Timestamp                                         : Thu Oct 15 07:50:43 2026
+
+Attached GPUs                                     : 1
+GPU#0  MXC500  0000:37:00.0
+        sched timeslice                           : 10 ms
+
+End of Log
+mx-smi  version: 2.3.1
+
+=================== MetaX System Management Interface Log ===================
+Timestamp                                         : Thu Oct 15 07:50:43 2026
+
+Attached GPUs                                     : 1
+GPU#0  MXC500  0000:37:00.0
+    sgpu0 memory
+        total                                     : 16384000 KB
+        used                                      : 6010880 KB
+        free                                      : 10373120 KB
+
+End of Log
