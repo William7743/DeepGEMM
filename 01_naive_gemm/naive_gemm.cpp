@@ -55,6 +55,51 @@ std::vector<int64_t> reference_gemm(const std::vector<int8_t>& a,
     return c;
 }
 
+// Symmetric quantization: x ~= q * scale, zero point = 0.
+// Round halfway away from zero, then clamp BEFORE converting to int8_t.
+int8_t quantize_value(float x, float scale) {
+    float q = std::round(x / scale);
+    return static_cast<int8_t>(std::clamp(q, -127.0f, 127.0f));
+}
+
+void quantize_a_rows(const std::vector<float>& input, std::vector<int8_t>& q,
+                     std::vector<float>& scales, int m, int k) {
+    for (int row = 0; row < m; ++row) {
+        float max_abs = 0;
+        for (int p = 0; p < k; ++p)
+            max_abs = std::max(max_abs, std::abs(input[row * k + p]));
+        // A zero row stays zero; scale=1 avoids division by zero.
+        scales[row] = max_abs == 0 ? 1.0f : max_abs / 127.0f;
+        for (int p = 0; p < k; ++p)
+            q[row * k + p] = quantize_value(input[row * k + p], scales[row]);
+    }
+}
+
+void quantize_b_columns(const std::vector<float>& input, std::vector<int8_t>& q,
+                        std::vector<float>& scales, int k, int n) {
+    for (int col = 0; col < n; ++col) {
+        float max_abs = 0;
+        for (int p = 0; p < k; ++p)
+            max_abs = std::max(max_abs, std::abs(input[p * n + col]));
+        scales[col] = max_abs == 0 ? 1.0f : max_abs / 127.0f;
+        for (int p = 0; p < k; ++p)
+            q[p * n + col] = quantize_value(input[p * n + col], scales[col]);
+    }
+}
+
+// Original floating inputs: this reference measures quantization loss.
+std::vector<double> reference_float_gemm(const std::vector<float>& a,
+                                        const std::vector<float>& b,
+                                        int m, int n, int k) {
+    std::vector<double> c(m * n, 0);
+    for (int row = 0; row < m; ++row)
+        for (int p = 0; p < k; ++p)
+            for (int col = 0; col < n; ++col)
+                c[row * n + col] += static_cast<double>(a[row * k + p]) *
+                                   static_cast<double>(b[p * n + col]);
+    return c;
+}
+
 int parse_dimension(const char* value) {
     std::string text(value);
     size_t used = 0;
@@ -65,14 +110,15 @@ int parse_dimension(const char* value) {
 }
 
 int main(int argc, char** argv) {
-    // Optional command line: ./naive_gemm.out M N K
+    // Optional command line: ./naive_gemm.out M N K [--zero-edges]
     int m = 3, n = 4, k = 5;
-    if (argc != 1 && argc != 4) {
-        std::cerr << "Usage: " << argv[0] << " [M N K]\n";
+    bool zero_edges = argc == 5 && std::string(argv[4]) == "--zero-edges";
+    if (argc != 1 && argc != 4 && !zero_edges) {
+        std::cerr << "Usage: " << argv[0] << " [M N K [--zero-edges]]\n";
         return EXIT_FAILURE;
     }
     try {
-        if (argc == 4) {
+        if (argc >= 4) {
             m = parse_dimension(argv[1]);
             n = parse_dimension(argv[2]);
             k = parse_dimension(argv[3]);
@@ -82,19 +128,30 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
-    // 1. Prepare deterministic CPU inputs, including positive/negative/zero.
-    // |a|, |b| <= 8 and K <= 1024, so |sum| <= 65536: INT32 cannot overflow.
+    // 1. Generate floating inputs, then quantize on CPU.
+    // Finite, moderate values for this lesson; not a general quantization API.
+    std::vector<float> a_float(m * k), b_float(k * n);
     std::vector<int8_t> a(m * k), b(k * n);
     std::vector<float> c(m * n), a_scale(m), b_scale(n);
-    for (size_t i = 0; i < a.size(); ++i)
-        a[i] = static_cast<int8_t>(static_cast<int>(i % 17) - 8);
-    for (size_t i = 0; i < b.size(); ++i)
-        b[i] = static_cast<int8_t>(static_cast<int>((i * 3) % 17) - 8);
-    // Manually supplied scales, NOT computed by quantizing floating inputs.
-    // Nonuniform values help catch incorrect row/column scale indexing.
-    for (int row = 0; row < m; ++row) a_scale[row] = 0.1f * (1 + row % 7);
-    for (int col = 0; col < n; ++col) b_scale[col] = 0.2f * (1 + col % 5);
+    for (int row = 0; row < m; ++row)
+        for (int p = 0; p < k; ++p)
+            a_float[row * k + p] = (static_cast<int>((row * k + p) % 17) - 8) *
+                                   0.13f * (1 + row % 7);
+    for (int p = 0; p < k; ++p)
+        for (int col = 0; col < n; ++col)
+            b_float[p * n + col] = (static_cast<int>(((p * n + col) * 3) % 17) - 8) *
+                                   0.17f * (1 + col % 5);
+    if (zero_edges) {
+        for (int p = 0; p < k; ++p) {
+            a_float[(m - 1) * k + p] = 0;
+            b_float[p * n + n - 1] = 0;
+        }
+    }
+    quantize_a_rows(a_float, a, a_scale, m, k);
+    quantize_b_columns(b_float, b, b_scale, k, n);
+    // |q| <= 127, K <= 1024: |sum| <= 16,516,096, safe in INT32.
     auto reference = reference_gemm(a, b, m, n, k);
+    auto float_reference = reference_float_gemm(a_float, b_float, m, n, k);
 
     // 2. Allocate GPU buffers and copy inputs to device 0.
     MC_CHECK(mcSetDevice(0));
@@ -134,6 +191,7 @@ int main(int argc, char** argv) {
     // FP32 multiplication rounds: use absolute + relative tolerance.
     constexpr double atol = 1e-6, rtol = 1e-5;
     double max_abs_error = 0, max_relative_error = 0;
+    double quant_max_abs_error = 0, quant_squared_error = 0, float_squared_norm = 0;
     size_t mismatches = 0;
     for (size_t i = 0; i < c.size(); ++i) {
         int row = static_cast<int>(i) / n, col = static_cast<int>(i) % n;
@@ -145,13 +203,25 @@ int main(int argc, char** argv) {
             max_relative_error = std::max(max_relative_error, error / std::abs(expected));
         if (!std::isfinite(c[i]) || error > atol + rtol * std::abs(expected))
             ++mismatches;
+        // Compare TWO CPU references to isolate quantization loss from GPU rounding.
+        double quant_error = expected - float_reference[i];
+        quant_max_abs_error = std::max(quant_max_abs_error, std::abs(quant_error));
+        quant_squared_error += quant_error * quant_error;
+        float_squared_norm += float_reference[i] * float_reference[i];
     }
     std::cout << "A[" << m << ',' << k << "] * B[" << k << ',' << n
               << "] -> C[" << m << ',' << n << "]\n"
-              << "INT8 inputs, INT32 accumulation, FP32 scaled output; row-major\n"
+              << "CPU FP32 -> INT8 quantization; GPU INT32 accumulation -> FP32 output\n"
+              << "zero_edges=" << zero_edges << "; row-major\n"
               << "block=(" << block.x << ',' << block.y << "), grid=("
               << grid.x << ',' << grid.y << ")\n";
     if (m <= 8 && n <= 8) {
+        if (k <= 8) {
+            std::cout << "A first row: float -> INT8 -> reconstructed float\n";
+            for (int p = 0; p < k; ++p)
+                std::cout << a_float[p] << " -> " << static_cast<int>(a[p])
+                          << " -> " << a[p] * a_scale[0] << '\n';
+        }
         std::cout << "A row scales:";
         for (float s : a_scale) std::cout << ' ' << s;
         std::cout << "\nB column scales:";
@@ -168,6 +238,13 @@ int main(int argc, char** argv) {
               << ", max_abs_error=" << max_abs_error
               << ", max_relative_error_away_from_zero=" << max_relative_error
               << "\natol=" << atol << ", rtol=" << rtol << '\n';
-    std::cout << (mismatches == 0 ? "PASS" : "FAIL") << '\n';
+    std::cout << "quantization_max_abs_error=" << quant_max_abs_error
+              << ", quantization_relative_L2=";
+    if (float_squared_norm > 0)
+        std::cout << std::sqrt(quant_squared_error / float_squared_norm);
+    else
+        std::cout << "N/A (original output norm is zero)";
+    std::cout << "\nQuantization metrics are informational, not acceptance thresholds.\n";
+    std::cout << (mismatches == 0 ? "PASS" : "FAIL") << " (GPU vs quantized CPU reference)\n";
     return mismatches == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
