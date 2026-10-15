@@ -1,34 +1,26 @@
-# 朴素 INT8 grouped GEMM：一次启动计算两个专家
+# 朴素 INT8 grouped GEMM：基础布局、多专家与空专家
 
-本课把两个不同 token 数的专家放在一次 grouped GEMM kernel 启动中计算。每个专家拥有独立的输入、权重、scale、输出和 CPU 参考结果，两个专家的 GPU 缓冲区同时存在：
+本课采用**每个专家独立缓冲区 + GPU 专家信息表**的简单布局。支持 1～64 个专家，各专家 M 可不同，N、K 相同。非空任务只启动一次 GEMM kernel，逐专家对照 CPU；本课不要求 contiguous/masked 接口。
 
-```text
-CPU 浮点 A[M,K]、B[K,N]
-    ↓ 计算 scale，除以 scale、取整、截断
-CPU INT8 A、B + FP32 A_scale[M]、B_scale[N]
-    ↓ 拷贝到 GPU
-GPU INT8 乘法、INT32 累加
-    ↓ 乘 A_scale[row] 和 B_scale[col]
-GPU FP32 C[M,N]
-```
+## 基础数据布局约定
 
-矩阵均按行存储，一个 GPU 线程计算一个输出元素，block 为 16×16。当前 B 是 [K,N] 布局；后续再学习 DeepGEMM NT 接口的 [N,K] 权重布局。本步实现一个朴素的 grouped 调度：`blockIdx.z` 选择专家，x/y 定位输出元素。尚未使用共享内存分块或 MMA。
+设专家编号为 g，所有矩阵按行紧密存储，不带额外行间距，不转置，不做 max(M) 填充。
 
-## 一次启动如何处理两个专家
+| 数据 | 类型 | 形状 | 元素位置 |
+|---|---|---|---|
+| A_g | INT8 | [M_g,K] | row*K+p |
+| B_g | INT8 | [K,N] | p*N+col |
+| A_scale_g | FP32 | [M_g] | row |
+| B_scale_g | FP32 | [N] | col |
+| C_g | FP32 | [M_g,N] | row*N+col |
 
-CPU 先调用 `prepare_expert` 和 `upload_expert`，准备两个专家。`HostExpert` 保存 CPU 数组，`DeviceExpert` 保存 GPU 地址及 M/N/K。再把两个 `DeviceExpert` 组成的信息表复制到 GPU 的 `d_groups`。
+零点均为 0，INT32 累加；`C_g[row,col] = float(sum(A_g[row,p]*B_g[p,col])) * A_scale_g[row] * B_scale_g[col]`。每个专家有独立的权重和 scale。输出维持该专家输入行的顺序；本例不定义跨专家的原始 token 顺序，也不实现路由或还原。
 
-注意：复制信息表不会自动复制其指针指向的数据。因此要先分配、上传各专家的矩阵和 scale，再把这些 GPU 地址写入表中。表中不能放 CPU vector 的地址。
+`HostExpert` 保存 CPU 数组；`DeviceExpert` 保存 M/N/K 和 GPU 指针。先上传非空专家的实际数据，再复制信息表到 `d_groups`。复制信息表不会自动复制指针指向的数据，表内不能放 CPU vector 的地址。不同专家的有效输出区域互不重叠。
 
-整个程序只有一处 GEMM kernel 启动：
+这里“按行紧密存储”只是单个矩阵的内存约定，不代表已经适配 DeepGEMM 的 contiguous 接口；权重目前仍是 B[K,N]，也不是 NT 接口的 B[N,K]。
 
-```cpp
-dim3 block(16, 16);
-dim3 grid(ceil(N / 16), ceil(max(M0, M1) / 16), 2); // 示意，源码用整数向上取整
-naive_grouped_int8_gemm<<<grid, block>>>(d_groups, num_groups);
-```
-
-kernel 内部的选择过程：
+## 一次启动如何覆盖所有专家
 
 ```cpp
 int group = blockIdx.z;
@@ -38,20 +30,17 @@ int row = blockIdx.y * blockDim.y + threadIdx.y;
 if (row >= e.m || col >= e.n) return;
 ```
 
-随后使用 `e.a`、`e.b` 做整数点积，乘 `e.a_scale[row]`、`e.b_scale[col]`，写入 `e.c`。各专家写入不同输出缓冲区，不需要原子操作；各 block 的执行先后由 GPU 调度，不保证专家 0 先完成。
+block=(16,16)，grid=(ceil(N/16), ceil(max(M_g)/16), 专家数)。z 选择专家，x/y 选择输出位置。M、N 的尾部线程会退出；K 按实际长度循环，无需整除 16。较小专家会有整块线程退出，尚未优化空转和负载均衡。各 block 的执行次序由 GPU 调度，不保证专家编号顺序。
 
-默认 M0=3、M1=5、N=4、K=5：
+## 空专家约定
 
-| 专家 | A | B | A_scale | B_scale | C |
-|---|---|---|---|---|---|
-| 0 | [3,5] | [5,4] | [3] | [4] | [3,4] |
-| 1 | [5,5] | [5,4] | [5] | [4] | [5,4] |
+- M_g=0 表示没有 token，A、A_scale 和 C 都没有元素。不能用一行零数据代替。
+- 该专家的 DeviceExpert 保留 M/N/K，所有指针设为 nullptr；本次调用也省略未使用的 B 和 B_scale 分配。
+- 混合输入仍保留空专家的编号，kernel 在边界判断处退出，不访问空指针；CPU 不执行零字节分配或拷贝。
+- 所有专家均为空时，跳过 GPU 分配、拷贝、同步和 kernel 启动，逐专家验证空输出并成功返回。
+- 零个专家（空列表）暂不支持，作为非法参数拒绝。
 
-默认 grid=(1,1,2)。M0=1、M1=33、N=19 时，统一 grid=(2,3,2)；专家 0 的后两排 block 全部退出，专家 1 则需要三排。这里仅让调度覆盖较大的 M，输入矩阵本身没有填充为 max(M)。这是一种容易理解的基础调度，存在空转开销，还没有实现负载均衡或持久化调度，不能假定它比两次调用更快。
-
-计算后统一同步，再逐专家拷回、检查并释放内存。GPU 输出预先填入 NaN：若某个 group 或尾部元素漏算，即使它的参考值为零，也会检查失败。两个专家都通过才返回成功。
-
-本例仍固定两个专家，M 各自不同，N/K 相同；输入直接生成，未实现路由分发、空专家、contiguous/masked 接口，也未做性能计时。每个专家只模拟一次线性 GEMM，不是完整 FFN。
+非空输出在启动前填入 NaN，用于发现漏算，即使该元素的参考结果为零。空输出按空结果约定验证；非空输出保留逐元素 CPU 对照。
 
 ## 量化怎么做
 
@@ -76,25 +65,22 @@ e.c[row * e.n + col] = static_cast<float>(sum) * e.a_scale[row] * e.b_scale[col]
 
 ## 编译与执行
 
-在 C500 服务器运行：
-
 ```bash
 cd /root/MOE/C500_int8_02All/01_naive_gemm
 bash build.sh
 export LD_LIBRARY_PATH=/opt/maca/lib:/opt/mxdriver/lib:${LD_LIBRARY_PATH:-}
 
-./naive_gemm.out                         # M0=3, M1=5, N=4, K=5
-./naive_gemm.out 3 5 4 5                 # 显式指定默认尺寸
-./naive_gemm.out 1 33 19 23              # 不同 grid 大小与尾部边界
-./naive_gemm.out 33 1 19 23              # 交换两个专家的 token 数
-./naive_gemm.out 64 97 96 128            # 多个 block
-./naive_gemm.out 3 5 4 5 --zero-edges    # 各专家 A 最后一行、B 最后一列全零
-./naive_gemm.out 1 1 1 1 --zero-edges    # 两个专家的输入均全零
+./naive_gemm.out                         # 默认两个专家，M=3、5，N=4、K=5
+./naive_gemm.out 3 5 4 5                 # 保留旧的两专家参数格式
+./naive_gemm.out --tokens 3,0,5,17 19 23 # 四个专家，第二个为空
+./naive_gemm.out --tokens 0,0,0 4 5     # 全空：不启动 GPU kernel
+./naive_gemm.out --tokens 17 19 23      # 单个专家也使用相同接口
+./naive_gemm.out --tokens 0,15,16,17,0 17 23 --zero-edges
 ```
 
-参数顺序沿用 `M0 M1 N K`。四个维度均限制在 1～1024；M=0 的空专家留到后续接口完善阶段。浮点输入确定性生成，包含不同的行/列幅度，以检查 scale 下标。量化后的最大累加绝对值不超过 127×127×1024=16,516,096，INT32 不会溢出。本教学量化函数针对生成的有限、适中浮点数；尚未处理 NaN、Inf 或极小 scale 等通用接口边界。
+新格式为 `--tokens M0,M1,... N K [--zero-edges]`。专家数 1～64，各 M 为 0～1024，N/K 为 1～1024；列表只接受十进制数字和逗号，不接受空项、负数或小数。`--zero-edges` 将每个非空专家的最后一行 A、最后一列 B 置零；与 M=0 的空专家概念不同。
 
-小矩阵会打印 A 第一行的“浮点 → INT8 → 重建浮点”、两组 scale 和 GPU 输出。
+默认每个非空专家确定性生成不同幅度的浮点输入，在 CPU 上量化。|q|≤127、K≤1024，故 |INT32累加|≤16,516,096。本教学量化函数只处理生成的有限、适中浮点数，尚未覆盖 NaN/Inf、极小 scale 等通用输入场景。
 
 ## 两类误差分开看
 
@@ -105,13 +91,13 @@ export LD_LIBRARY_PATH=/opt/maca/lib:/opt/mxdriver/lib:${LD_LIBRARY_PATH:-}
 
 ## 建议阅读顺序
 
-1. `DeviceExpert`：记录哪些 GPU 地址和尺寸。
-2. `naive_grouped_int8_gemm`：z 选专家、x/y 选输出元素、按本专家 M 判断边界。
-3. `main`：准备两个专家、上传描述表、一次启动、同步后分别检查。
-4. `prepare_expert` 与 `upload_expert`：CPU 数组和 GPU 缓冲区的区别。
-5. `check_expert`：保留逐专家参考结果，区分计算误差和量化误差。
+1. `DeviceExpert` 与上面的布局表：GPU 如何找到每个专家的输入和 scale。
+2. `parse_tokens`、`main`：专家列表、max(M)、全空分支、信息表大小。
+3. `prepare_expert`、`upload_expert`：空专家为什么直接返回。
+4. `naive_grouped_int8_gemm`：z 选专家，边界判断发生在读写矩阵之前。
+5. `check_expert`：空输出约定与非空输出的 CPU 对照。
 
-早期阶段仅手动提供 INT8 输入和 scale，保存在提交 `1b726f4`；更早的未缩放 INT32 输出保存在 `acee04b`。
+当前是功能教学版本，未实现完整 FFN、路由通信、DeepGEMM contiguous/masked 接口或硬件矩阵指令优化；未做性能计时。
 
 ## 历史单专家 C500 实测（2026-10-15，提交 9ef6455）
 
@@ -165,7 +151,7 @@ MACA 编译成功，7 组用例 × 2 个专家全部通过，两个专家的 mis
 
 M0=1、M1=33、N=19 时，两个专家的 grid 分别为 (2,1)、(2,3)，交换 M 后 grid 也随之交换。全部运行 mismatches=0。旧的三维参数格式、任一专家 M=0、M1 超上限、非法数字和未知选项，共 6 类非法参数检查均返回非零退出码。本步尚不支持空专家，也未做统一调度或性能计时。
 
-## 当前 grouped 单次启动 C500 实测（2026-10-15）
+## 历史双专家 grouped 单次启动 C500 实测（2026-10-15，提交 ea38f82）
 
 MACA 编译成功，10 次运行（含默认参数与显式默认参数）× 2 个专家全部通过逐元素 CPU 参考检查。与上一提交 `0dcdb76` 的两次启动可执行文件，在相同输入下逐项比较打印的计算误差、量化误差及小矩阵输出，结果一致。
 
@@ -182,3 +168,37 @@ MACA 编译成功，10 次运行（含默认参数与显式默认参数）× 2 �
 | 1024,1,17,7 | 默认输入 | (2,64,2) | PASS |
 
 所有专家 mismatches=0；检查了每个专家的 shape、输出元素数以及统一 grid 的尺寸。源码中唯一的 GEMM 启动位于专家检查循环之前。6 类非法参数检查通过。以上结果不表示性能提升，也不表示已完成 DeepGEMM 接口适配。
+
+## 当前基础布局与空专家实测（2026-10-15）
+
+在 C500 服务器编译并验证 26 组新接口用例，共 201 个专家条目：96 个非空专家逐元素通过 CPU INT64/FP64 参考检查，105 个空专家通过空输出约定检查。所有非空任务启动一次 GEMM kernel，全空任务启动零次。全部 mismatches=0。
+
+覆盖范围：
+
+- 1 个、多个、64 个专家，以及 64 个专家全部为空。
+- 空专家位于开头、中间、结尾，及零值输入与空专家混合。
+- M=15/16/17、31/33 的整块与尾部边界，N=1/15/16/17/19，K=1/7/16/23/1024。
+- M=1 与 M=1024 同组的强不均衡输入。
+- 14 组指定场景加 12 组确定性随机组合（种子 20261015）。
+
+18 组非法参数检查全部被拒绝，覆盖空列表、空项、前后逗号、负数、小数、非数字、超范围、整数溢出、65 个专家、N/K=0、未知选项和缺失参数。
+
+另外将默认、显式默认、1/33 token、zero-edges 共 4 组旧接口用例与上一提交 `ea38f82` 的可执行文件比较，打印的计算误差、量化误差和小矩阵输出一致。
+
+可用下面的命令快速复查关键边界（已先按上文编译并设置库路径）：
+
+```bash
+set -e
+./naive_gemm.out --tokens 3,0,5,17 19 23
+./naive_gemm.out --tokens 0,0,0 4 5
+./naive_gemm.out --tokens 0,15,16,17,0 17 23 --zero-edges
+./naive_gemm.out --tokens 1,1024,0,33 17 7
+./naive_gemm.out --tokens 1,2,0 1 1024
+./naive_gemm.out --tokens 17 19 23
+if ./naive_gemm.out --tokens 3,,5 4 5; then
+    echo 'FAIL: malformed token list accepted'
+    exit 1
+fi
+```
+
+这些是功能验证，不包含性能目标验收或 contiguous/masked 适配验收。

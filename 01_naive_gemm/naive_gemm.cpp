@@ -22,7 +22,10 @@
     } while (0)
 
 // A descriptor contains GPU addresses, not CPU vector addresses.
-// Copy the descriptor array to GPU after allocating every expert's buffers.
+// Basic layout: each expert owns separate packed row-major A[M,K], B[K,N],
+// C[M,N], with FP32 row scales [M] and column scales [N]; zero points are zero.
+// Copy the descriptor array after uploading the nonempty experts' buffers.
+// M=0 means an empty expert: all pointers may be null and must not be read.
 struct DeviceExpert {
     int8_t *a = nullptr, *b = nullptr;
     float *a_scale = nullptr, *b_scale = nullptr, *c = nullptr;
@@ -115,19 +118,41 @@ std::vector<double> reference_float_gemm(const std::vector<float>& a,
     return c;
 }
 
-int parse_dimension(const char* value) {
+int parse_dimension(const char* value, int minimum = 1) {
     std::string text(value);
+    if (text.empty() || !std::all_of(text.begin(), text.end(),
+                                   [](char ch) { return ch >= '0' && ch <= '9'; }))
+        throw std::invalid_argument("dimensions must contain decimal digits only");
     size_t used = 0;
     int result = std::stoi(text, &used);
-    if (used != text.size() || result < 1 || result > 1024)
-        throw std::invalid_argument("dimensions must be integers in [1, 1024]");
+    if (used != text.size() || result < minimum || result > 1024)
+        throw std::invalid_argument("M must be in [0,1024]; N and K in [1,1024]");
     return result;
 }
 
-// Prepare each expert independently, but retain BOTH until grouped execution ends.
+// A bounded teaching interface: 1..64 groups, with one M per group.
+std::vector<int> parse_tokens(const char* value) {
+    std::string text(value);
+    std::vector<int> tokens;
+    size_t begin = 0;
+    while (true) {
+        size_t end = text.find(',', begin);
+        std::string item = text.substr(begin, end == std::string::npos ? end : end - begin);
+        tokens.push_back(parse_dimension(item.c_str(), 0));
+        if (tokens.size() > 64)
+            throw std::invalid_argument("the teaching example supports 1..64 experts");
+        if (end == std::string::npos) break;
+        begin = end + 1;
+    }
+    return tokens;
+}
+
+// Retain every expert until grouped execution ends.
 HostExpert prepare_expert(int expert_id, int m, int n, int k, bool zero_edges) {
     HostExpert h;
     h.m = m; h.n = n; h.k = k;
+    // No tokens, no output: even weight buffers are unnecessary for this call.
+    if (m == 0) return h;
     h.a_float.resize(m * k); h.b_float.resize(k * n);
     h.a.resize(m * k); h.b.resize(k * n);
     h.a_scale.resize(m); h.b_scale.resize(n);
@@ -160,6 +185,7 @@ HostExpert prepare_expert(int expert_id, int m, int n, int k, bool zero_edges) {
 DeviceExpert upload_expert(const HostExpert& h) {
     DeviceExpert d;
     d.m = h.m; d.n = h.n; d.k = h.k;
+    if (h.m == 0) return d; // Null pointers; no zero-byte allocations/copies.
     MC_CHECK(mcMalloc(reinterpret_cast<void**>(&d.a), h.a.size() * sizeof(int8_t)));
     MC_CHECK(mcMalloc(reinterpret_cast<void**>(&d.b), h.b.size() * sizeof(int8_t)));
     MC_CHECK(mcMalloc(reinterpret_cast<void**>(&d.a_scale), h.a_scale.size() * sizeof(float)));
@@ -174,6 +200,7 @@ DeviceExpert upload_expert(const HostExpert& h) {
 }
 
 void free_expert(const DeviceExpert& d) {
+    if (d.m == 0) return;
     MC_CHECK(mcFree(d.a));
     MC_CHECK(mcFree(d.b));
     MC_CHECK(mcFree(d.a_scale));
@@ -184,6 +211,14 @@ void free_expert(const DeviceExpert& d) {
 int check_expert(int expert_id, const HostExpert& h, bool zero_edges) {
     std::cout << "\n=== Expert " << expert_id << " ===\n";
     int m = h.m, n = h.n, k = h.k;
+    if (m == 0) {
+        // The CPU contract for an empty expert is an empty result, not zeros [1,N].
+        bool empty = h.a.empty() && h.a_scale.empty() && h.c.empty();
+        std::cout << "M=0: empty expert, no output elements\n"
+                  << "checked_elements=0, mismatches=" << (empty ? 0 : 1) << '\n'
+                  << (empty ? "PASS" : "FAIL") << " (empty expert contract)\n";
+        return empty ? EXIT_SUCCESS : EXIT_FAILURE;
+    }
     const auto& a = h.a; const auto& b = h.b;
     const auto& a_float = h.a_float; const auto& b_float = h.b_float;
     const auto& a_scale = h.a_scale; const auto& b_scale = h.b_scale;
@@ -251,18 +286,22 @@ int check_expert(int expert_id, const HostExpert& h, bool zero_edges) {
 }
 
 int main(int argc, char** argv) {
-    // M0 and M1 are the token counts of the two experts; N and K are shared.
-    // Optional command line: ./naive_gemm.out M0 M1 N K [--zero-edges]
-    int m0 = 3, m1 = 5, n = 4, k = 5;
+    // New: --tokens M0,M1,... N K [--zero-edges]. Keep the old two-expert form.
+    std::vector<int> tokens = {3, 5};
+    int n = 4, k = 5;
     bool zero_edges = argc == 6 && std::string(argv[5]) == "--zero-edges";
     if (argc != 1 && argc != 5 && !zero_edges) {
-        std::cerr << "Usage: " << argv[0] << " [M0 M1 N K [--zero-edges]]\n";
+        std::cerr << "Usage: " << argv[0]
+                  << " [--tokens M0,M1,... N K [--zero-edges]]\n"
+                  << "   or: " << argv[0] << " M0 M1 N K [--zero-edges]\n";
         return EXIT_FAILURE;
     }
     try {
         if (argc >= 5) {
-            m0 = parse_dimension(argv[1]);
-            m1 = parse_dimension(argv[2]);
+            if (std::string(argv[1]) == "--tokens")
+                tokens = parse_tokens(argv[2]);
+            else
+                tokens = {parse_dimension(argv[1], 0), parse_dimension(argv[2], 0)};
             n = parse_dimension(argv[3]);
             k = parse_dimension(argv[4]);
         }
@@ -271,27 +310,40 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
-    constexpr int num_groups = 2;
-    HostExpert experts[num_groups] = {
-        prepare_expert(0, m0, n, k, zero_edges),
-        prepare_expert(1, m1, n, k, zero_edges)
-    };
+    int num_groups = static_cast<int>(tokens.size());
+    int max_m = *std::max_element(tokens.begin(), tokens.end());
+    std::vector<HostExpert> experts;
+    for (int group = 0; group < num_groups; ++group)
+        experts.push_back(prepare_expert(group, tokens[group], n, k, zero_edges));
+
+    // A zero-height grid is invalid. All-empty input is a successful no-op.
+    // No GPU allocation, copy, launch or synchronization is needed in this path.
+    if (max_m == 0) {
+        bool passed = true;
+        std::cout << "All experts empty: GEMM kernel launches=0\n";
+        for (int group = 0; group < num_groups; ++group)
+            if (check_expert(group, experts[group], zero_edges) != EXIT_SUCCESS)
+                passed = false;
+        std::cout << "Grouped result: " << (passed ? "PASS" : "FAIL") << '\n';
+        return passed ? EXIT_SUCCESS : EXIT_FAILURE;
+    }
+
     MC_CHECK(mcSetDevice(0));
-    DeviceExpert groups[num_groups] = {
-        upload_expert(experts[0]), upload_expert(experts[1])
-    };
+    std::vector<DeviceExpert> groups;
+    for (const auto& expert : experts) groups.push_back(upload_expert(expert));
 
     // A GPU-readable table of pointers, dimensions and scale pointers.
     DeviceExpert* d_groups = nullptr;
-    MC_CHECK(mcMalloc(reinterpret_cast<void**>(&d_groups), sizeof(groups)));
-    MC_CHECK(mcMemcpy(d_groups, groups, sizeof(groups), mcMemcpyHostToDevice));
+    size_t group_bytes = groups.size() * sizeof(DeviceExpert);
+    MC_CHECK(mcMalloc(reinterpret_cast<void**>(&d_groups), group_bytes));
+    MC_CHECK(mcMemcpy(d_groups, groups.data(), group_bytes, mcMemcpyHostToDevice));
 
     dim3 block(16, 16);
     dim3 grid((n + block.x - 1) / block.x,
-              (std::max(m0, m1) + block.y - 1) / block.y, num_groups);
+              (max_m + block.y - 1) / block.y, num_groups);
     std::cout << "Grouped launch: block=(" << block.x << ',' << block.y
               << "), grid=(" << grid.x << ',' << grid.y << ',' << grid.z << ")\n";
-    // Exactly ONE GEMM kernel launch for all experts.
+    // Exactly ONE GEMM kernel launch whenever at least one expert is nonempty.
     naive_grouped_int8_gemm<<<grid, block>>>(d_groups, num_groups);
     MC_CHECK(mcGetLastError());
     MC_CHECK(mcDeviceSynchronize());
@@ -299,15 +351,16 @@ int main(int argc, char** argv) {
     bool passed = true;
     for (int group = 0; group < num_groups; ++group) {
         auto& h = experts[group];
-        MC_CHECK(mcMemcpy(h.c.data(), groups[group].c,
-                          h.c.size() * sizeof(float), mcMemcpyDeviceToHost));
+        if (h.m != 0)
+            MC_CHECK(mcMemcpy(h.c.data(), groups[group].c,
+                              h.c.size() * sizeof(float), mcMemcpyDeviceToHost));
         // Always check every expert, even after a previous one failed.
         int status = check_expert(group, h, zero_edges);
         if (status != EXIT_SUCCESS) passed = false;
         free_expert(groups[group]);
     }
     MC_CHECK(mcFree(d_groups));
-    std::cout << "\nTwo experts, one grouped GEMM kernel launch: "
-              << (passed ? "PASS" : "FAIL") << '\n';
+    std::cout << "\nExperts=" << num_groups << ", GEMM kernel launches=1\n"
+              << "Grouped result: " << (passed ? "PASS" : "FAIL") << '\n';
     return passed ? EXIT_SUCCESS : EXIT_FAILURE;
 }
