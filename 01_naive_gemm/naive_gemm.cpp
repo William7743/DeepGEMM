@@ -109,25 +109,10 @@ int parse_dimension(const char* value) {
     return result;
 }
 
-int main(int argc, char** argv) {
-    // Optional command line: ./naive_gemm.out M N K [--zero-edges]
-    int m = 3, n = 4, k = 5;
-    bool zero_edges = argc == 5 && std::string(argv[4]) == "--zero-edges";
-    if (argc != 1 && argc != 4 && !zero_edges) {
-        std::cerr << "Usage: " << argv[0] << " [M N K [--zero-edges]]\n";
-        return EXIT_FAILURE;
-    }
-    try {
-        if (argc >= 4) {
-            m = parse_dimension(argv[1]);
-            n = parse_dimension(argv[2]);
-            k = parse_dimension(argv[3]);
-        }
-    } catch (const std::exception& error) {
-        std::cerr << "Invalid shape: " << error.what() << '\n';
-        return EXIT_FAILURE;
-    }
-
+// Each call owns one expert's CPU arrays and GPU buffers.
+// Run and verify it completely before returning; two calls mean two launches.
+int run_expert(int expert_id, int m, int n, int k, bool zero_edges) {
+    std::cout << "\n=== Expert " << expert_id << " ===\n";
     // 1. Generate floating inputs, then quantize on CPU.
     // Finite, moderate values for this lesson; not a general quantization API.
     std::vector<float> a_float(m * k), b_float(k * n);
@@ -135,12 +120,12 @@ int main(int argc, char** argv) {
     std::vector<float> c(m * n), a_scale(m), b_scale(n);
     for (int row = 0; row < m; ++row)
         for (int p = 0; p < k; ++p)
-            a_float[row * k + p] = (static_cast<int>((row * k + p) % 17) - 8) *
-                                   0.13f * (1 + row % 7);
+            a_float[row * k + p] = (static_cast<int>((row * k + p + expert_id * 5) % 17) - 8) *
+                                   0.13f * (1 + row % 7 + expert_id);
     for (int p = 0; p < k; ++p)
         for (int col = 0; col < n; ++col)
-            b_float[p * n + col] = (static_cast<int>(((p * n + col) * 3) % 17) - 8) *
-                                   0.17f * (1 + col % 5);
+            b_float[p * n + col] = (static_cast<int>(((p * n + col) * 3 + expert_id * 7) % 17) - 8) *
+                                   0.17f * (1 + col % 5 + expert_id);
     if (zero_edges) {
         for (int p = 0; p < k; ++p) {
             a_float[(m - 1) * k + p] = 0;
@@ -247,4 +232,33 @@ int main(int argc, char** argv) {
     std::cout << "\nQuantization metrics are informational, not acceptance thresholds.\n";
     std::cout << (mismatches == 0 ? "PASS" : "FAIL") << " (GPU vs quantized CPU reference)\n";
     return mismatches == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
+}
+
+int main(int argc, char** argv) {
+    // Optional command line: ./naive_gemm.out M N K [--zero-edges]
+    int m = 3, n = 4, k = 5;
+    bool zero_edges = argc == 5 && std::string(argv[4]) == "--zero-edges";
+    if (argc != 1 && argc != 4 && !zero_edges) {
+        std::cerr << "Usage: " << argv[0] << " [M N K [--zero-edges]]\n";
+        return EXIT_FAILURE;
+    }
+    try {
+        if (argc >= 4) {
+            m = parse_dimension(argv[1]);
+            n = parse_dimension(argv[2]);
+            k = parse_dimension(argv[3]);
+        }
+    } catch (const std::exception& error) {
+        std::cerr << "Invalid shape: " << error.what() << '\n';
+        return EXIT_FAILURE;
+    }
+
+    // Keep both experts at the same shape for this lesson.
+    // Their input values, weights, scales and reference results are independent.
+    int expert0_status = run_expert(0, m, n, k, zero_edges);
+    int expert1_status = run_expert(1, m, n, k, zero_edges);
+    bool passed = expert0_status == EXIT_SUCCESS && expert1_status == EXIT_SUCCESS;
+    std::cout << "\nTwo experts, two separate kernel launches: "
+              << (passed ? "PASS" : "FAIL") << '\n';
+    return passed ? EXIT_SUCCESS : EXIT_FAILURE;
 }
