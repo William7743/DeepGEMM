@@ -1,5 +1,7 @@
 # DeepGEMM
 
+> **MACA / MetaX C500:** This branch adds an experimental native INT8 W8A8 grouped GEMM backend with FP32 output. See [c500_int8/README.md](c500_int8/README.md) for its API, build steps, supported shapes, and C500 correctness/benchmark reports. This is a new INT8 backend; it does not replace the upstream FP8/FP4 APIs.
+
 DeepGEMM is a unified, high-performance tensor core kernel library that brings together the key computation primitives of modern large language models — GEMMs (FP8, FP4, BF16), fused MoE with overlapped communication (Mega MoE), MQA scoring for the lightning indexer, HyperConnection (HC), and more — into a single, cohesive CUDA codebase. All kernels are compiled at runtime through DeepJIT, requiring no CUDA compilation during installation.
 
 DeepGEMM leverages some concepts from [CUTLASS](https://github.com/nvidia/cutlass) and [CuTe](https://github.com/NVIDIA/cutlass/tree/main/include/cute), but avoids heavy reliance on their templates or algebras. The library is designed for simplicity, with only a limited number of core kernel functions, making it a clean and accessible resource for learning NVIDIA GPU kernel optimization techniques.

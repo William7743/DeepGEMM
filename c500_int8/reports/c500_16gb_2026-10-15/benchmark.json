@@ -1,0 +1,734 @@
+{
+  "status": "PASS",
+  "results": [
+    {
+      "name": "small_balanced",
+      "shape_source": "synthetic",
+      "counts": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "m": 128,
+      "g": 4,
+      "n": 1024,
+      "k": 1024,
+      "requested_tile_m": 0,
+      "selected_tile_m": 32,
+      "tensor_bytes": 4866560,
+      "warmup": 3,
+      "repeat": 10,
+      "latency_ms": {
+        "median": 0.060287998989224434,
+        "min": 0.03814399987459183,
+        "max": 0.10726399719715118,
+        "p90": 0.07569919824600219,
+        "samples": [
+          0.10726399719715118,
+          0.0721919983625412,
+          0.05939200147986412,
+          0.059647999703884125,
+          0.06425599753856659,
+          0.05913599953055382,
+          0.06092799827456474,
+          0.059647999703884125,
+          0.06143999844789505,
+          0.03814399987459183
+        ]
+      },
+      "int8_tops_from_median": 4.452552091635663,
+      "operation_count": 268435456,
+      "pre_timing_validation": {
+        "scope": "sampled same-INT8 INT64/FP64 CPU oracle",
+        "samples": 36,
+        "max_abs_error": 3.941805175600166e-05,
+        "max_relative_error_away_from_zero": 7.734724064992974e-08
+      },
+      "input_seed": 20261015
+    },
+    {
+      "name": "small_balanced",
+      "shape_source": "synthetic",
+      "counts": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "m": 128,
+      "g": 4,
+      "n": 1024,
+      "k": 1024,
+      "requested_tile_m": 16,
+      "selected_tile_m": 16,
+      "tensor_bytes": 4866560,
+      "warmup": 3,
+      "repeat": 10,
+      "latency_ms": {
+        "median": 0.05772799998521805,
+        "min": 0.03481600061058998,
+        "max": 0.10931199789047241,
+        "p90": 0.07383040264248847,
+        "samples": [
+          0.10931199789047241,
+          0.06656000018119812,
+          0.0578560009598732,
+          0.058368001133203506,
+          0.05734400078654289,
+          0.03558399900794029,
+          0.06988800317049026,
+          0.0575999990105629,
+          0.0575999990105629,
+          0.03481600061058998
+        ]
+      },
+      "int8_tops_from_median": 4.65000443578049,
+      "operation_count": 268435456,
+      "pre_timing_validation": {
+        "scope": "sampled same-INT8 INT64/FP64 CPU oracle",
+        "samples": 36,
+        "max_abs_error": 3.941805175600166e-05,
+        "max_relative_error_away_from_zero": 7.734724064992974e-08
+      },
+      "input_seed": 20261015
+    },
+    {
+      "name": "small_balanced",
+      "shape_source": "synthetic",
+      "counts": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "m": 128,
+      "g": 4,
+      "n": 1024,
+      "k": 1024,
+      "requested_tile_m": 32,
+      "selected_tile_m": 32,
+      "tensor_bytes": 4866560,
+      "warmup": 3,
+      "repeat": 10,
+      "latency_ms": {
+        "median": 0.059648001566529274,
+        "min": 0.03763199970126152,
+        "max": 0.10239999741315842,
+        "p90": 0.07129600197076796,
+        "samples": [
+          0.10239999741315842,
+          0.06400000303983688,
+          0.05913599953055382,
+          0.05939200147986412,
+          0.03788800165057182,
+          0.06784000247716904,
+          0.05990400165319443,
+          0.03763199970126152,
+          0.060416001826524734,
+          0.05939200147986412
+        ]
+      },
+      "int8_tops_from_median": 4.500326062065912,
+      "operation_count": 268435456,
+      "pre_timing_validation": {
+        "scope": "sampled same-INT8 INT64/FP64 CPU oracle",
+        "samples": 36,
+        "max_abs_error": 3.941805175600166e-05,
+        "max_relative_error_away_from_zero": 7.734724064992974e-08
+      },
+      "input_seed": 20261015
+    },
+    {
+      "name": "small_balanced",
+      "shape_source": "synthetic",
+      "counts": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "m": 128,
+      "g": 4,
+      "n": 1024,
+      "k": 1024,
+      "requested_tile_m": 64,
+      "selected_tile_m": 64,
+      "tensor_bytes": 4866560,
+      "warmup": 3,
+      "repeat": 10,
+      "latency_ms": {
+        "median": 0.061695998534560204,
+        "min": 0.039423998445272446,
+        "max": 0.35737600922584534,
+        "p90": 0.13066239953041067,
+        "samples": [
+          0.10547199845314026,
+          0.06195199862122536,
+          0.06143999844789505,
+          0.06195199862122536,
+          0.039423998445272446,
+          0.35737600922584534,
+          0.0867839977145195,
+          0.06143999844789505,
+          0.06143999844789505,
+          0.06092799827456474
+        ]
+      },
+      "int8_tops_from_median": 4.350937862682143,
+      "operation_count": 268435456,
+      "pre_timing_validation": {
+        "scope": "sampled same-INT8 INT64/FP64 CPU oracle",
+        "samples": 36,
+        "max_abs_error": 3.941805175600166e-05,
+        "max_relative_error_away_from_zero": 7.734724064992974e-08
+      },
+      "input_seed": 20261015
+    },
+    {
+      "name": "small_balanced",
+      "shape_source": "synthetic",
+      "counts": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "m": 128,
+      "g": 4,
+      "n": 1024,
+      "k": 1024,
+      "requested_tile_m": 128,
+      "selected_tile_m": 128,
+      "tensor_bytes": 4866560,
+      "warmup": 3,
+      "repeat": 10,
+      "latency_ms": {
+        "median": 0.06464000046253204,
+        "min": 0.04198399931192398,
+        "max": 0.10675200074911118,
+        "p90": 0.08048640191555022,
+        "samples": [
+          0.10675200074911118,
+          0.0650240033864975,
+          0.06425599753856659,
+          0.04198399931192398,
+          0.07756800204515457,
+          0.06400000303983688,
+          0.04224000126123428,
+          0.0650240033864975,
+          0.044544000178575516,
+          0.0650240033864975
+        ]
+      },
+      "int8_tops_from_median": 4.152776207908539,
+      "operation_count": 268435456,
+      "pre_timing_validation": {
+        "scope": "sampled same-INT8 INT64/FP64 CPU oracle",
+        "samples": 36,
+        "max_abs_error": 3.941805175600166e-05,
+        "max_relative_error_away_from_zero": 7.734724064992974e-08
+      },
+      "input_seed": 20261015
+    },
+    {
+      "name": "small_skewed",
+      "shape_source": "synthetic",
+      "counts": [
+        0,
+        1,
+        7,
+        128,
+        3,
+        64,
+        0,
+        17
+      ],
+      "m": 220,
+      "g": 8,
+      "n": 1024,
+      "k": 2048,
+      "requested_tile_m": 0,
+      "selected_tile_m": 32,
+      "tensor_bytes": 18162544,
+      "warmup": 3,
+      "repeat": 10,
+      "latency_ms": {
+        "median": 0.053120000287890434,
+        "min": 0.05196800082921982,
+        "max": 0.1157120019197464,
+        "p90": 0.08069120347499846,
+        "samples": [
+          0.1157120019197464,
+          0.053247999399900436,
+          0.054016001522541046,
+          0.07680000364780426,
+          0.05299200117588043,
+          0.05273599922657013,
+          0.05299200117588043,
+          0.053247999399900436,
+          0.05299200117588043,
+          0.05196800082921982
+        ]
+      },
+      "int8_tops_from_median": 17.370987857663003,
+      "operation_count": 922746880,
+      "pre_timing_validation": {
+        "scope": "sampled same-INT8 INT64/FP64 CPU oracle",
+        "samples": 48,
+        "max_abs_error": 3.131761002350686e-05,
+        "max_relative_error_away_from_zero": 8.256007934963086e-08
+      },
+      "input_seed": 20261016
+    },
+    {
+      "name": "small_skewed",
+      "shape_source": "synthetic",
+      "counts": [
+        0,
+        1,
+        7,
+        128,
+        3,
+        64,
+        0,
+        17
+      ],
+      "m": 220,
+      "g": 8,
+      "n": 1024,
+      "k": 2048,
+      "requested_tile_m": 16,
+      "selected_tile_m": 16,
+      "tensor_bytes": 18162544,
+      "warmup": 3,
+      "repeat": 10,
+      "latency_ms": {
+        "median": 0.05939199961721897,
+        "min": 0.04761600121855736,
+        "max": 0.11110399663448334,
+        "p90": 0.07723520025610922,
+        "samples": [
+          0.11110399663448334,
+          0.07295999675989151,
+          0.048128001391887665,
+          0.04761600121855736,
+          0.07014399766921997,
+          0.04864000156521797,
+          0.04787199944257736,
+          0.07347200065851212,
+          0.048128001391887665,
+          0.07091200351715088
+        ]
+      },
+      "int8_tops_from_median": 15.5365518242709,
+      "operation_count": 922746880,
+      "pre_timing_validation": {
+        "scope": "sampled same-INT8 INT64/FP64 CPU oracle",
+        "samples": 48,
+        "max_abs_error": 3.131761002350686e-05,
+        "max_relative_error_away_from_zero": 8.256007934963086e-08
+      },
+      "input_seed": 20261016
+    },
+    {
+      "name": "small_skewed",
+      "shape_source": "synthetic",
+      "counts": [
+        0,
+        1,
+        7,
+        128,
+        3,
+        64,
+        0,
+        17
+      ],
+      "m": 220,
+      "g": 8,
+      "n": 1024,
+      "k": 2048,
+      "requested_tile_m": 32,
+      "selected_tile_m": 32,
+      "tensor_bytes": 18162544,
+      "warmup": 3,
+      "repeat": 10,
+      "latency_ms": {
+        "median": 0.05299200117588043,
+        "min": 0.051711998879909515,
+        "max": 0.11724799871444702,
+        "p90": 0.07877120077610014,
+        "samples": [
+          0.11724799871444702,
+          0.05299200117588043,
+          0.07423999905586243,
+          0.05299200117588043,
+          0.05273599922657013,
+          0.051711998879909515,
+          0.07449600100517273,
+          0.05222399905323982,
+          0.052480001002550125,
+          0.05299200117588043
+        ]
+      },
+      "int8_tops_from_median": 17.412946473514058,
+      "operation_count": 922746880,
+      "pre_timing_validation": {
+        "scope": "sampled same-INT8 INT64/FP64 CPU oracle",
+        "samples": 48,
+        "max_abs_error": 3.131761002350686e-05,
+        "max_relative_error_away_from_zero": 8.256007934963086e-08
+      },
+      "input_seed": 20261016
+    },
+    {
+      "name": "small_skewed",
+      "shape_source": "synthetic",
+      "counts": [
+        0,
+        1,
+        7,
+        128,
+        3,
+        64,
+        0,
+        17
+      ],
+      "m": 220,
+      "g": 8,
+      "n": 1024,
+      "k": 2048,
+      "requested_tile_m": 64,
+      "selected_tile_m": 64,
+      "tensor_bytes": 18162544,
+      "warmup": 3,
+      "repeat": 10,
+      "latency_ms": {
+        "median": 0.05337600037455559,
+        "min": 0.05222399905323982,
+        "max": 0.11750400066375732,
+        "p90": 0.0705023981630802,
+        "samples": [
+          0.11750400066375732,
+          0.05350400134921074,
+          0.05273599922657013,
+          0.0652799978852272,
+          0.05990400165319443,
+          0.05222399905323982,
+          0.05222399905323982,
+          0.0575999990105629,
+          0.053247999399900436,
+          0.05273599922657013
+        ]
+      },
+      "int8_tops_from_median": 17.287673739598418,
+      "operation_count": 922746880,
+      "pre_timing_validation": {
+        "scope": "sampled same-INT8 INT64/FP64 CPU oracle",
+        "samples": 48,
+        "max_abs_error": 3.131761002350686e-05,
+        "max_relative_error_away_from_zero": 8.256007934963086e-08
+      },
+      "input_seed": 20261016
+    },
+    {
+      "name": "small_skewed",
+      "shape_source": "synthetic",
+      "counts": [
+        0,
+        1,
+        7,
+        128,
+        3,
+        64,
+        0,
+        17
+      ],
+      "m": 220,
+      "g": 8,
+      "n": 1024,
+      "k": 2048,
+      "requested_tile_m": 128,
+      "selected_tile_m": 128,
+      "tensor_bytes": 18162544,
+      "warmup": 3,
+      "repeat": 10,
+      "latency_ms": {
+        "median": 0.05516799911856651,
+        "min": 0.05222399905323982,
+        "max": 0.11980800330638885,
+        "p90": 0.07856639772653579,
+        "samples": [
+          0.11980800330638885,
+          0.05708799883723259,
+          0.07398399710655212,
+          0.05222399905323982,
+          0.055296000093221664,
+          0.054016001522541046,
+          0.05503999814391136,
+          0.05299200117588043,
+          0.05657599866390228,
+          0.052480001002550125
+        ]
+      },
+      "int8_tops_from_median": 16.72612555726086,
+      "operation_count": 922746880,
+      "pre_timing_validation": {
+        "scope": "sampled same-INT8 INT64/FP64 CPU oracle",
+        "samples": 48,
+        "max_abs_error": 3.131761002350686e-05,
+        "max_relative_error_away_from_zero": 8.256007934963086e-08
+      },
+      "input_seed": 20261016
+    },
+    {
+      "name": "medium_balanced",
+      "shape_source": "synthetic",
+      "counts": [
+        64,
+        64,
+        64,
+        64
+      ],
+      "m": 256,
+      "g": 4,
+      "n": 2048,
+      "k": 1024,
+      "requested_tile_m": 0,
+      "selected_tile_m": 64,
+      "tensor_bytes": 10781696,
+      "warmup": 3,
+      "repeat": 10,
+      "latency_ms": {
+        "median": 0.050303999334573746,
+        "min": 0.04710400104522705,
+        "max": 0.11007999628782272,
+        "p90": 0.07598079815506933,
+        "samples": [
+          0.11007999628782272,
+          0.07065600156784058,
+          0.04787199944257736,
+          0.051711998879909515,
+          0.06963200122117996,
+          0.04787199944257736,
+          0.04787199944257736,
+          0.0721919983625412,
+          0.048895999789237976,
+          0.04710400104522705
+        ]
+      },
+      "int8_tops_from_median": 21.345058806527565,
+      "operation_count": 1073741824,
+      "pre_timing_validation": {
+        "scope": "sampled same-INT8 INT64/FP64 CPU oracle",
+        "samples": 36,
+        "max_abs_error": 4.3320718532413593e-05,
+        "max_relative_error_away_from_zero": 7.575400561293886e-08
+      },
+      "input_seed": 20261017
+    },
+    {
+      "name": "medium_balanced",
+      "shape_source": "synthetic",
+      "counts": [
+        64,
+        64,
+        64,
+        64
+      ],
+      "m": 256,
+      "g": 4,
+      "n": 2048,
+      "k": 1024,
+      "requested_tile_m": 16,
+      "selected_tile_m": 16,
+      "tensor_bytes": 10781696,
+      "warmup": 3,
+      "repeat": 10,
+      "latency_ms": {
+        "median": 0.04556799866259098,
+        "min": 0.044544000178575516,
+        "max": 0.10803200304508209,
+        "p90": 0.07715840265154837,
+        "samples": [
+          0.10803200304508209,
+          0.06809599697589874,
+          0.04633599892258644,
+          0.04479999840259552,
+          0.07372800260782242,
+          0.04479999840259552,
+          0.044544000178575516,
+          0.06604799628257751,
+          0.04479999840259552,
+          0.04479999840259552
+        ]
+      },
+      "int8_tops_from_median": 23.563506309560346,
+      "operation_count": 1073741824,
+      "pre_timing_validation": {
+        "scope": "sampled same-INT8 INT64/FP64 CPU oracle",
+        "samples": 36,
+        "max_abs_error": 4.3320718532413593e-05,
+        "max_relative_error_away_from_zero": 7.575400561293886e-08
+      },
+      "input_seed": 20261017
+    },
+    {
+      "name": "medium_balanced",
+      "shape_source": "synthetic",
+      "counts": [
+        64,
+        64,
+        64,
+        64
+      ],
+      "m": 256,
+      "g": 4,
+      "n": 2048,
+      "k": 1024,
+      "requested_tile_m": 32,
+      "selected_tile_m": 32,
+      "tensor_bytes": 10781696,
+      "warmup": 3,
+      "repeat": 10,
+      "latency_ms": {
+        "median": 0.0650239996612072,
+        "min": 0.043007999658584595,
+        "max": 0.10751999914646149,
+        "p90": 0.07065600007772445,
+        "samples": [
+          0.10751999914646149,
+          0.0652799978852272,
+          0.04403200000524521,
+          0.06656000018119812,
+          0.043007999658584595,
+          0.0655359998345375,
+          0.043007999658584595,
+          0.0647680014371872,
+          0.0432640016078949,
+          0.0655359998345375
+        ]
+      },
+      "int8_tops_from_median": 16.51300796005303,
+      "operation_count": 1073741824,
+      "pre_timing_validation": {
+        "scope": "sampled same-INT8 INT64/FP64 CPU oracle",
+        "samples": 36,
+        "max_abs_error": 4.3320718532413593e-05,
+        "max_relative_error_away_from_zero": 7.575400561293886e-08
+      },
+      "input_seed": 20261017
+    },
+    {
+      "name": "medium_balanced",
+      "shape_source": "synthetic",
+      "counts": [
+        64,
+        64,
+        64,
+        64
+      ],
+      "m": 256,
+      "g": 4,
+      "n": 2048,
+      "k": 1024,
+      "requested_tile_m": 64,
+      "selected_tile_m": 64,
+      "tensor_bytes": 10781696,
+      "warmup": 3,
+      "repeat": 10,
+      "latency_ms": {
+        "median": 0.048768000677227974,
+        "min": 0.04787199944257736,
+        "max": 0.11007999628782272,
+        "p90": 0.07482880279421805,
+        "samples": [
+          0.11007999628782272,
+          0.07091200351715088,
+          0.04787199944257736,
+          0.048128001391887665,
+          0.06963200122117996,
+          0.048895999789237976,
+          0.048128001391887665,
+          0.04864000156521797,
+          0.04787199944257736,
+          0.07065600156784058
+        ]
+      },
+      "int8_tops_from_median": 22.017343526272125,
+      "operation_count": 1073741824,
+      "pre_timing_validation": {
+        "scope": "sampled same-INT8 INT64/FP64 CPU oracle",
+        "samples": 36,
+        "max_abs_error": 4.3320718532413593e-05,
+        "max_relative_error_away_from_zero": 7.575400561293886e-08
+      },
+      "input_seed": 20261017
+    },
+    {
+      "name": "medium_balanced",
+      "shape_source": "synthetic",
+      "counts": [
+        64,
+        64,
+        64,
+        64
+      ],
+      "m": 256,
+      "g": 4,
+      "n": 2048,
+      "k": 1024,
+      "requested_tile_m": 128,
+      "selected_tile_m": 128,
+      "tensor_bytes": 10781696,
+      "warmup": 3,
+      "repeat": 10,
+      "latency_ms": {
+        "median": 0.05555200017988682,
+        "min": 0.04479999840259552,
+        "max": 0.10777600109577179,
+        "p90": 0.07505920007824897,
+        "samples": [
+          0.10777600109577179,
+          0.07142399996519089,
+          0.04505600035190582,
+          0.06707199662923813,
+          0.04479999840259552,
+          0.04479999840259552,
+          0.06758400052785873,
+          0.04531199857592583,
+          0.04479999840259552,
+          0.06579200178384781
+        ]
+      },
+      "int8_tops_from_median": 19.328589799161893,
+      "operation_count": 1073741824,
+      "pre_timing_validation": {
+        "scope": "sampled same-INT8 INT64/FP64 CPU oracle",
+        "samples": 36,
+        "max_abs_error": 4.3320718532413593e-05,
+        "max_relative_error_away_from_zero": 7.575400561293886e-08
+      },
+      "input_seed": 20261017
+    }
+  ],
+  "timing": "GPU events around one native INT8 grouped GEMM including FP32 scaling epilogue; may include host launch gaps",
+  "excluded_from_timing": [
+    "input generation",
+    "host/device transfer",
+    "plan preparation",
+    "output allocation",
+    "correctness checks"
+  ],
+  "interpretation": "synthetic or explicitly supplied shapes; no A100/H200 baseline, utilization target, or project acceptance claim",
+  "environment": {
+    "python": "3.12.11",
+    "platform": "Linux-5.15.0-58-generic-x86_64-with-glibc2.39",
+    "torch": "2.8.0+metax3.7.1.3",
+    "device": "cuda:0",
+    "device_name": "MetaX C500",
+    "device_total_memory_bytes": 16341008384,
+    "torch_cuda_compat_version": "11.6",
+    "torch_maca_version": "3.7.1.3"
+  }
+}

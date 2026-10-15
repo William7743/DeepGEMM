@@ -1,0 +1,13 @@
+{
+  "instance": "C500 16GB sGPU",
+  "hostname": "22edb6d358d0",
+  "compute_quota_percent": 25,
+  "vram_quota_mib": 16000,
+  "correctness_status": "PASS",
+  "correctness_checks": 69,
+  "benchmark_status": "PASS",
+  "benchmark_cases": 15,
+  "native_source_sha256": "5de9f5b9fa639b2e339e34d710850a05cf5dfa0aef999a79671e60e1087f10f5",
+  "native_binary_sha256": "0ba20b2da5983a2f6544f01fd707df9c6fc6baecb122d496b5aaac7ff8e43822",
+  "performance_scope": "25% compute slice; not exclusive full-card performance"
+}

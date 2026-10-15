@@ -1,0 +1,470 @@
+{
+  "status": "PASS",
+  "gpu_status": "PASS",
+  "cases": [
+    {
+      "name": "cpu_segments_with_empty_experts",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "cpu_per_expert_tiles_without_row_padding",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "cpu_expert_weight_order",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "cpu_all_empty",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "cpu_max_safe_aligned_k",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "cpu_selector_m32_g2_k256",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "cpu_selector_m33_g2_k256",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "cpu_selector_m64_g2_k256",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "cpu_selector_m65_g2_k256",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "cpu_selector_m128_g2_k3840",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "cpu_selector_m129_g2_k256",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "cpu_selector_m65_g2_k4096",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "cpu_explicit_tile_16",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "cpu_explicit_tile_32",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "cpu_explicit_tile_64",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "cpu_explicit_tile_128",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "cpu_reject_negative_count",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "cpu_reject_float_count",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "cpu_reject_bool_count",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "cpu_reject_no_experts",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "cpu_reject_n_tail",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "cpu_reject_k_tail",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "cpu_reject_zero_n",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "cpu_reject_accumulator_overflow",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "cpu_reject_index_overflow",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "cpu_reject_invalid_tile",
+      "status": "PASS",
+      "execution": "CPU metadata only"
+    },
+    {
+      "name": "tile_16_ragged_empty_experts",
+      "status": "PASS",
+      "counts": [
+        0,
+        1,
+        15,
+        16,
+        17,
+        0
+      ],
+      "tile_m": 16,
+      "max_abs_error": 0.0005333706631063251,
+      "max_relative_error_away_from_zero": 1.0331430938513674e-07,
+      "near_zero_elements": 176,
+      "max_abs_error_near_zero": 0.0
+    },
+    {
+      "name": "tile_32_ragged_empty_experts",
+      "status": "PASS",
+      "counts": [
+        0,
+        1,
+        31,
+        32,
+        33,
+        0
+      ],
+      "tile_m": 32,
+      "max_abs_error": 0.0005660935112246079,
+      "max_relative_error_away_from_zero": 1.0954984137491258e-07,
+      "near_zero_elements": 224,
+      "max_abs_error_near_zero": 0.0
+    },
+    {
+      "name": "tile_64_ragged_empty_experts",
+      "status": "PASS",
+      "counts": [
+        0,
+        1,
+        63,
+        64,
+        65,
+        0
+      ],
+      "tile_m": 64,
+      "max_abs_error": 0.0006407898508768994,
+      "max_relative_error_away_from_zero": 1.0907515857841234e-07,
+      "near_zero_elements": 320,
+      "max_abs_error_near_zero": 0.0
+    },
+    {
+      "name": "tile_128_ragged_empty_experts",
+      "status": "PASS",
+      "counts": [
+        0,
+        1,
+        127,
+        128,
+        129,
+        0
+      ],
+      "tile_m": 128,
+      "max_abs_error": 0.0009575323019817006,
+      "max_relative_error_away_from_zero": 1.1045174597053509e-07,
+      "near_zero_elements": 512,
+      "max_abs_error_near_zero": 0.0
+    },
+    {
+      "name": "automatic_skew",
+      "status": "PASS",
+      "counts": [
+        0,
+        1,
+        0,
+        129,
+        2
+      ],
+      "n": 128,
+      "k": 256,
+      "max_abs_error": 0.000653802835586248,
+      "max_relative_error_away_from_zero": 1.1112799973023451e-07,
+      "near_zero_elements": 260,
+      "max_abs_error_near_zero": 0.0
+    },
+    {
+      "name": "multiple_nk_tiles",
+      "status": "PASS",
+      "counts": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "n": 256,
+      "k": 512,
+      "max_abs_error": 0.000503523095176206,
+      "max_relative_error_away_from_zero": 1.06650937501902e-07,
+      "near_zero_elements": 261,
+      "max_abs_error_near_zero": 0.0
+    },
+    {
+      "name": "signed_extremes",
+      "status": "PASS",
+      "counts": [
+        1,
+        2
+      ],
+      "n": 128,
+      "k": 4096,
+      "max_abs_error": 0.08868126571178436,
+      "max_relative_error_away_from_zero": 8.341316043782453e-08,
+      "near_zero_elements": 0,
+      "max_abs_error_near_zero": 0.0
+    },
+    {
+      "name": "all_experts_empty",
+      "status": "PASS",
+      "counts": [
+        0,
+        0,
+        0
+      ],
+      "n": 128,
+      "k": 256,
+      "max_abs_error": 0.0,
+      "max_relative_error_away_from_zero": 0.0,
+      "near_zero_elements": 0,
+      "max_abs_error_near_zero": 0.0
+    },
+    {
+      "name": "single_token",
+      "status": "PASS",
+      "counts": [
+        1
+      ],
+      "n": 128,
+      "k": 256,
+      "max_abs_error": 0.002731463362579234,
+      "max_relative_error_away_from_zero": 7.42139626755641e-08,
+      "near_zero_elements": 0,
+      "max_abs_error_near_zero": 0.0
+    },
+    {
+      "name": "nondefault_stream_plan_dependency",
+      "status": "PASS",
+      "max_abs_error": 0.00018356680311626405,
+      "max_relative_error_away_from_zero": 9.160467950982203e-08,
+      "near_zero_elements": 130,
+      "max_abs_error_near_zero": 0.0
+    },
+    {
+      "name": "asynchronous_plan_release",
+      "status": "PASS",
+      "max_abs_error": 0.00018356680311626405,
+      "max_relative_error_away_from_zero": 9.160467950982203e-08,
+      "near_zero_elements": 130,
+      "max_abs_error_near_zero": 0.0
+    },
+    {
+      "name": "reject_a_dtype",
+      "status": "PASS",
+      "rejected_with": "TypeError"
+    },
+    {
+      "name": "reject_b_dtype",
+      "status": "PASS",
+      "rejected_with": "TypeError"
+    },
+    {
+      "name": "reject_scale_dtype",
+      "status": "PASS",
+      "rejected_with": "TypeError"
+    },
+    {
+      "name": "reject_a_rank",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    },
+    {
+      "name": "reject_b_rank",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    },
+    {
+      "name": "reject_scale_shape",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    },
+    {
+      "name": "reject_cpu_input",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    },
+    {
+      "name": "reject_noncontiguous_a",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    },
+    {
+      "name": "reject_noncontiguous_b",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    },
+    {
+      "name": "reject_noncontiguous_scale",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    },
+    {
+      "name": "reject_out_dtype",
+      "status": "PASS",
+      "rejected_with": "TypeError"
+    },
+    {
+      "name": "reject_out_shape",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    },
+    {
+      "name": "reject_noncontiguous_out",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    },
+    {
+      "name": "reject_plan_counts_conflict",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    },
+    {
+      "name": "reject_plan_tile_conflict",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    },
+    {
+      "name": "reject_autograd_scale",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    },
+    {
+      "name": "reject_output_alias_scale",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    },
+    {
+      "name": "reject_output_alias_input",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    },
+    {
+      "name": "reject_misaligned_a",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    },
+    {
+      "name": "reject_misaligned_out",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    },
+    {
+      "name": "reject_counts_[1, -1, 3]",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    },
+    {
+      "name": "reject_counts_[1.0, 2, 0]",
+      "status": "PASS",
+      "rejected_with": "TypeError"
+    },
+    {
+      "name": "reject_counts_[True, 2, 0]",
+      "status": "PASS",
+      "rejected_with": "TypeError"
+    },
+    {
+      "name": "reject_counts_[]",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    },
+    {
+      "name": "reject_counts_[1, 1, 0]",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    },
+    {
+      "name": "reject_counts_[3]",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    },
+    {
+      "name": "reject_gpu_counts",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    },
+    {
+      "name": "reject_n_alignment",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    },
+    {
+      "name": "reject_k_alignment",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    },
+    {
+      "name": "reject_int32_accumulator_overflow",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    },
+    {
+      "name": "reject_int32_index_overflow",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    },
+    {
+      "name": "reject_invalid_tile",
+      "status": "PASS",
+      "rejected_with": "ValueError"
+    }
+  ],
+  "oracle": "same quantized INT8 inputs; NumPy INT64 dot then FP64 scaling",
+  "tolerance": {
+    "rule": "abs(actual-reference) <= atol + rtol*abs(reference)",
+    "rtol": 0.001,
+    "atol": 1e-06,
+    "near_zero_threshold": 1e-06
+  },
+  "scope": "synthetic operator correctness, not model quantization accuracy or project acceptance",
+  "cpu_metadata_passed_cases": 26,
+  "environment": {
+    "torch": "2.8.0+metax3.7.1.3",
+    "device": "cuda:0",
+    "device_name": "MetaX C500"
+  },
+  "passed_cases": 69
+}
