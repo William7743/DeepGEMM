@@ -1,6 +1,6 @@
-# 朴素 INT8 GEMM：两个专家处理不同 token 数
+# 朴素 INT8 grouped GEMM：一次启动计算两个专家
 
-本课将下面的单个 GEMM 流程分别用于两个专家。每个专家拥有独立的输入、权重、scale、输出和 CPU 参考结果：
+本课把两个不同 token 数的专家放在一次 grouped GEMM kernel 启动中计算。每个专家拥有独立的输入、权重、scale、输出和 CPU 参考结果，两个专家的 GPU 缓冲区同时存在：
 
 ```text
 CPU 浮点 A[M,K]、B[K,N]
@@ -12,31 +12,46 @@ GPU INT8 乘法、INT32 累加
 GPU FP32 C[M,N]
 ```
 
-矩阵均按行存储，一个 GPU 线程计算一个输出元素，block 为 16×16。当前 B 是 [K,N] 布局；后续再学习 DeepGEMM NT 接口的 [N,K] 权重布局。本步使用两个独立的 kernel 启动，尚未实现 grouped GEMM 的统一调度、共享内存分块或 MMA。
+矩阵均按行存储，一个 GPU 线程计算一个输出元素，block 为 16×16。当前 B 是 [K,N] 布局；后续再学习 DeepGEMM NT 接口的 [N,K] 权重布局。本步实现一个朴素的 grouped 调度：`blockIdx.z` 选择专家，x/y 定位输出元素。尚未使用共享内存分块或 MMA。
 
-## 两个专家如何执行
+## 一次启动如何处理两个专家
 
-`main` 在解析参数后分别调用：
+CPU 先调用 `prepare_expert` 和 `upload_expert`，准备两个专家。`HostExpert` 保存 CPU 数组，`DeviceExpert` 保存 GPU 地址及 M/N/K。再把两个 `DeviceExpert` 组成的信息表复制到 GPU 的 `d_groups`。
+
+注意：复制信息表不会自动复制其指针指向的数据。因此要先分配、上传各专家的矩阵和 scale，再把这些 GPU 地址写入表中。表中不能放 CPU vector 的地址。
+
+整个程序只有一处 GEMM kernel 启动：
 
 ```cpp
-int expert0_status = run_expert(0, m0, n, k, zero_edges);
-int expert1_status = run_expert(1, m1, n, k, zero_edges);
+dim3 block(16, 16);
+dim3 grid(ceil(N / 16), ceil(max(M0, M1) / 16), 2); // 示意，源码用整数向上取整
+naive_grouped_int8_gemm<<<grid, block>>>(d_groups, num_groups);
 ```
 
-`run_expert` 每次独立生成浮点 A、B，计算各自的 scale，量化、分配 GPU 缓冲区、启动一次原有 kernel、拷回并验证结果。专家 0 执行、同步、验证完成后才执行专家 1；两者依次使用 GPU 内存，不同时常驻。kernel 的数学公式和线程映射不变。
+kernel 内部的选择过程：
 
-这一步两个专家分别使用 M0、M1，表示分给各自的 token 数；N、K 相同，但权重 B 的值仍各自独立。默认 M0=3、M1=5、N=4、K=5：
+```cpp
+int group = blockIdx.z;
+const DeviceExpert& e = groups[group];
+int col = blockIdx.x * blockDim.x + threadIdx.x;
+int row = blockIdx.y * blockDim.y + threadIdx.y;
+if (row >= e.m || col >= e.n) return;
+```
+
+随后使用 `e.a`、`e.b` 做整数点积，乘 `e.a_scale[row]`、`e.b_scale[col]`，写入 `e.c`。各专家写入不同输出缓冲区，不需要原子操作；各 block 的执行先后由 GPU 调度，不保证专家 0 先完成。
+
+默认 M0=3、M1=5、N=4、K=5：
 
 | 专家 | A | B | A_scale | B_scale | C |
 |---|---|---|---|---|---|
 | 0 | [3,5] | [5,4] | [3] | [4] | [3,4] |
 | 1 | [5,5] | [5,4] | [5] | [4] | [5,4] |
 
-已有的 `run_expert` 根据传入的 M 分配 A、A_scale 和 C，设置 grid 的 y 方向为 ceil(M/16)，并逐元素检查各自的输出。默认两个 M 都小于 16，所以 grid 相同；例如 M0=1、M1=33 时，y 方向分别需要 1、3 个 block。kernel 内的边界判断使用该专家自己的 M。
+默认 grid=(1,1,2)。M0=1、M1=33、N=19 时，统一 grid=(2,3,2)；专家 0 的后两排 block 全部退出，专家 1 则需要三排。这里仅让调度覆盖较大的 M，输入矩阵本身没有填充为 max(M)。这是一种容易理解的基础调度，存在空转开销，还没有实现负载均衡或持久化调度，不能假定它比两次调用更快。
 
-专家 ID 改变数据生成的取值和幅度。每个专家单独打印 shape、grid、输出及误差，最后必须两个专家都通过才返回成功。本步仍为两次独立调用，后续再统一调度。输入直接在 CPU 生成，尚未实现路由分发。
+计算后统一同步，再逐专家拷回、检查并释放内存。GPU 输出预先填入 NaN：若某个 group 或尾部元素漏算，即使它的参考值为零，也会检查失败。两个专家都通过才返回成功。
 
-这里一个“专家”仅模拟一次线性 GEMM，不是带激活的完整 FFN。
+本例仍固定两个专家，M 各自不同，N/K 相同；输入直接生成，未实现路由分发、空专家、contiguous/masked 接口，也未做性能计时。每个专家只模拟一次线性 GEMM，不是完整 FFN。
 
 ## 量化怎么做
 
@@ -54,7 +69,7 @@ q = static_cast<int8_t>(std::clamp(std::round(x / scale), -127.0f, 127.0f));
 GPU kernel 的写回公式仍然是：
 
 ```cpp
-c[row * n + col] = static_cast<float>(sum) * a_scale[row] * b_scale[col];
+e.c[row * e.n + col] = static_cast<float>(sum) * e.a_scale[row] * e.b_scale[col];
 ```
 
 两个 scale 沿 K 不变，所以可以放在整数点积完成后相乘。量化在 CPU 上完成；此步骤用于理解流程，不包含 GPU 量化 kernel。
@@ -77,7 +92,7 @@ export LD_LIBRARY_PATH=/opt/maca/lib:/opt/mxdriver/lib:${LD_LIBRARY_PATH:-}
 ./naive_gemm.out 1 1 1 1 --zero-edges    # 两个专家的输入均全零
 ```
 
-参数顺序现在是 `M0 M1 N K`，替代上一步的 `M N K`。四个维度均限制在 1～1024；M=0 的空专家留到后续接口完善阶段。浮点输入确定性生成，包含不同的行/列幅度，以检查 scale 下标。量化后的最大累加绝对值不超过 127×127×1024=16,516,096，INT32 不会溢出。本教学量化函数针对生成的有限、适中浮点数；尚未处理 NaN、Inf 或极小 scale 等通用接口边界。
+参数顺序沿用 `M0 M1 N K`。四个维度均限制在 1～1024；M=0 的空专家留到后续接口完善阶段。浮点输入确定性生成，包含不同的行/列幅度，以检查 scale 下标。量化后的最大累加绝对值不超过 127×127×1024=16,516,096，INT32 不会溢出。本教学量化函数针对生成的有限、适中浮点数；尚未处理 NaN、Inf 或极小 scale 等通用接口边界。
 
 小矩阵会打印 A 第一行的“浮点 → INT8 → 重建浮点”、两组 scale 和 GPU 输出。
 
@@ -90,15 +105,15 @@ export LD_LIBRARY_PATH=/opt/maca/lib:/opt/mxdriver/lib:${LD_LIBRARY_PATH:-}
 
 ## 建议阅读顺序
 
-1. `main`：查看两次 `run_expert` 调用；再进入 `run_expert` 第 1 步查看独立的数据生成与量化。
-2. `quantize_a_rows`、`quantize_b_columns`：按行/列寻找 max_abs 并计算 scale。
-3. `quantize_value`：除 scale、取整、截断、转 INT8。
-4. `naive_int8_gemm`：整数点积和输出缩放。
-5. `reference_gemm`、`reference_float_gemm` 和第 5 步：区分计算错误与量化损失。
+1. `DeviceExpert`：记录哪些 GPU 地址和尺寸。
+2. `naive_grouped_int8_gemm`：z 选专家、x/y 选输出元素、按本专家 M 判断边界。
+3. `main`：准备两个专家、上传描述表、一次启动、同步后分别检查。
+4. `prepare_expert` 与 `upload_expert`：CPU 数组和 GPU 缓冲区的区别。
+5. `check_expert`：保留逐专家参考结果，区分计算误差和量化误差。
 
-上一阶段仅手动提供 INT8 输入和 scale，保存在提交 `1b726f4`；更早的未缩放 INT32 输出保存在 `acee04b`。
+早期阶段仅手动提供 INT8 输入和 scale，保存在提交 `1b726f4`；更早的未缩放 INT32 输出保存在 `acee04b`。
 
-## 上一步单专家 C500 实测（2026-10-15，提交 9ef6455）
+## 历史单专家 C500 实测（2026-10-15，提交 9ef6455）
 
 MACA 编译成功，以下 7 组全部逐元素通过算子计算检查（mismatches=0）。表中的量化误差采用上文的独立 CPU 参考口径。
 
@@ -118,7 +133,7 @@ MACA 编译成功，以下 7 组全部逐元素通过算子计算检查（mismat
 
 在服务器另用 C++ 断言检查了量化函数：正负半整数取整、范围截断、已知行/列的量化值与 scale、全零行/列，全部通过。
 
-## 上一步同尺寸双专家 C500 实测（2026-10-15，提交 d590ef7）
+## 历史同尺寸双专家 C500 实测（2026-10-15，提交 d590ef7）
 
 MACA 编译成功，7 组用例 × 2 个专家全部通过，两个专家的 mismatches 均为 0：
 
@@ -134,7 +149,7 @@ MACA 编译成功，7 组用例 × 2 个专家全部通过，两个专家的 mis
 
 默认用例中，两个专家输出的首元素分别约为 1.04968 和 0.449668；确认两组输出不同，且各自匹配对应的 CPU 参考值。四类非法参数检查仍通过。这一步没有性能计时，也不包含不同 token 数或 grouped 调度。
 
-## 当前不同 token 数 C500 实测（2026-10-15）
+## 上一步两次启动、不同 token 数 C500 实测（2026-10-15，提交 0dcdb76）
 
 编译成功，8 次运行（含默认参数与显式默认参数）× 2 个专家，全部通过 CPU 参考检查。另断言检查了每个专家打印的 shape、grid 和检查元素数均匹配各自的 M。
 
@@ -149,3 +164,21 @@ MACA 编译成功，7 组用例 × 2 个专家全部通过，两个专家的 mis
 | 1,1,1,1 | zero-edges | 1 | 1 | PASS |
 
 M0=1、M1=33、N=19 时，两个专家的 grid 分别为 (2,1)、(2,3)，交换 M 后 grid 也随之交换。全部运行 mismatches=0。旧的三维参数格式、任一专家 M=0、M1 超上限、非法数字和未知选项，共 6 类非法参数检查均返回非零退出码。本步尚不支持空专家，也未做统一调度或性能计时。
+
+## 当前 grouped 单次启动 C500 实测（2026-10-15）
+
+MACA 编译成功，10 次运行（含默认参数与显式默认参数）× 2 个专家全部通过逐元素 CPU 参考检查。与上一提交 `0dcdb76` 的两次启动可执行文件，在相同输入下逐项比较打印的计算误差、量化误差及小矩阵输出，结果一致。
+
+| M0,M1,N,K | 模式 | grouped grid (x,y,z) | 结果 |
+|---|---|---|---|
+| 3,5,4,5 | 默认及显式参数 | (1,1,2) | PASS |
+| 1,33,19,23 | 默认输入 | (2,3,2) | PASS |
+| 33,1,19,23 | 默认输入 | (2,3,2) | PASS |
+| 64,97,96,128 | 默认输入 | (6,7,2) | PASS |
+| 1,2,1,1024 | 默认输入 | (1,1,2) | PASS |
+| 3,5,4,5 | zero-edges | (1,1,2) | PASS |
+| 1,1,1,1 | zero-edges | (1,1,2) | PASS |
+| 1,1024,17,7 | 默认输入 | (2,64,2) | PASS |
+| 1024,1,17,7 | 默认输入 | (2,64,2) | PASS |
+
+所有专家 mismatches=0；检查了每个专家的 shape、输出元素数以及统一 grid 的尺寸。源码中唯一的 GEMM 启动位于专家检查循环之前。6 类非法参数检查通过。以上结果不表示性能提升，也不表示已完成 DeepGEMM 接口适配。

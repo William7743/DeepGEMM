@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
+#include <limits>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -20,24 +21,38 @@
         }                                                                \
     } while (0)
 
-// All matrices are row-major: A[M,K] * B[K,N] = C[M,N].
-// One thread computes one C[row,col]. No shared memory or MMA yet.
-__global__ void naive_int8_gemm(const int8_t* a, const int8_t* b,
-                               const float* a_scale, const float* b_scale,
-                               float* c, int m, int n, int k) {
+// A descriptor contains GPU addresses, not CPU vector addresses.
+// Copy the descriptor array to GPU after allocating every expert's buffers.
+struct DeviceExpert {
+    int8_t *a = nullptr, *b = nullptr;
+    float *a_scale = nullptr, *b_scale = nullptr, *c = nullptr;
+    int m = 0, n = 0, k = 0;
+};
+
+// All matrices are row-major. One thread computes one output element.
+// z selects the expert; x/y select its output column/row.
+__global__ void naive_grouped_int8_gemm(const DeviceExpert* groups, int num_groups) {
+    int group = blockIdx.z;
+    if (group >= num_groups) return;
+    const DeviceExpert& e = groups[group];
     int col = blockIdx.x * blockDim.x + threadIdx.x;
     int row = blockIdx.y * blockDim.y + threadIdx.y;
-    if (row >= m || col >= n) return;
+    // The grid covers max(M): smaller experts skip surplus rows/blocks.
+    if (row >= e.m || col >= e.n) return;
 
     int32_t sum = 0;
-    for (int p = 0; p < k; ++p) {
-        sum += static_cast<int32_t>(a[row * k + p]) *
-               static_cast<int32_t>(b[p * n + col]);
+    for (int p = 0; p < e.k; ++p) {
+        sum += static_cast<int32_t>(e.a[row * e.k + p]) *
+               static_cast<int32_t>(e.b[p * e.n + col]);
     }
-    // Zero points are zero. Scale once AFTER the integer dot product.
-    // a_scale has M entries (tokens), b_scale has N entries (output channels).
-    c[row * n + col] = static_cast<float>(sum) * a_scale[row] * b_scale[col];
+    e.c[row * e.n + col] = static_cast<float>(sum) * e.a_scale[row] * e.b_scale[col];
 }
+
+struct HostExpert {
+    int m, n, k;
+    std::vector<float> a_float, b_float, a_scale, b_scale, c;
+    std::vector<int8_t> a, b;
+};
 
 // Use wider CPU arithmetic and a different loop order for the reference.
 std::vector<int64_t> reference_gemm(const std::vector<int8_t>& a,
@@ -109,15 +124,18 @@ int parse_dimension(const char* value) {
     return result;
 }
 
-// Each call owns one expert's CPU arrays and GPU buffers.
-// Run and verify it completely before returning; two calls mean two launches.
-int run_expert(int expert_id, int m, int n, int k, bool zero_edges) {
-    std::cout << "\n=== Expert " << expert_id << " ===\n";
-    // 1. Generate floating inputs, then quantize on CPU.
-    // Finite, moderate values for this lesson; not a general quantization API.
-    std::vector<float> a_float(m * k), b_float(k * n);
-    std::vector<int8_t> a(m * k), b(k * n);
-    std::vector<float> c(m * n), a_scale(m), b_scale(n);
+// Prepare each expert independently, but retain BOTH until grouped execution ends.
+HostExpert prepare_expert(int expert_id, int m, int n, int k, bool zero_edges) {
+    HostExpert h;
+    h.m = m; h.n = n; h.k = k;
+    h.a_float.resize(m * k); h.b_float.resize(k * n);
+    h.a.resize(m * k); h.b.resize(k * n);
+    h.a_scale.resize(m); h.b_scale.resize(n);
+    // A missing GPU write must fail validation, including when expected C is zero.
+    h.c.assign(m * n, std::numeric_limits<float>::quiet_NaN());
+    auto& a_float = h.a_float; auto& b_float = h.b_float;
+    auto& a = h.a; auto& b = h.b;
+    auto& a_scale = h.a_scale; auto& b_scale = h.b_scale;
     for (int row = 0; row < m; ++row)
         for (int p = 0; p < k; ++p)
             a_float[row * k + p] = (static_cast<int>((row * k + p + expert_id * 5) % 17) - 8) *
@@ -135,44 +153,44 @@ int run_expert(int expert_id, int m, int n, int k, bool zero_edges) {
     quantize_a_rows(a_float, a, a_scale, m, k);
     quantize_b_columns(b_float, b, b_scale, k, n);
     // |q| <= 127, K <= 1024: |sum| <= 16,516,096, safe in INT32.
+    return h;
+}
+
+// Allocate independent GPU buffers; the returned descriptor stays on CPU for now.
+DeviceExpert upload_expert(const HostExpert& h) {
+    DeviceExpert d;
+    d.m = h.m; d.n = h.n; d.k = h.k;
+    MC_CHECK(mcMalloc(reinterpret_cast<void**>(&d.a), h.a.size() * sizeof(int8_t)));
+    MC_CHECK(mcMalloc(reinterpret_cast<void**>(&d.b), h.b.size() * sizeof(int8_t)));
+    MC_CHECK(mcMalloc(reinterpret_cast<void**>(&d.a_scale), h.a_scale.size() * sizeof(float)));
+    MC_CHECK(mcMalloc(reinterpret_cast<void**>(&d.b_scale), h.b_scale.size() * sizeof(float)));
+    MC_CHECK(mcMalloc(reinterpret_cast<void**>(&d.c), h.c.size() * sizeof(float)));
+    MC_CHECK(mcMemcpy(d.a, h.a.data(), h.a.size() * sizeof(int8_t), mcMemcpyHostToDevice));
+    MC_CHECK(mcMemcpy(d.b, h.b.data(), h.b.size() * sizeof(int8_t), mcMemcpyHostToDevice));
+    MC_CHECK(mcMemcpy(d.a_scale, h.a_scale.data(), h.a_scale.size() * sizeof(float), mcMemcpyHostToDevice));
+    MC_CHECK(mcMemcpy(d.b_scale, h.b_scale.data(), h.b_scale.size() * sizeof(float), mcMemcpyHostToDevice));
+    MC_CHECK(mcMemcpy(d.c, h.c.data(), h.c.size() * sizeof(float), mcMemcpyHostToDevice));
+    return d;
+}
+
+void free_expert(const DeviceExpert& d) {
+    MC_CHECK(mcFree(d.a));
+    MC_CHECK(mcFree(d.b));
+    MC_CHECK(mcFree(d.a_scale));
+    MC_CHECK(mcFree(d.b_scale));
+    MC_CHECK(mcFree(d.c));
+}
+
+int check_expert(int expert_id, const HostExpert& h, bool zero_edges) {
+    std::cout << "\n=== Expert " << expert_id << " ===\n";
+    int m = h.m, n = h.n, k = h.k;
+    const auto& a = h.a; const auto& b = h.b;
+    const auto& a_float = h.a_float; const auto& b_float = h.b_float;
+    const auto& a_scale = h.a_scale; const auto& b_scale = h.b_scale;
+    const auto& c = h.c;
     auto reference = reference_gemm(a, b, m, n, k);
     auto float_reference = reference_float_gemm(a_float, b_float, m, n, k);
-
-    // 2. Allocate GPU buffers and copy inputs to device 0.
-    MC_CHECK(mcSetDevice(0));
-    int8_t *d_a = nullptr, *d_b = nullptr;
-    float *d_c = nullptr, *d_a_scale = nullptr, *d_b_scale = nullptr;
-    size_t a_bytes = a.size() * sizeof(int8_t);
-    size_t b_bytes = b.size() * sizeof(int8_t);
-    size_t c_bytes = c.size() * sizeof(float);
-    size_t a_scale_bytes = a_scale.size() * sizeof(float);
-    size_t b_scale_bytes = b_scale.size() * sizeof(float);
-    MC_CHECK(mcMalloc(reinterpret_cast<void**>(&d_a), a_bytes));
-    MC_CHECK(mcMalloc(reinterpret_cast<void**>(&d_b), b_bytes));
-    MC_CHECK(mcMalloc(reinterpret_cast<void**>(&d_c), c_bytes));
-    MC_CHECK(mcMalloc(reinterpret_cast<void**>(&d_a_scale), a_scale_bytes));
-    MC_CHECK(mcMalloc(reinterpret_cast<void**>(&d_b_scale), b_scale_bytes));
-    MC_CHECK(mcMemcpy(d_a, a.data(), a_bytes, mcMemcpyHostToDevice));
-    MC_CHECK(mcMemcpy(d_b, b.data(), b_bytes, mcMemcpyHostToDevice));
-    MC_CHECK(mcMemcpy(d_a_scale, a_scale.data(), a_scale_bytes, mcMemcpyHostToDevice));
-    MC_CHECK(mcMemcpy(d_b_scale, b_scale.data(), b_scale_bytes, mcMemcpyHostToDevice));
-
-    // 3. Launch 16x16 threads per block. Round grid dimensions upwards.
-    dim3 block(16, 16);
-    dim3 grid((n + block.x - 1) / block.x, (m + block.y - 1) / block.y);
-    naive_int8_gemm<<<grid, block>>>(d_a, d_b, d_a_scale, d_b_scale, d_c, m, n, k);
-    MC_CHECK(mcGetLastError());            // Launch errors.
-    MC_CHECK(mcDeviceSynchronize());       // Wait and catch execution errors.
-
-    // 4. Copy the result back and release GPU memory.
-    MC_CHECK(mcMemcpy(c.data(), d_c, c_bytes, mcMemcpyDeviceToHost));
-    MC_CHECK(mcFree(d_a));
-    MC_CHECK(mcFree(d_b));
-    MC_CHECK(mcFree(d_c));
-    MC_CHECK(mcFree(d_a_scale));
-    MC_CHECK(mcFree(d_b_scale));
-
-    // 5. Check EVERY output against INT64 accumulation + FP64 scaling.
+    // Check EVERY output against INT64 accumulation + FP64 scaling.
     // FP32 multiplication rounds: use absolute + relative tolerance.
     constexpr double atol = 1e-6, rtol = 1e-5;
     double max_abs_error = 0, max_relative_error = 0;
@@ -197,9 +215,7 @@ int run_expert(int expert_id, int m, int n, int k, bool zero_edges) {
     std::cout << "A[" << m << ',' << k << "] * B[" << k << ',' << n
               << "] -> C[" << m << ',' << n << "]\n"
               << "CPU FP32 -> INT8 quantization; GPU INT32 accumulation -> FP32 output\n"
-              << "zero_edges=" << zero_edges << "; row-major\n"
-              << "block=(" << block.x << ',' << block.y << "), grid=("
-              << grid.x << ',' << grid.y << ")\n";
+              << "zero_edges=" << zero_edges << "; row-major\n";
     if (m <= 8 && n <= 8) {
         if (k <= 8) {
             std::cout << "A first row: float -> INT8 -> reconstructed float\n";
@@ -255,12 +271,43 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
-    // Each call uses its own M for A, A_scale, C, launch grid and CPU reference.
-    // Both experts keep independent weights even though N and K are shared.
-    int expert0_status = run_expert(0, m0, n, k, zero_edges);
-    int expert1_status = run_expert(1, m1, n, k, zero_edges);
-    bool passed = expert0_status == EXIT_SUCCESS && expert1_status == EXIT_SUCCESS;
-    std::cout << "\nTwo experts, two separate kernel launches: "
+    constexpr int num_groups = 2;
+    HostExpert experts[num_groups] = {
+        prepare_expert(0, m0, n, k, zero_edges),
+        prepare_expert(1, m1, n, k, zero_edges)
+    };
+    MC_CHECK(mcSetDevice(0));
+    DeviceExpert groups[num_groups] = {
+        upload_expert(experts[0]), upload_expert(experts[1])
+    };
+
+    // A GPU-readable table of pointers, dimensions and scale pointers.
+    DeviceExpert* d_groups = nullptr;
+    MC_CHECK(mcMalloc(reinterpret_cast<void**>(&d_groups), sizeof(groups)));
+    MC_CHECK(mcMemcpy(d_groups, groups, sizeof(groups), mcMemcpyHostToDevice));
+
+    dim3 block(16, 16);
+    dim3 grid((n + block.x - 1) / block.x,
+              (std::max(m0, m1) + block.y - 1) / block.y, num_groups);
+    std::cout << "Grouped launch: block=(" << block.x << ',' << block.y
+              << "), grid=(" << grid.x << ',' << grid.y << ',' << grid.z << ")\n";
+    // Exactly ONE GEMM kernel launch for all experts.
+    naive_grouped_int8_gemm<<<grid, block>>>(d_groups, num_groups);
+    MC_CHECK(mcGetLastError());
+    MC_CHECK(mcDeviceSynchronize());
+
+    bool passed = true;
+    for (int group = 0; group < num_groups; ++group) {
+        auto& h = experts[group];
+        MC_CHECK(mcMemcpy(h.c.data(), groups[group].c,
+                          h.c.size() * sizeof(float), mcMemcpyDeviceToHost));
+        // Always check every expert, even after a previous one failed.
+        int status = check_expert(group, h, zero_edges);
+        if (status != EXIT_SUCCESS) passed = false;
+        free_expert(groups[group]);
+    }
+    MC_CHECK(mcFree(d_groups));
+    std::cout << "\nTwo experts, one grouped GEMM kernel launch: "
               << (passed ? "PASS" : "FAIL") << '\n';
     return passed ? EXIT_SUCCESS : EXIT_FAILURE;
 }
