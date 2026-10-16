@@ -135,7 +135,47 @@ extern "C" mcError_t moe_int8_masked(
                           groups, capacity, n, k, true, stream);
 }
 
-// The remainder is demo/input preparation, not part of either entry point.
+// Measurement-only entry point. Unlike the compute APIs this synchronizes.
+// Keep event recording and repeated launches in C++ to avoid Python gaps.
+// host_ms[samples] receives milliseconds per grouped call for each batch.
+extern "C" mcError_t moe_int8_benchmark(
+    const int8_t* a, const int8_t* b, const float* a_scale, const float* b_scale,
+    const int32_t* metadata, float* c, int groups, int rows, int n, int k,
+    mcStream_t stream, int masked, int warmup, int iterations, int samples,
+    float* host_ms) {
+    if (!host_ms || (masked != 0 && masked != 1) || warmup < 0 || warmup > 100 ||
+        iterations < 1 || iterations > 1000 || samples < 1 || samples > 100)
+        return mcErrorInvalidValue;
+    GemmView data{a, b, a_scale, b_scale, metadata, c};
+    mcEvent_t start{}, stop{};
+    mcError_t status = mcEventCreate(&start);
+    if (status != mcSuccess) return status;
+    status = mcEventCreate(&stop);
+    if (status != mcSuccess) { mcEventDestroy(start); return status; }
+    auto measure = [&]() -> mcError_t {
+#define BENCH_CHECK(call) do { mcError_t s = (call); if (s != mcSuccess) return s; } while (0)
+        for (int i = 0; i < warmup; ++i)
+            BENCH_CHECK(launch_grouped(data, groups, rows, n, k, masked, stream));
+        BENCH_CHECK(mcStreamSynchronize(stream));
+        for (int sample = 0; sample < samples; ++sample) {
+            BENCH_CHECK(mcEventRecord(start, stream));
+            for (int i = 0; i < iterations; ++i)
+                BENCH_CHECK(launch_grouped(data, groups, rows, n, k, masked, stream));
+            BENCH_CHECK(mcEventRecord(stop, stream));
+            BENCH_CHECK(mcEventSynchronize(stop));
+            BENCH_CHECK(mcEventElapsedTime(&host_ms[sample], start, stop));
+            host_ms[sample] /= iterations;
+        }
+#undef BENCH_CHECK
+        return mcSuccess;
+    };
+    status = measure();
+    mcError_t stop_status = mcEventDestroy(stop), start_status = mcEventDestroy(start);
+    if (status != mcSuccess) return status;
+    return stop_status != mcSuccess ? stop_status : start_status;
+}
+
+// The remainder is demo/input preparation, not part of either compute entry point.
 struct DeviceBuffers {
     int8_t *a = nullptr, *b = nullptr;
     float *a_scale = nullptr, *b_scale = nullptr, *c = nullptr;
