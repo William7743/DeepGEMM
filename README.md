@@ -47,3 +47,6 @@ contiguous/masked 共 16 组配置；输入矩阵与 scale 仍随机生成，不
 当前两个 C 接口支持 1～4096 个专家，内部每批最多启动 64 个专家，保持上游一次调用。
 自动拆批的小尺寸正确性记录见 `01_naive_gemm/batching_correctness_results.json`；
 该步骤验证调用层与跨批索引，尚未增加分块复用或矩阵指令优化。
+
+优化前固定基线使用 `01_naive_gemm/baseline_shapes_2026-10-16.json` 的 7 个代表性 case。
+当前朴素 kernel 保留不变；基线的环境、计时方法、结果与复现命令见第一课说明末尾。
