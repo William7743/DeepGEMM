@@ -39,3 +39,7 @@
 ## 当前性能测试入口
 
 `01_naive_gemm/shapes.json` 保存 24 组上游生成 shape；`01_naive_gemm/bench_shapes.py` 读取配置、调用 MACA C++ 计时入口并保存正确性与性能记录。运行方法、计时口径和结果见 [第一课说明](01_naive_gemm/README.md)。这套数据用于建立朴素实现的基线，真实模型 TP/EP 采集数据仍需后续补充。
+
+`01_naive_gemm/prepare_flame_shapes.py` 从固定版本的 FLAME-MoE 路由片段提取各专家 token 数，
+生成独立的 `shapes_flame.json`。它使用模型专家层尺寸，在单卡上测试 64 个专家的 FC1/FC2、
+contiguous/masked 共 16 组配置；输入矩阵与 scale 仍随机生成，不是完整 MoE 或原训练部署的重现。

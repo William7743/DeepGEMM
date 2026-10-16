@@ -394,3 +394,120 @@ T 是所有专家实际有效 M 的总和；每专家具体 counts 见 JSON。�
 断点恢复验证：相同参数恢复时跳过全部 24 个已通过 case；将 seed 改为 1 时拒绝恢复并返回非零，已有结果文件 SHA256 保持不变。普通可执行文件也重新编译，并通过 counts=[3,0,5] 的 masked 全量回归检查。
 
 shape 哈希统一以 CRLF 转 LF 后的字节计算，避免 Git 换行转换误拒绝恢复；原始实测文件的字节哈希另存为 shapes_raw_sha256。本基线只补记了换行归一化元数据，配置、计时样本和校验结果均未修改。
+
+## FLAME-MoE 路由片段接入（2026-10-16）
+
+这一小步复用现有 kernel 和 `bench_shapes.py`，用真实路由记录生成每个专家的 M。
+原来的 `shapes.json` 和 `benchmark_results.json` 保留独立基线。
+
+### 输入到 shape 的过程
+
+1. 从 [FLAME-MoE Routing Traces](https://huggingface.co/datasets/CMU-FLAME/FLAME-MoE-Traces)
+   固定版本 `394919b1ce3b166ce364d6749ba35d3a04ea358e` 的
+   `flame-moe-290m/actives/iter_5473/layer_02.parquet` 读取 `indices` 列。
+2. 默认取从第 0 行开始的 16、128、1024、4096 个 token，四个窗口是嵌套前缀。
+   每行含 6 个不同的专家编号；统计 64 个编号各自出现次数，就是 `counts[expert]`。
+   因此 `sum(counts) = token_count * 6`，不是原始 token 数。
+3. 官方模型配置为 hidden size=1024、专家 intermediate size=704、SwiGLU。
+   本次采用 TP=1 的完整专家尺寸：FC1 将 gate/up 拼接，`N=1408,K=1024`；
+   FC2 为 `N=1024,K=704`。FC1 和 FC2 是分别独立测试，未串联激活函数。
+4. 两个 GEMM 均生成 contiguous 和 masked 配置，共 `4×2×2=16` 组。
+   contiguous 用有效行紧密拼接；masked 的容量取 `ceil(max(counts)/16)*16`，
+   这是本练习的容量规则，不是数据集中实测的容量，不丢弃 token。
+
+模型尺寸依据固定提交
+[`scripts/release/flame-moe-290m.sh`](https://github.com/cmu-flame/FLAME-MoE/blob/e9b2fe2df3f1abb8dbb9ec0eabde8cdfb65e5c78/scripts/release/flame-moe-290m.sh)
+及 [`configs/model/flame-moe.sh`](https://github.com/cmu-flame/FLAME-MoE/blob/e9b2fe2df3f1abb8dbb9ec0eabde8cdfb65e5c78/configs/model/flame-moe.sh)。
+
+| 原始 token 数 | 路由分配总数（sum M） | 最小 M | 最大 M | 空专家数 | masked 容量 |
+|---:|---:|---:|---:|---:|---:|
+| 16 | 96 | 0 | 14 | 44 | 16 |
+| 128 | 768 | 0 | 66 | 7 | 80 |
+| 1024 | 6144 | 37 | 221 | 0 | 224 |
+| 4096 | 24576 | 247 | 592 | 0 | 592 |
+
+### 范围与来源记录
+
+- 这是单设备、64 个 routed experts 的尺寸重放（EP=1、TP=1），不重现原训练的批次和并行部署。
+  官方发布脚本的 EP=8 不意味着本次测试进行了八卡通信。
+- 真实数据只提供路由 `counts`。A、B 和 FP32 量化 scale 仍按现有脚本规则随机生成；
+  路由文件的 `scores` 是门控概率，**不是量化 scale**。
+- 不加载模型权重，不测试模型量化质量；不包含共享专家、dispatch/combine、激活或通信。
+  四个窗口来自同一层、同一 checkpoint 的开头，不能代表整个数据集或甲方验收集合。
+- 每个 case 保存 dataset revision、文件路径、token 行范围、片段 SHA256 和模型配置来源。
+  片段 SHA256 对 token 顺序下的六个专家 ID 按 little-endian INT16 编码后计算。
+  `file_sha256_from_lfs_metadata` 是上游 LFS 提供的整文件摘要；按需读取没有重新校验整个文件摘要。
+- 提取程序通过 HTTP range 读取 Parquet 元数据和需要的列块；解码需要的 row group/列块可能比
+  4096 行大，但不下载整套数据。HF/Arrow 需要可用网络；生成的 JSON 可离线用于 GPU 测试。
+
+### 复现
+
+在 Linux 的独立环境中生成 shape，避免改变 mcPyTorch 环境的依赖：
+
+```bash
+cd /root/MOE/C500_int8_02All/01_naive_gemm
+python -m venv .venv
+.venv/bin/python -m pip install 'pyarrow>=18' huggingface_hub
+.venv/bin/python prepare_flame_shapes.py
+```
+
+这只需在重新提取路由时运行；仓库中已有生成好的 `shapes_flame.json`。
+然后使用配置好 mcPyTorch 的 Python 运行 GPU 批测：
+
+```bash
+bash build.sh --shared
+export LD_LIBRARY_PATH=/opt/maca/lib:/opt/mxdriver/lib:${LD_LIBRARY_PATH:-}
+python bench_shapes.py --shapes shapes_flame.json --output benchmark_flame_results.json \
+  --warmup 1 --iterations 1 --rounds 5
+# 中断后按相同参数续跑
+python bench_shapes.py --shapes shapes_flame.json --output benchmark_flame_results.json --resume
+```
+
+正确性与计时沿用上一节的口径：每专家最多 128 个参考点（含边界），
+全部有效输出检查有限值，masked 全部填充区检查未被写入；GPU Event 计时不含准备、路由提取和 CPU 校验。
+不同 case 名称会派生不同随机输入种子，因此两种布局使用相同 counts 和尺寸，但不是逐元素相同的 A/B。
+
+提取验证已覆盖手算 Top-6 计数、非法/重复专家编号、总分配数、16 组配置的实际批测 schema、
+固定版本的重复生成一致性、非零起点跨 batch 的切片及越界拒绝。
+
+### C500 实测结果
+
+原始记录：[benchmark_flame_results.json](benchmark_flame_results.json)。
+本次使用原先的 C500 16 GB sGPU 实例，mx-smi 登记计算配额 25%，
+mcPyTorch `2.8.0+metax3.7.1.3`；源码、共享库和批测脚本与上一轮保持一致。
+配额不等于物理固定四分之一计算单元，结果不能乘四推算整卡性能。
+每组独立进程运行，预热 1 次，测 5 次，取中位数；进程启动不计入 GPU Event。
+
+16/16 组均为 sampled PASS，共 104,960 个 CPU INT64/FP64 参考点，
+数值不匹配、非有限有效输出和 padding 错写均为 0。
+masked 共检查 65,138,688 个填充元素。最大采样绝对误差约 `5.25e-5`，
+全部满足前述 `atol=1e-6, rtol=1e-5` 的混合容差；这不是原始浮点模型的量化精度验收。
+
+以下吞吐使用 **GOPS**（1 TOPS=1000 GOPS），按 `2*sum(M)*N*K` 计算有效工作量。
+
+| 原始 token 数 | 阶段 | 布局 | 中位耗时 ms | GOPS |
+|---:|---|---|---:|---:|
+| 16 | fc1 | contiguous | 2.8849 | 95.96 |
+| 16 | fc1 | masked | 2.9312 | 94.44 |
+| 16 | fc2 | contiguous | 1.0982 | 126.03 |
+| 16 | fc2 | masked | 1.0770 | 128.52 |
+| 128 | fc1 | contiguous | 20.8276 | 106.33 |
+| 128 | fc1 | masked | 20.6310 | 107.34 |
+| 128 | fc2 | contiguous | 6.6537 | 166.42 |
+| 128 | fc2 | masked | 6.6266 | 167.10 |
+| 1024 | fc1 | contiguous | 161.6230 | 109.62 |
+| 1024 | fc1 | masked | 161.5081 | 109.70 |
+| 1024 | fc2 | contiguous | 46.8216 | 189.19 |
+| 1024 | fc2 | masked | 46.8188 | 189.21 |
+| 4096 | fc1 | contiguous | 644.5547 | 109.95 |
+| 4096 | fc1 | masked | 644.2414 | 110.00 |
+| 4096 | fc2 | contiguous | 184.1982 | 192.37 |
+| 4096 | fc2 | masked | 184.7127 | 191.83 |
+
+在这一组窗口中，同一 GEMM 阶段的吞吐随 token 数增加而提高，但 N/K 不同的 FC1、FC2
+有不同水平；不能把所有 shape 概括成统一的 110 GOPS。
+两种布局本轮的耗时接近；各组 `(最大耗时-最小耗时)/中位耗时` 最大约 6.28%，
+不据此宣布某一种布局稳定领先。实际瓶颈及缓存/调度贡献仍需性能分析验证。
+
+结果文件下载后已核对 SHA256；16 组配置与 shape 文件逐项一致，所有运行的
+kernel 源码、共享库、批测脚本和 shape 摘要一致，吞吐公式和进程退出状态检查通过。
