@@ -1,125 +1,130 @@
-# INT8 grouped GEMM：contiguous NT 布局
+# INT8 grouped GEMM：contiguous / masked 与调用入口
 
-本步把各专家的独立 GPU 缓冲区改成按专家顺序拼接的 contiguous 张量，并把权重从 [K,N] 改为 [N,K] 的物理存储。计算继续使用一个朴素 kernel，尚未进入硬件加速阶段。
+本课为两种布局提供独立的 C 调用入口。kernel 仍是朴素 INT8 点积、INT32 累加和 FP32 缩放输出，尚未使用硬件矩阵指令。
 
-## 本步选择的接口语义
+## 两种布局
 
-对齐本仓库 C500 INT8 后端 `c500_int8/deep_gemm_maca/api.py` 中 `m_grouped_int8_gemm_nt_contiguous` 的张量布局、CPU counts 分组方式、FP32 scale 和输出类型：
+令 G 为专家数，T 为总有效 token 数，capacity 为每个专家的固定容量。所有数组按行紧密存储，权重 B 的最后一维 K 连续。
 
-| 数据 | 类型 | 形状 | 含义 |
+| 数据 | contiguous | masked | 类型 |
 |---|---|---|---|
-| A | INT8 | [T,K] | 按专家编号拼接的有效 token，T=sum(counts) |
-| B | INT8 | [G,N,K] | 每专家一组权重，最后一维 K 连续 |
-| A_scale | FP32 | [T] | 每个 token 一个 scale |
-| B_scale | FP32 | [G,N] | 每专家、每输出通道一个 scale |
-| C | FP32 | [T,N] | 与 A 保持相同的拼接行顺序 |
-| counts | CPU 整数列表 | [G] | 各专家的有效行数，包括 0 |
-| offsets | GPU INT32 | [G+1] | counts 的前缀和，从 0 开始，末项为 T |
+| A | [T,K] | [G,capacity,K] | INT8 |
+| B | [G,N,K] | [G,N,K] | INT8 |
+| A_scale | [T] | [G,capacity] | FP32 |
+| B_scale | [G,N] | [G,N] | FP32 |
+| C | [T,N] | [G,capacity,N] | FP32 |
+| GPU 分组信息 | offsets[G+1] | masked_m[G] | INT32 |
 
-这是 INT8 扩展约定，不是上游 DeepGEMM FP8 API 的直接替代。上游 FP8/FP4 使用不同的分块 scale 格式；其逐行 grouped_layout、带对齐的 PSUM 格式也不能当作这里的 offsets。该步骤只对齐所选 INT8 接口的数据语义，不提供 Python 绑定或完整 ABI。
+contiguous：专家 g 的输入输出区间为 `[offsets[g], offsets[g+1])`。offsets 从 0 开始、单调不减、最后一项为 T。相等的相邻偏移表示空专家。CPU 演示用 counts 的前缀和生成它。
 
-教学版继续允许 N/K 的任意尾部；已有 mctlass 加速后端当前要求 N 为 128 的倍数、K 为 256 的倍数。后续接入硬件加速时再明确这些限制或实现尾部处理。
+masked：每个专家始终占 capacity 行，只有前 `masked_m[g]` 行有效，要求 `0 <= masked_m[g] <= capacity`。有效行的物理行号为 `g*capacity+row`；其余输出行保持调用前的值。这个 mask 是有效前缀长度，不是逐元素布尔掩码。GPU 每次调用重新读取长度，容量与指针不变时可更新长度后再次调用。
 
-## 专家区间与地址计算
+例如 counts=[3,0,5]，capacity=8：contiguous 的 offsets=[0,3,3,8]，A/C 共 8 行；masked 的 A/C 共 24 个物理行槽，分别位于 [0,8)、[8,16)、[16,24)，其中仅 3、0、5 行有效。
 
-例如 `counts=[3,0,5,17]`，得到：
+数学约定相同：零点为 0，`C[row,col] = float(sum_k A[row,k]*B[g,col,k]) * A_scale[row] * B_scale[g,col]`。scale 沿 K 不变。单个矩阵布局和 dtype 对齐本仓库的 C500 INT8 扩展约定；它不是 DeepGEMM 原始 FP8/FP4 接口的直接替代。
 
-```text
-offsets = [0,3,3,8,25]
-E0 使用 A/C 的行 [0,3)
-E1 使用 A/C 的行 [3,3)  —— 空专家
-E2 使用 A/C 的行 [3,8)
-E3 使用 A/C 的行 [8,25)
-```
+## 可供外部调用的入口
 
-这里不按 block 大小填充行，也不重新排列每个专家内部的 token。CPU `make_offsets` 生成区间；`pack_contiguous` 拼接 A 和 A_scale，并把原有权重逐元素转置存储。CPU 参考保留原始独立数组及 B[K,N]，帮助发现拼接或转置错误。
-
-kernel 内部：
+源码在演示 main 之外导出两个 C 符号，参数顺序一致，只有分组信息和第二个尺寸的含义不同：
 
 ```cpp
-int group = blockIdx.z;
-int begin = data.offsets[group];
-int m = data.offsets[group + 1] - begin;
-// row/col 由 blockIdx.x/y、threadIdx.x/y 计算。
-if (row >= m || col >= n) return;
-int global_row = begin + row;
+extern "C" mcError_t moe_int8_contiguous(
+    const int8_t* a, const int8_t* b,
+    const float* a_scale, const float* b_scale,
+    const int32_t* offsets, float* c,
+    int groups, int total_m, int n, int k, mcStream_t stream);
+
+extern "C" mcError_t moe_int8_masked(
+    const int8_t* a, const int8_t* b,
+    const float* a_scale, const float* b_scale,
+    const int32_t* masked_m, float* c,
+    int groups, int capacity, int n, int k, mcStream_t stream);
 ```
 
-点积读取位置为：
+两个入口接收已量化的数据和调用者提供的输出。它们不生成输入、不量化、不分配或释放内存、不复制数据、不切换设备，也不等待 GPU 完成。`stream=nullptr` 表示默认 stream，非默认 stream 也受支持。调用者负责使输入及元数据在该 stream 上就绪，并保持所有缓冲区存活到计算完成；必要时使用事件协调不同 stream。
 
-```cpp
-A[global_row * K + p]
-B[(group * N + col) * K + p]
-```
+返回 `mcSuccess` 仅表示主机参数校验与启动成功，计算执行错误须在调用者同步 stream 或其他后续同步点检查。CPU 参数非法返回 `mcErrorInvalidValue`，不退出进程。
 
-因此数学上计算 `A_g × B_g^T`。权重数值没有改变，只改变物理排列；输出仍等价于上一课的 A[M,K] × B[K,N]。不能仅交换 N/K 参数而不转换数据。
+接口约束：
 
-block=(16,16)，grid=(ceil(N/16),ceil(max(counts)/16),G)。这一步保留原来的 z 方向分组调度；拼接内存不会自动消除小专家的空转 block，也不代表已优化性能。
+- G 为 1～64，N/K 为 1～1024，每专家 M 为 0～1024；masked capacity 为 0～1024；contiguous T 为 0～G*1024。
+- 所有指针指向当前 GPU 上足够大的缓冲区。INT8 地址无额外对齐要求，FP32 和 INT32 地址至少 4 字节对齐。
+- 输出 C 不得与输入、scale 或分组信息重叠；入口检查给定地址范围的重叠、空指针、对齐和主机尺寸。裸指针接口无法确认真实分配大小或张量所属设备，这由调用者保证。
+- 调用者必须保证 GPU 分组信息合法、scale 为有限值。入口不为读取 GPU 元数据而隐式同步。kernel 对越界长度/偏移有保护，但非法 GPU 元数据不保证结果正确，也不会同步返回一个校验错误。
+- T=0 或 capacity=0 时不启动 kernel，允许数据指针为空。capacity>0 且所有 masked_m=0 时仍启动一次 kernel，由 GPU 判断无有效行；整个输出保持不变。这允许 CPU 不读取动态长度。
 
-## 空专家与输出约定
+只有计算调用异步。演示程序的打包、上传、同步、拷回和 CPU 对照都放在入口之外。
 
-- M_g=0 对应相等的两个 offsets，不占 A、A_scale、C 的行。
-- B 和 B_scale 仍保留该专家的位置，以保持 [G,N,K]、[G,N] 的形状。本演示中未使用的权重槽位填 0、scale 填 1；kernel 不读取它们。
-- 只要有非空专家，一次 GEMM 启动覆盖所有专家。边界检查在读取矩阵和 scale 前完成。
-- 全部专家为空时，T=0，跳过所有 GPU 操作，逐专家检查空结果，成功返回；空专家列表仍拒绝。
-- GPU 输出预先填入 NaN 以检查漏算。拷回 C 后按 offsets 切回各专家，分别与 CPU 参考比较。
-
-## 量化怎么做
-
-采用零点为 0 的对称量化，整数范围为 [-127,127]。A 每行计算一个 scale，B 每列计算一个 scale，均沿 K 方向寻找最大绝对值：
-
-```cpp
-scale = max_abs == 0 ? 1.0f : max_abs / 127.0f;
-q = static_cast<int8_t>(std::clamp(std::round(x / scale), -127.0f, 127.0f));
-```
-
-全零行或列使用 scale=1，量化结果仍全为 0，避免除零。`std::round` 遇到半整数时向远离零的方向取整，先截断范围再转换为 INT8。
-
-例如 x=0.5、scale=0.01，量化得到 q=50，重建值为 50×0.01=0.5。一般情况下，取整会丢失一部分信息，重建值只能近似原始浮点值。
-
-GPU kernel 的写回公式仍然是：
-
-```cpp
-data.c[global_row * n + col] = static_cast<float>(sum) *
-                             data.a_scale[global_row] * data.b_scale[group * n + col];
-```
-
-两个 scale 沿 K 不变，所以可以放在整数点积完成后相乘。量化在 CPU 上完成；此步骤用于理解流程，不包含 GPU 量化 kernel。
-
-## 编译与执行
+## 编译、运行及共享库
 
 ```bash
 cd /root/MOE/C500_int8_02All/01_naive_gemm
 bash build.sh
 export LD_LIBRARY_PATH=/opt/maca/lib:/opt/mxdriver/lib:${LD_LIBRARY_PATH:-}
 
-./naive_gemm.out                         # 默认两个专家，M=3、5，N=4、K=5
-./naive_gemm.out 3 5 4 5                 # 保留旧的两专家参数格式
-./naive_gemm.out --tokens 3,0,5,17 19 23 # 四个专家，第二个为空
-./naive_gemm.out --tokens 0,0,0 4 5     # 全空：不启动 GPU kernel
-./naive_gemm.out --tokens 17 19 23      # 单个专家也使用相同接口
-./naive_gemm.out --tokens 0,15,16,17,0 17 23 --zero-edges
+./naive_gemm.out --tokens 3,0,5 19 23
+./naive_gemm.out --masked 8 --tokens 3,0,5 19 23
+./naive_gemm.out --masked 17 --tokens 0,15,16,17,0 17 23 --zero-edges
+./naive_gemm.out --masked 8 --tokens 0,0,0 4 5  # 有容量，全空，padding 不变
+./naive_gemm.out --masked 0 --tokens 0,0 4 5   # 零容量，不启动
+./naive_gemm.out 3 5 4 5                      # 旧用法保持兼容
+
+bash build.sh --shared                       # 生成 libmoe_int8.so
 ```
 
-新格式为 `--tokens M0,M1,... N K [--zero-edges]`。专家数 1～64，各 M 为 0～1024，N/K 为 1～1024；列表只接受十进制数字和逗号，不接受空项、负数或小数。`--zero-edges` 将每个非空专家的最后一行 A、最后一列 B 置零；与 M=0 的空专家概念不同。
+共享库由同一个现有 cpp 文件编译，定义 `MOE_GEMM_LIBRARY` 排除 main；当前不新增头文件或 Python 包。C++ 调用者可使用上面的声明链接共享库，Python 可通过 ctypes 传递 GPU 地址；这不是自动注册的 PyTorch 算子，也尚未验证 graph capture 或 autograd。
 
-默认每个非空专家确定性生成不同幅度的浮点输入，在 CPU 上量化。|q|≤127、K≤1024，故 |INT32累加|≤16,516,096。本教学量化函数只处理生成的有限、适中浮点数，尚未覆盖 NaN/Inf、极小 scale 等通用输入场景。
+调用示意（所有参数都已经准备好）：
 
-## 两类误差分开看
+```cpp
+mcError_t status = moe_int8_masked(d_a, d_b, d_sa, d_sb, d_lengths, d_c,
+                                  groups, capacity, n, k, stream);
+// 检查 status；可继续提交同一 stream 上的其他工作。
+// 需要 CPU 读取输出或释放数据之前，由调用者同步。
+```
 
-1. **算子计算误差**：GPU 输出对比同一组 INT8 输入的 CPU INT64 点积与 FP64 缩放。逐元素要求 `abs(gpu-reference) <= 1e-6 + 1e-5*abs(reference)`。`PASS` 只表示这项检查通过。非近零最大相对误差只统计参考值绝对值大于 1e-6 的元素。
-2. **量化误差**：上述量化 CPU 参考结果，对比原始浮点输入的 CPU FP64 GEMM。这样隔离 GPU 舍入误差。报告最大绝对误差，以及 `relative_L2 = sqrt(sum((C_quant-C_float)^2) / sum(C_float^2))`。原始输出范数为 0 时报告 N/A；这些指标只作观察，不设置通过阈值。
+## mcPyTorch 通过共享库调用的最小例子
 
-这里的相对 L2 与逐元素相对误差不是同一种指标，不能据此宣称满足项目的 1e-3 精度要求。量化误差还与数据分布、量化粒度有关。本课不做性能计时。
+先执行 `bash build.sh --shared`，在已配置 mcPyTorch 的服务器 Python 环境运行下面的代码。这里演示调用者自己分配输入、输出，填入已量化 INT8 数据；不是把 Python 浮点 GEMM 当作后端。
 
-## 建议阅读顺序
+```python
+import ctypes
+from pathlib import Path
+import torch
 
-1. `make_offsets`：从 token 数得到专家区间，理解重复偏移为什么表示空专家。
-2. `pack_contiguous`：A/scale 如何拼接，B 如何从 [K,N] 转为 [N,K]。
-3. `naive_contiguous_int8_gemm`：局部 row 如何变成 global_row，三个新下标怎么计算。
-4. `main`：单次启动后，如何按 offsets 取回各专家输出。
+lib = ctypes.CDLL(str(Path("libmoe_int8.so").resolve()))
+fn = lib.moe_int8_masked
+fn.argtypes = [ctypes.c_void_p] * 6 + [ctypes.c_int] * 4 + [ctypes.c_void_p]
+fn.restype = ctypes.c_int
+G, capacity, N, K = 3, 8, 4, 5
+stream = torch.cuda.Stream()
+with torch.cuda.stream(stream):
+    a = torch.ones((G, capacity, K), dtype=torch.int8, device="cuda")
+    b = torch.ones((G, N, K), dtype=torch.int8, device="cuda")
+    sa = torch.ones((G, capacity), dtype=torch.float32, device="cuda")
+    sb = torch.ones((G, N), dtype=torch.float32, device="cuda")
+    lengths = torch.tensor([3, 0, 5], dtype=torch.int32, device="cuda")
+    out = torch.full((G, capacity, N), -99.0, device="cuda", dtype=torch.float32)
+    status = fn(*(t.data_ptr() for t in (a, b, sa, sb, lengths, out)),
+                G, capacity, N, K, stream.cuda_stream)
+    if status != 0:
+        raise RuntimeError(f"MACA launch error: {status}")
+stream.synchronize()
+# 有效行应为 K=5，其余行保持 -99。
+print(out.cpu())
+```
 
-本轮实现 contiguous 数据语义；masked、分块复用、INT8 矩阵指令和性能测试是后续小步。也尚未提供完整 MoE 的路由、激活和合并。
+必须保留张量引用直到 stream 完成；若在其他 stream 产生数据，调用者还需要正确的 stream/event 依赖。修改 lengths 后可再次调用同一个入口，要求输入在新增有效行上也已经准备好。
+
+## 演示验证与阅读顺序
+
+CPU 生成浮点 A/B，按 A 行和 B 输出通道计算 max_abs/127，取整并截断到 [-127,127]。全零行/列 scale=1。保留原始每专家 B[K,N] 作为 CPU 参考，打包时转换成 B[G,N,K]。
+
+非空有效输出初始化为 NaN，漏写会检查失败。masked 无效输出初始化为有限哨兵 -123456.75，逐元素确认调用后仍相同；无效输入 A/scale 也设置为无用值，kernel 必须在读取前判断有效长度。空专家没有有效结果，不用一行零替代。
+
+CPU 使用 INT64 点积和 FP64 缩放，要求每个有效元素满足 `abs(gpu-reference) <= 1e-6 + 1e-5*abs(reference)`。另报告相对原始浮点 GEMM 的量化误差，不将其等同于算子实现误差或项目验收精度。
+
+先看两个 `extern "C"` 入口和 `launch_grouped`，再比较两个 kernel 中的行号计算。然后看 `pack_masked`、main 中的非默认 stream 调用，以及 padding 检查。新 contiguous 调度使用 `min(T,1024)` 作为行数上界，避免入口依赖 CPU 的 max(counts)；它保证覆盖合法元数据，但可能产生更多空转 block，尚未调优。
 
 ## 历史单专家 C500 实测（2026-10-15，提交 9ef6455）
 
@@ -225,7 +230,7 @@ fi
 
 这些是功能验证，不包含性能目标验收或 contiguous/masked 适配验收。
 
-## 当前 contiguous NT 实测（2026-10-15）
+## 历史 contiguous NT 实测（2026-10-15，提交 dc641e0）
 
 在 C500 上编译并运行 26 组用例，覆盖 1～64 个专家、空专家位于首/中/尾、全空、尾部尺寸和强不均衡 M。所有非空专家逐元素通过 CPU INT64/FP64 对照，空专家输出检查通过。
 
@@ -240,3 +245,19 @@ Grouped launch: block=(16,16), grid=(2,2,4)
 ```
 
 使用 N=19、K=23 等非方形权重检查转置索引；前缀和不对齐 16 的用例检查拼接区间，空专家槽位检查权重编号是否被错误压缩。数据规模和随机种子沿用上一课测试记录。这一步尚未计时，不据此声称性能提升。
+
+## 当前 masked 与调用入口实测（2026-10-16）
+
+C500 上分别构建演示可执行文件和共享库成功。验证结果如下：
+
+- 20 组成对场景，共 40 次运行：相同有效数据分别使用 contiguous 和 masked，逐专家计算误差、量化误差及打印的小矩阵结果一致，全部通过 CPU 参考检查。
+- masked 对每个无效输出元素检查哨兵保持不变；覆盖空专家、全部有效行数为 0 但 capacity>0、capacity=0、1～64 个专家、M/N 尾部、K=1024、M=1/1024 的不均衡场景。10 组指定场景加 10 组随机组合，随机种子 20261016。
+- 12 组非法命令行参数被拒绝，包括有效行数超过 capacity；4 组原 contiguous 用例与提交 `dc641e0` 的可执行文件比较，误差指标一致。
+- 通过 ctypes 从 mcPyTorch 的真实 GPU 张量直接调用共享库，在非默认 stream 上验证两个 C 符号。没有经过演示 main 或 CPU 打包函数。
+- 同一 masked 缓冲区依次使用长度 [3,0,7]、[0,5,1]、[7,7,7]、[0,0,0]，各次有效输出均匹配 NumPy INT64/FP64 参考，无效输出与本次调用前的 GPU 实际值逐位一致。
+- 同一 contiguous 缓冲区依次使用偏移 [0,3,3,7]、[0,0,5,7]、[0,7,7,7]，均与独立 CPU 参考匹配。两类外部调用使用 [-128,127] 范围的随机 INT8 数据。
+- 两个 C 接口均验证了零尺寸允许空指针的无操作路径，以及非零尺寸空指针、非法 G/N 的拒绝；另外验证 masked 的未对齐 scale、输出与输入重叠、capacity 超限被拒绝。
+
+动态 padding 验证比较调用前后 GPU 输出的实际位模式；计算正确性才使用带容差的 CPU 参考，避免把正常浮点舍入差异混入“是否被改写”的检查。
+
+当前接口有明确的教学尺寸上限，仍是朴素计算实现。没有声明 PyTorch 自动注册、autograd、图捕获、性能提升或项目精度验收已完成。
