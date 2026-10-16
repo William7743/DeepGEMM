@@ -47,7 +47,7 @@ extern "C" mcError_t moe_int8_masked(
 
 接口约束：
 
-- G 为 1～64，N/K 为 1～1024，每专家 M 为 0～1024；masked capacity 为 0～1024；contiguous T 为 0～G*1024。
+- G 为 1～64，N/K 为 1～32768，每专家 M 为 0～65536；masked capacity 为 0～65536；contiguous T 为 0～G*65536。尺寸在范围内仍须有足够的主机内存和显存，不保证所有上限的组合都能在当前设备上分配。
 - 所有指针指向当前 GPU 上足够大的缓冲区。INT8 地址无额外对齐要求，FP32 和 INT32 地址至少 4 字节对齐。
 - 输出 C 不得与输入、scale 或分组信息重叠；入口检查给定地址范围的重叠、空指针、对齐和主机尺寸。裸指针接口无法确认真实分配大小或张量所属设备，这由调用者保证。
 - 调用者必须保证 GPU 分组信息合法、scale 为有限值。入口不为读取 GPU 元数据而隐式同步。kernel 对越界长度/偏移有保护，但非法 GPU 元数据不保证结果正确，也不会同步返回一个校验错误。
@@ -124,7 +124,7 @@ CPU 生成浮点 A/B，按 A 行和 B 输出通道计算 max_abs/127，取整并
 
 CPU 使用 INT64 点积和 FP64 缩放，要求每个有效元素满足 `abs(gpu-reference) <= 1e-6 + 1e-5*abs(reference)`。另报告相对原始浮点 GEMM 的量化误差，不将其等同于算子实现误差或项目验收精度。
 
-先看两个 `extern "C"` 入口和 `launch_grouped`，再比较两个 kernel 中的行号计算。然后看 `pack_masked`、main 中的非默认 stream 调用，以及 padding 检查。新 contiguous 调度使用 `min(T,1024)` 作为行数上界，避免入口依赖 CPU 的 max(counts)；它保证覆盖合法元数据，但可能产生更多空转 block，尚未调优。
+先看两个 `extern "C"` 入口和 `launch_grouped`，再比较两个 kernel 中的行号计算。然后看 `pack_masked`、main 中的非默认 stream 调用，以及 padding 检查。新 contiguous 调度使用 `min(T,65536)` 作为行数上界，避免入口依赖 CPU 的 max(counts)；它保证覆盖合法元数据，但可能产生更多空转 block，尚未调优。
 
 ## 历史单专家 C500 实测（2026-10-15，提交 9ef6455）
 
@@ -261,3 +261,41 @@ C500 上分别构建演示可执行文件和共享库成功。验证结果如下
 动态 padding 验证比较调用前后 GPU 输出的实际位模式；计算正确性才使用带容差的 CPU 参考，避免把正常浮点舍入差异混入“是否被改写”的检查。
 
 当前接口有明确的教学尺寸上限，仍是朴素计算实现。没有声明 PyTorch 自动注册、autograd、图捕获、性能提升或项目精度验收已完成。
+
+
+## 大尺寸教学阶段（2026-10-16）
+
+目标调整为运行大尺寸 INT8 grouped GEMM，并继续以朴素实现作为正确性基线。
+
+- 同时扩大 CLI、C 接口、kernel 元数据检查和 launch 行数覆盖范围。
+- 数组索引和元素数量使用 64 位 `size_t`。必须先转换再相乘，例如 `size_t(group) * n * k`；仅把已经溢出的 INT32 结果赋给 64 位变量无效。
+- offsets 和 masked_m 仍为 INT32，当前最多 64*65536 行，足够表示。
+- K 上限为 32768；即使输入包含 -128，点积绝对值也不超过 `32768*128*128=536870912`，不会溢出 INT32。
+- 保留 16x16 block、一线程一个输出元素、全量 INT64/FP64 CPU 对照。扩大范围不意味着已经达到高性能；大 M/N/K 同时出现时，GPU 朴素点积和 CPU 全量参考都可能耗时很长。
+
+逐步运行：
+
+```bash
+bash build.sh
+# 先扩大 M，保留空专家和不整齐尾部
+./naive_gemm.out --tokens 1025,0,2049 17 23
+./naive_gemm.out --masked 2051 --tokens 1025,0,2049 17 23
+# 再扩大 N/K
+./naive_gemm.out --tokens 16,0,23 4096 2048 --zero-edges
+# 本地上游生成集合中的一条完整 masked case
+./naive_gemm.out --masked 4096 --tokens 15,15,23,15,25,15 6144 7168
+```
+
+最后一条来自正式适配仓库 `c500_int8/benchmarks/upstream_shapes.json` 的 `masked_g6_m20_n6144_k7168`，固定 count_seed=20261015，尺寸来源为上游提交 `1fc9c66975ee322d628b3288534ca0e9ce12a64d` 的测试生成器。它是生成测试，不是模型实测路由。当前未添加 JSON 批量测试入口，也未宣称跑完全部 24 组。
+
+
+大尺寸验证记录（C500 16 GB 分片，MACA 3.7.1.5）：可执行文件与共享库均编译成功。
+
+- 15 个运行场景通过：旧小尺寸、两种布局的 M=1025/2049、M=65536、独立 N=32768/K=32768、N=4096/K=2048、全空输入，以及下面两条大尺寸 case。全部有效元素逐个对照 CPU；masked padding 全量检查。
+- 5 个非法参数被拒绝：M/capacity=65537、N/K=32769、有效 M 超过 capacity。
+- `--masked 4096 --tokens 15,15,23,15,25,15 6144 7168`：663552 个有效输出，mismatches=0；150331392 个 padding 元素，padding_errors=0。
+- `--tokens 2049,0,2051 2049 1025`：8400900 个有效输出，mismatches=0，包含空专家及 M/N/K 尾部。
+
+额外通过 mcPyTorch + ctypes 调用两个 C 接口，G=3、N=K=32768，只有最后一个专家接收 1 行。B 共 3 GiB，最后一个专家起始偏移为 2147483648 字节；A 和该专家 B 全为 -128，scale=1，32768 个有效输出全部精确等于 536870912。masked capacity=1、lengths=[0,0,1]，前两个专家输出保留 -99；contiguous offsets=[0,0,0,1]。两次调用使用非默认 stream，验证 64 位权重偏移和 INT32 累加上限。
+
+本次验证是正确性检查，包含 CPU 输入生成、量化、内存传输和 CPU 参考；运行总耗时不能作为 kernel 性能数据。
