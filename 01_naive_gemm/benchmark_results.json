@@ -9,7 +9,7 @@
   "source_sha256": "c4336d43344953d9436ca7733aae8e08314b13cd4a61740afc030c151933cf13",
   "harness_sha256": "79f18b2a49e60bb15d528544823bb6e06448c2113bd1f557ffef7806cef39c86",
   "library_sha256": "c3630de69b551b7a48061f4f275c5e5e04fabc57894e9d92ff287ce0144ab67f",
-  "shapes_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+  "shapes_sha256": "dfd03ec3a85afa75170f6fc9ad1c8c0c5ec5f5ee02a86a853dd1f9ec251dec5f",
   "settings": {
     "shapes": "/root/MOE/C500_int8_02All/01_naive_gemm/shapes.json",
     "output": "benchmark_results.json",
@@ -1340,7 +1340,7 @@
       "source_sha256": "c4336d43344953d9436ca7733aae8e08314b13cd4a61740afc030c151933cf13",
       "harness_sha256": "79f18b2a49e60bb15d528544823bb6e06448c2113bd1f557ffef7806cef39c86",
       "library_sha256": "c3630de69b551b7a48061f4f275c5e5e04fabc57894e9d92ff287ce0144ab67f",
-      "shapes_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_sha256": "dfd03ec3a85afa75170f6fc9ad1c8c0c5ec5f5ee02a86a853dd1f9ec251dec5f",
       "settings": {
         "shapes": "/root/MOE/C500_int8_02All/01_naive_gemm/shapes.json",
         "output": "benchmark_results.json",
@@ -1352,7 +1352,9 @@
         "seed": 20261016
       },
       "timing": "MACA events around repeated native grouped calls, same buffers, warmed; excludes input preparation, transfers, CPU reference; includes native launch gaps",
-      "precision": "quantized INT8 CPU INT64 dot + FP64 scale, atol=1e-6 rtol=1e-5; not quantization-quality acceptance"
+      "precision": "quantized INT8 CPU INT64 dot + FP64 scale, atol=1e-6 rtol=1e-5; not quantization-quality acceptance",
+      "shapes_raw_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_hash_scheme": "SHA256 after CRLF-to-LF normalization"
     },
     {
       "timestamp_utc": "2026-10-16T01:22:18.772624+00:00",
@@ -1365,7 +1367,7 @@
       "source_sha256": "c4336d43344953d9436ca7733aae8e08314b13cd4a61740afc030c151933cf13",
       "harness_sha256": "90ec3691cb4a11960950cc17d8b44d88a402de9804d535f56de1c10101997eed",
       "library_sha256": "c3630de69b551b7a48061f4f275c5e5e04fabc57894e9d92ff287ce0144ab67f",
-      "shapes_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_sha256": "dfd03ec3a85afa75170f6fc9ad1c8c0c5ec5f5ee02a86a853dd1f9ec251dec5f",
       "settings": {
         "shapes": "/root/MOE/C500_int8_02All/01_naive_gemm/shapes.json",
         "output": "/tmp/moe_bench_4h5o7bfb/case_3.json",
@@ -1381,7 +1383,9 @@
       "timing": "MACA events around repeated native grouped calls, same buffers, warmed; excludes input preparation, transfers, CPU reference; includes native launch gaps",
       "precision": "quantized INT8 CPU INT64 dot + FP64 scale, atol=1e-6 rtol=1e-5; not quantization-quality acceptance",
       "mx_smi_after": "mx-smi  version: 2.3.1\n\n=================== MetaX System Management Interface Log ===================\nTimestamp                                         : Fri Oct 16 01:22:54 2026\n\nAttached GPUs                                     : 1\n+---------------------------------------------------------------------------------+\n| MX-SMI 2.3.1                       Kernel Mode Driver Version: 3.8.30           |\n| MACA Version: 3.7.1.5              BIOS Version: 1.33.5.0                       |\n|------------------+-----------------+---------------------+----------------------|\n| Board       Name | GPU   Persist-M | Bus-id              | GPU-Util      sGPU-M |\n| Pwr:Usage/Cap    | Temp       Perf | Memory-Usage        | GPU-State            |\n|==================+=================+=====================+======================|\n| 0     MetaX C500 | 0           Off | 0000:37:00.0        | 100%         Enabled |\n| 106W / 350W      | 41C          P9 | 928/65536 MiB       | Available            |\n+------------------+-----------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Sliced GPU                                                                      |\n|------------------------------------+---------------------+----------------------|\n| Minor    GPU    sGPU-Id    Compute | Vram Quota          | sGPU-Util            |\n|====================================+=====================+======================|\n| 020      0      0          25%     | 102/16000 MiB       | 0%                   |\n+------------------------------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Process:                                                                        |\n|  GPU                    PID         Process Name                 GPU Memory     |\n|                                                                  Usage(MiB)     |\n|=================================================================================|\n|  0-s0                582016         python                       102            |\n+---------------------------------------------------------------------------------+\n\nEnd of Log",
-      "worker_returncode": 0
+      "worker_returncode": 0,
+      "shapes_raw_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_hash_scheme": "SHA256 after CRLF-to-LF normalization"
     },
     {
       "timestamp_utc": "2026-10-16T01:23:27.092511+00:00",
@@ -1394,7 +1398,7 @@
       "source_sha256": "c4336d43344953d9436ca7733aae8e08314b13cd4a61740afc030c151933cf13",
       "harness_sha256": "90ec3691cb4a11960950cc17d8b44d88a402de9804d535f56de1c10101997eed",
       "library_sha256": "c3630de69b551b7a48061f4f275c5e5e04fabc57894e9d92ff287ce0144ab67f",
-      "shapes_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_sha256": "dfd03ec3a85afa75170f6fc9ad1c8c0c5ec5f5ee02a86a853dd1f9ec251dec5f",
       "settings": {
         "shapes": "/root/MOE/C500_int8_02All/01_naive_gemm/shapes.json",
         "output": "/tmp/moe_bench_4h5o7bfb/case_4.json",
@@ -1410,7 +1414,9 @@
       "timing": "MACA events around repeated native grouped calls, same buffers, warmed; excludes input preparation, transfers, CPU reference; includes native launch gaps",
       "precision": "quantized INT8 CPU INT64 dot + FP64 scale, atol=1e-6 rtol=1e-5; not quantization-quality acceptance",
       "mx_smi_after": "mx-smi  version: 2.3.1\n\n=================== MetaX System Management Interface Log ===================\nTimestamp                                         : Fri Oct 16 01:25:58 2026\n\nAttached GPUs                                     : 1\n+---------------------------------------------------------------------------------+\n| MX-SMI 2.3.1                       Kernel Mode Driver Version: 3.8.30           |\n| MACA Version: 3.7.1.5              BIOS Version: 1.33.5.0                       |\n|------------------+-----------------+---------------------+----------------------|\n| Board       Name | GPU   Persist-M | Bus-id              | GPU-Util      sGPU-M |\n| Pwr:Usage/Cap    | Temp       Perf | Memory-Usage        | GPU-State            |\n|==================+=================+=====================+======================|\n| 0     MetaX C500 | 0           Off | 0000:37:00.0        | 100%         Enabled |\n| 102W / 350W      | 42C          P9 | 928/65536 MiB       | Available            |\n+------------------+-----------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Sliced GPU                                                                      |\n|------------------------------------+---------------------+----------------------|\n| Minor    GPU    sGPU-Id    Compute | Vram Quota          | sGPU-Util            |\n|====================================+=====================+======================|\n| 020      0      0          25%     | 102/16000 MiB       | 0%                   |\n+------------------------------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Process:                                                                        |\n|  GPU                    PID         Process Name                 GPU Memory     |\n|                                                                  Usage(MiB)     |\n|=================================================================================|\n|  0-s0                582672         python                       102            |\n+---------------------------------------------------------------------------------+\n\nEnd of Log",
-      "worker_returncode": 0
+      "worker_returncode": 0,
+      "shapes_raw_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_hash_scheme": "SHA256 after CRLF-to-LF normalization"
     },
     {
       "timestamp_utc": "2026-10-16T01:26:30.421172+00:00",
@@ -1423,7 +1429,7 @@
       "source_sha256": "c4336d43344953d9436ca7733aae8e08314b13cd4a61740afc030c151933cf13",
       "harness_sha256": "90ec3691cb4a11960950cc17d8b44d88a402de9804d535f56de1c10101997eed",
       "library_sha256": "c3630de69b551b7a48061f4f275c5e5e04fabc57894e9d92ff287ce0144ab67f",
-      "shapes_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_sha256": "dfd03ec3a85afa75170f6fc9ad1c8c0c5ec5f5ee02a86a853dd1f9ec251dec5f",
       "settings": {
         "shapes": "/root/MOE/C500_int8_02All/01_naive_gemm/shapes.json",
         "output": "/tmp/moe_bench_4h5o7bfb/case_5.json",
@@ -1439,7 +1445,9 @@
       "timing": "MACA events around repeated native grouped calls, same buffers, warmed; excludes input preparation, transfers, CPU reference; includes native launch gaps",
       "precision": "quantized INT8 CPU INT64 dot + FP64 scale, atol=1e-6 rtol=1e-5; not quantization-quality acceptance",
       "mx_smi_after": "mx-smi  version: 2.3.1\n\n=================== MetaX System Management Interface Log ===================\nTimestamp                                         : Fri Oct 16 01:27:55 2026\n\nAttached GPUs                                     : 1\n+---------------------------------------------------------------------------------+\n| MX-SMI 2.3.1                       Kernel Mode Driver Version: 3.8.30           |\n| MACA Version: 3.7.1.5              BIOS Version: 1.33.5.0                       |\n|------------------+-----------------+---------------------+----------------------|\n| Board       Name | GPU   Persist-M | Bus-id              | GPU-Util      sGPU-M |\n| Pwr:Usage/Cap    | Temp       Perf | Memory-Usage        | GPU-State            |\n|==================+=================+=====================+======================|\n| 0     MetaX C500 | 0           Off | 0000:37:00.0        | 98%          Enabled |\n| 105W / 350W      | 42C          P9 | 928/65536 MiB       | Available            |\n+------------------+-----------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Sliced GPU                                                                      |\n|------------------------------------+---------------------+----------------------|\n| Minor    GPU    sGPU-Id    Compute | Vram Quota          | sGPU-Util            |\n|====================================+=====================+======================|\n| 020      0      0          25%     | 102/16000 MiB       | 0%                   |\n+------------------------------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Process:                                                                        |\n|  GPU                    PID         Process Name                 GPU Memory     |\n|                                                                  Usage(MiB)     |\n|=================================================================================|\n|  0-s0                584113         python                       102            |\n+---------------------------------------------------------------------------------+\n\nEnd of Log",
-      "worker_returncode": 0
+      "worker_returncode": 0,
+      "shapes_raw_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_hash_scheme": "SHA256 after CRLF-to-LF normalization"
     },
     {
       "timestamp_utc": "2026-10-16T01:28:27.674825+00:00",
@@ -1452,7 +1460,7 @@
       "source_sha256": "c4336d43344953d9436ca7733aae8e08314b13cd4a61740afc030c151933cf13",
       "harness_sha256": "90ec3691cb4a11960950cc17d8b44d88a402de9804d535f56de1c10101997eed",
       "library_sha256": "c3630de69b551b7a48061f4f275c5e5e04fabc57894e9d92ff287ce0144ab67f",
-      "shapes_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_sha256": "dfd03ec3a85afa75170f6fc9ad1c8c0c5ec5f5ee02a86a853dd1f9ec251dec5f",
       "settings": {
         "shapes": "/root/MOE/C500_int8_02All/01_naive_gemm/shapes.json",
         "output": "/tmp/moe_bench_4h5o7bfb/case_6.json",
@@ -1468,7 +1476,9 @@
       "timing": "MACA events around repeated native grouped calls, same buffers, warmed; excludes input preparation, transfers, CPU reference; includes native launch gaps",
       "precision": "quantized INT8 CPU INT64 dot + FP64 scale, atol=1e-6 rtol=1e-5; not quantization-quality acceptance",
       "mx_smi_after": "mx-smi  version: 2.3.1\n\n=================== MetaX System Management Interface Log ===================\nTimestamp                                         : Fri Oct 16 01:29:27 2026\n\nAttached GPUs                                     : 1\n+---------------------------------------------------------------------------------+\n| MX-SMI 2.3.1                       Kernel Mode Driver Version: 3.8.30           |\n| MACA Version: 3.7.1.5              BIOS Version: 1.33.5.0                       |\n|------------------+-----------------+---------------------+----------------------|\n| Board       Name | GPU   Persist-M | Bus-id              | GPU-Util      sGPU-M |\n| Pwr:Usage/Cap    | Temp       Perf | Memory-Usage        | GPU-State            |\n|==================+=================+=====================+======================|\n| 0     MetaX C500 | 0           Off | 0000:37:00.0        | 97%          Enabled |\n| 110W / 350W      | 42C          P9 | 928/65536 MiB       | Available            |\n+------------------+-----------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Sliced GPU                                                                      |\n|------------------------------------+---------------------+----------------------|\n| Minor    GPU    sGPU-Id    Compute | Vram Quota          | sGPU-Util            |\n|====================================+=====================+======================|\n| 020      0      0          25%     | 102/16000 MiB       | 0%                   |\n+------------------------------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Process:                                                                        |\n|  GPU                    PID         Process Name                 GPU Memory     |\n|                                                                  Usage(MiB)     |\n|=================================================================================|\n|  0-s0                585098         python                       102            |\n+---------------------------------------------------------------------------------+\n\nEnd of Log",
-      "worker_returncode": 0
+      "worker_returncode": 0,
+      "shapes_raw_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_hash_scheme": "SHA256 after CRLF-to-LF normalization"
     },
     {
       "timestamp_utc": "2026-10-16T01:29:59.750573+00:00",
@@ -1481,7 +1491,7 @@
       "source_sha256": "c4336d43344953d9436ca7733aae8e08314b13cd4a61740afc030c151933cf13",
       "harness_sha256": "90ec3691cb4a11960950cc17d8b44d88a402de9804d535f56de1c10101997eed",
       "library_sha256": "c3630de69b551b7a48061f4f275c5e5e04fabc57894e9d92ff287ce0144ab67f",
-      "shapes_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_sha256": "dfd03ec3a85afa75170f6fc9ad1c8c0c5ec5f5ee02a86a853dd1f9ec251dec5f",
       "settings": {
         "shapes": "/root/MOE/C500_int8_02All/01_naive_gemm/shapes.json",
         "output": "/tmp/moe_bench_4h5o7bfb/case_7.json",
@@ -1497,7 +1507,9 @@
       "timing": "MACA events around repeated native grouped calls, same buffers, warmed; excludes input preparation, transfers, CPU reference; includes native launch gaps",
       "precision": "quantized INT8 CPU INT64 dot + FP64 scale, atol=1e-6 rtol=1e-5; not quantization-quality acceptance",
       "mx_smi_after": "mx-smi  version: 2.3.1\n\n=================== MetaX System Management Interface Log ===================\nTimestamp                                         : Fri Oct 16 01:30:28 2026\n\nAttached GPUs                                     : 1\n+---------------------------------------------------------------------------------+\n| MX-SMI 2.3.1                       Kernel Mode Driver Version: 3.8.30           |\n| MACA Version: 3.7.1.5              BIOS Version: 1.33.5.0                       |\n|------------------+-----------------+---------------------+----------------------|\n| Board       Name | GPU   Persist-M | Bus-id              | GPU-Util      sGPU-M |\n| Pwr:Usage/Cap    | Temp       Perf | Memory-Usage        | GPU-State            |\n|==================+=================+=====================+======================|\n| 0     MetaX C500 | 0           Off | 0000:37:00.0        | 100%         Enabled |\n| 109W / 350W      | 41C          P9 | 928/65536 MiB       | Available            |\n+------------------+-----------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Sliced GPU                                                                      |\n|------------------------------------+---------------------+----------------------|\n| Minor    GPU    sGPU-Id    Compute | Vram Quota          | sGPU-Util            |\n|====================================+=====================+======================|\n| 020      0      0          25%     | 102/16000 MiB       | 0%                   |\n+------------------------------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Process:                                                                        |\n|  GPU                    PID         Process Name                 GPU Memory     |\n|                                                                  Usage(MiB)     |\n|=================================================================================|\n|  0-s0                585901         python                       102            |\n+---------------------------------------------------------------------------------+\n\nEnd of Log",
-      "worker_returncode": 0
+      "worker_returncode": 0,
+      "shapes_raw_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_hash_scheme": "SHA256 after CRLF-to-LF normalization"
     },
     {
       "timestamp_utc": "2026-10-16T01:31:00.896922+00:00",
@@ -1510,7 +1522,7 @@
       "source_sha256": "c4336d43344953d9436ca7733aae8e08314b13cd4a61740afc030c151933cf13",
       "harness_sha256": "90ec3691cb4a11960950cc17d8b44d88a402de9804d535f56de1c10101997eed",
       "library_sha256": "c3630de69b551b7a48061f4f275c5e5e04fabc57894e9d92ff287ce0144ab67f",
-      "shapes_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_sha256": "dfd03ec3a85afa75170f6fc9ad1c8c0c5ec5f5ee02a86a853dd1f9ec251dec5f",
       "settings": {
         "shapes": "/root/MOE/C500_int8_02All/01_naive_gemm/shapes.json",
         "output": "/tmp/moe_bench_4h5o7bfb/case_8.json",
@@ -1526,7 +1538,9 @@
       "timing": "MACA events around repeated native grouped calls, same buffers, warmed; excludes input preparation, transfers, CPU reference; includes native launch gaps",
       "precision": "quantized INT8 CPU INT64 dot + FP64 scale, atol=1e-6 rtol=1e-5; not quantization-quality acceptance",
       "mx_smi_after": "mx-smi  version: 2.3.1\n\n=================== MetaX System Management Interface Log ===================\nTimestamp                                         : Fri Oct 16 01:31:31 2026\n\nAttached GPUs                                     : 1\n+---------------------------------------------------------------------------------+\n| MX-SMI 2.3.1                       Kernel Mode Driver Version: 3.8.30           |\n| MACA Version: 3.7.1.5              BIOS Version: 1.33.5.0                       |\n|------------------+-----------------+---------------------+----------------------|\n| Board       Name | GPU   Persist-M | Bus-id              | GPU-Util      sGPU-M |\n| Pwr:Usage/Cap    | Temp       Perf | Memory-Usage        | GPU-State            |\n|==================+=================+=====================+======================|\n| 0     MetaX C500 | 0           Off | 0000:37:00.0        | 91%          Enabled |\n| 99W / 350W       | 41C          P9 | 928/65536 MiB       | Available            |\n+------------------+-----------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Sliced GPU                                                                      |\n|------------------------------------+---------------------+----------------------|\n| Minor    GPU    sGPU-Id    Compute | Vram Quota          | sGPU-Util            |\n|====================================+=====================+======================|\n| 020      0      0          25%     | 102/16000 MiB       | 91%                  |\n+------------------------------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Process:                                                                        |\n|  GPU                    PID         Process Name                 GPU Memory     |\n|                                                                  Usage(MiB)     |\n|=================================================================================|\n|  0-s0                586506         python                       102            |\n+---------------------------------------------------------------------------------+\n\nEnd of Log",
-      "worker_returncode": 0
+      "worker_returncode": 0,
+      "shapes_raw_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_hash_scheme": "SHA256 after CRLF-to-LF normalization"
     },
     {
       "timestamp_utc": "2026-10-16T01:32:04.346432+00:00",
@@ -1539,7 +1553,7 @@
       "source_sha256": "c4336d43344953d9436ca7733aae8e08314b13cd4a61740afc030c151933cf13",
       "harness_sha256": "90ec3691cb4a11960950cc17d8b44d88a402de9804d535f56de1c10101997eed",
       "library_sha256": "c3630de69b551b7a48061f4f275c5e5e04fabc57894e9d92ff287ce0144ab67f",
-      "shapes_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_sha256": "dfd03ec3a85afa75170f6fc9ad1c8c0c5ec5f5ee02a86a853dd1f9ec251dec5f",
       "settings": {
         "shapes": "/root/MOE/C500_int8_02All/01_naive_gemm/shapes.json",
         "output": "/tmp/moe_bench_4h5o7bfb/case_9.json",
@@ -1555,7 +1569,9 @@
       "timing": "MACA events around repeated native grouped calls, same buffers, warmed; excludes input preparation, transfers, CPU reference; includes native launch gaps",
       "precision": "quantized INT8 CPU INT64 dot + FP64 scale, atol=1e-6 rtol=1e-5; not quantization-quality acceptance",
       "mx_smi_after": "mx-smi  version: 2.3.1\n\n=================== MetaX System Management Interface Log ===================\nTimestamp                                         : Fri Oct 16 01:32:18 2026\n\nAttached GPUs                                     : 1\n+---------------------------------------------------------------------------------+\n| MX-SMI 2.3.1                       Kernel Mode Driver Version: 3.8.30           |\n| MACA Version: 3.7.1.5              BIOS Version: 1.33.5.0                       |\n|------------------+-----------------+---------------------+----------------------|\n| Board       Name | GPU   Persist-M | Bus-id              | GPU-Util      sGPU-M |\n| Pwr:Usage/Cap    | Temp       Perf | Memory-Usage        | GPU-State            |\n|==================+=================+=====================+======================|\n| 0     MetaX C500 | 0           Off | 0000:37:00.0        | 99%          Enabled |\n| 99W / 350W       | 40C          P9 | 928/65536 MiB       | Available            |\n+------------------+-----------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Sliced GPU                                                                      |\n|------------------------------------+---------------------+----------------------|\n| Minor    GPU    sGPU-Id    Compute | Vram Quota          | sGPU-Util            |\n|====================================+=====================+======================|\n| 020      0      0          25%     | 102/16000 MiB       | 99%                  |\n+------------------------------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Process:                                                                        |\n|  GPU                    PID         Process Name                 GPU Memory     |\n|                                                                  Usage(MiB)     |\n|=================================================================================|\n|  0-s0                587116         python                       102            |\n+---------------------------------------------------------------------------------+\n\nEnd of Log",
-      "worker_returncode": 0
+      "worker_returncode": 0,
+      "shapes_raw_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_hash_scheme": "SHA256 after CRLF-to-LF normalization"
     },
     {
       "timestamp_utc": "2026-10-16T01:32:51.744022+00:00",
@@ -1568,7 +1584,7 @@
       "source_sha256": "c4336d43344953d9436ca7733aae8e08314b13cd4a61740afc030c151933cf13",
       "harness_sha256": "90ec3691cb4a11960950cc17d8b44d88a402de9804d535f56de1c10101997eed",
       "library_sha256": "c3630de69b551b7a48061f4f275c5e5e04fabc57894e9d92ff287ce0144ab67f",
-      "shapes_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_sha256": "dfd03ec3a85afa75170f6fc9ad1c8c0c5ec5f5ee02a86a853dd1f9ec251dec5f",
       "settings": {
         "shapes": "/root/MOE/C500_int8_02All/01_naive_gemm/shapes.json",
         "output": "/tmp/moe_bench_4h5o7bfb/case_10.json",
@@ -1584,7 +1600,9 @@
       "timing": "MACA events around repeated native grouped calls, same buffers, warmed; excludes input preparation, transfers, CPU reference; includes native launch gaps",
       "precision": "quantized INT8 CPU INT64 dot + FP64 scale, atol=1e-6 rtol=1e-5; not quantization-quality acceptance",
       "mx_smi_after": "mx-smi  version: 2.3.1\n\n=================== MetaX System Management Interface Log ===================\nTimestamp                                         : Fri Oct 16 01:33:03 2026\n\nAttached GPUs                                     : 1\n+---------------------------------------------------------------------------------+\n| MX-SMI 2.3.1                       Kernel Mode Driver Version: 3.8.30           |\n| MACA Version: 3.7.1.5              BIOS Version: 1.33.5.0                       |\n|------------------+-----------------+---------------------+----------------------|\n| Board       Name | GPU   Persist-M | Bus-id              | GPU-Util      sGPU-M |\n| Pwr:Usage/Cap    | Temp       Perf | Memory-Usage        | GPU-State            |\n|==================+=================+=====================+======================|\n| 0     MetaX C500 | 0           Off | 0000:37:00.0        | 97%          Enabled |\n| 97W / 350W       | 40C          P9 | 928/65536 MiB       | Available            |\n+------------------+-----------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Sliced GPU                                                                      |\n|------------------------------------+---------------------+----------------------|\n| Minor    GPU    sGPU-Id    Compute | Vram Quota          | sGPU-Util            |\n|====================================+=====================+======================|\n| 020      0      0          25%     | 102/16000 MiB       | 0%                   |\n+------------------------------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Process:                                                                        |\n|  GPU                    PID         Process Name                 GPU Memory     |\n|                                                                  Usage(MiB)     |\n|=================================================================================|\n|  0-s0                587610         python                       102            |\n+---------------------------------------------------------------------------------+\n\nEnd of Log",
-      "worker_returncode": 0
+      "worker_returncode": 0,
+      "shapes_raw_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_hash_scheme": "SHA256 after CRLF-to-LF normalization"
     },
     {
       "timestamp_utc": "2026-10-16T01:33:35.670792+00:00",
@@ -1597,7 +1615,7 @@
       "source_sha256": "c4336d43344953d9436ca7733aae8e08314b13cd4a61740afc030c151933cf13",
       "harness_sha256": "90ec3691cb4a11960950cc17d8b44d88a402de9804d535f56de1c10101997eed",
       "library_sha256": "c3630de69b551b7a48061f4f275c5e5e04fabc57894e9d92ff287ce0144ab67f",
-      "shapes_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_sha256": "dfd03ec3a85afa75170f6fc9ad1c8c0c5ec5f5ee02a86a853dd1f9ec251dec5f",
       "settings": {
         "shapes": "/root/MOE/C500_int8_02All/01_naive_gemm/shapes.json",
         "output": "/tmp/moe_bench_4h5o7bfb/case_11.json",
@@ -1613,7 +1631,9 @@
       "timing": "MACA events around repeated native grouped calls, same buffers, warmed; excludes input preparation, transfers, CPU reference; includes native launch gaps",
       "precision": "quantized INT8 CPU INT64 dot + FP64 scale, atol=1e-6 rtol=1e-5; not quantization-quality acceptance",
       "mx_smi_after": "mx-smi  version: 2.3.1\n\n=================== MetaX System Management Interface Log ===================\nTimestamp                                         : Fri Oct 16 01:33:41 2026\n\nAttached GPUs                                     : 1\n+---------------------------------------------------------------------------------+\n| MX-SMI 2.3.1                       Kernel Mode Driver Version: 3.8.30           |\n| MACA Version: 3.7.1.5              BIOS Version: 1.33.5.0                       |\n|------------------+-----------------+---------------------+----------------------|\n| Board       Name | GPU   Persist-M | Bus-id              | GPU-Util      sGPU-M |\n| Pwr:Usage/Cap    | Temp       Perf | Memory-Usage        | GPU-State            |\n|==================+=================+=====================+======================|\n| 0     MetaX C500 | 0           Off | 0000:37:00.0        | 100%         Enabled |\n| 101W / 350W      | 39C          P9 | 928/65536 MiB       | Available            |\n+------------------+-----------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Sliced GPU                                                                      |\n|------------------------------------+---------------------+----------------------|\n| Minor    GPU    sGPU-Id    Compute | Vram Quota          | sGPU-Util            |\n|====================================+=====================+======================|\n| 020      0      0          25%     | 102/16000 MiB       | 100%                 |\n+------------------------------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Process:                                                                        |\n|  GPU                    PID         Process Name                 GPU Memory     |\n|                                                                  Usage(MiB)     |\n|=================================================================================|\n|  0-s0                588089         python                       102            |\n+---------------------------------------------------------------------------------+\n\nEnd of Log",
-      "worker_returncode": 0
+      "worker_returncode": 0,
+      "shapes_raw_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_hash_scheme": "SHA256 after CRLF-to-LF normalization"
     },
     {
       "timestamp_utc": "2026-10-16T01:34:13.725023+00:00",
@@ -1626,7 +1646,7 @@
       "source_sha256": "c4336d43344953d9436ca7733aae8e08314b13cd4a61740afc030c151933cf13",
       "harness_sha256": "90ec3691cb4a11960950cc17d8b44d88a402de9804d535f56de1c10101997eed",
       "library_sha256": "c3630de69b551b7a48061f4f275c5e5e04fabc57894e9d92ff287ce0144ab67f",
-      "shapes_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_sha256": "dfd03ec3a85afa75170f6fc9ad1c8c0c5ec5f5ee02a86a853dd1f9ec251dec5f",
       "settings": {
         "shapes": "/root/MOE/C500_int8_02All/01_naive_gemm/shapes.json",
         "output": "/tmp/moe_bench_4h5o7bfb/case_12.json",
@@ -1642,7 +1662,9 @@
       "timing": "MACA events around repeated native grouped calls, same buffers, warmed; excludes input preparation, transfers, CPU reference; includes native launch gaps",
       "precision": "quantized INT8 CPU INT64 dot + FP64 scale, atol=1e-6 rtol=1e-5; not quantization-quality acceptance",
       "mx_smi_after": "mx-smi  version: 2.3.1\n\n=================== MetaX System Management Interface Log ===================\nTimestamp                                         : Fri Oct 16 01:34:45 2026\n\nAttached GPUs                                     : 1\n+---------------------------------------------------------------------------------+\n| MX-SMI 2.3.1                       Kernel Mode Driver Version: 3.8.30           |\n| MACA Version: 3.7.1.5              BIOS Version: 1.33.5.0                       |\n|------------------+-----------------+---------------------+----------------------|\n| Board       Name | GPU   Persist-M | Bus-id              | GPU-Util      sGPU-M |\n| Pwr:Usage/Cap    | Temp       Perf | Memory-Usage        | GPU-State            |\n|==================+=================+=====================+======================|\n| 0     MetaX C500 | 0           Off | 0000:37:00.0        | 94%          Enabled |\n| 101W / 350W      | 41C          P9 | 928/65536 MiB       | Available            |\n+------------------+-----------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Sliced GPU                                                                      |\n|------------------------------------+---------------------+----------------------|\n| Minor    GPU    sGPU-Id    Compute | Vram Quota          | sGPU-Util            |\n|====================================+=====================+======================|\n| 020      0      0          25%     | 102/16000 MiB       | 0%                   |\n+------------------------------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Process:                                                                        |\n|  GPU                    PID         Process Name                 GPU Memory     |\n|                                                                  Usage(MiB)     |\n|=================================================================================|\n|  0-s0                588526         python                       102            |\n+---------------------------------------------------------------------------------+\n\nEnd of Log",
-      "worker_returncode": 0
+      "worker_returncode": 0,
+      "shapes_raw_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_hash_scheme": "SHA256 after CRLF-to-LF normalization"
     },
     {
       "timestamp_utc": "2026-10-16T01:35:18.009950+00:00",
@@ -1655,7 +1677,7 @@
       "source_sha256": "c4336d43344953d9436ca7733aae8e08314b13cd4a61740afc030c151933cf13",
       "harness_sha256": "90ec3691cb4a11960950cc17d8b44d88a402de9804d535f56de1c10101997eed",
       "library_sha256": "c3630de69b551b7a48061f4f275c5e5e04fabc57894e9d92ff287ce0144ab67f",
-      "shapes_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_sha256": "dfd03ec3a85afa75170f6fc9ad1c8c0c5ec5f5ee02a86a853dd1f9ec251dec5f",
       "settings": {
         "shapes": "/root/MOE/C500_int8_02All/01_naive_gemm/shapes.json",
         "output": "/tmp/moe_bench_4h5o7bfb/case_13.json",
@@ -1671,7 +1693,9 @@
       "timing": "MACA events around repeated native grouped calls, same buffers, warmed; excludes input preparation, transfers, CPU reference; includes native launch gaps",
       "precision": "quantized INT8 CPU INT64 dot + FP64 scale, atol=1e-6 rtol=1e-5; not quantization-quality acceptance",
       "mx_smi_after": "mx-smi  version: 2.3.1\n\n=================== MetaX System Management Interface Log ===================\nTimestamp                                         : Fri Oct 16 01:35:33 2026\n\nAttached GPUs                                     : 1\n+---------------------------------------------------------------------------------+\n| MX-SMI 2.3.1                       Kernel Mode Driver Version: 3.8.30           |\n| MACA Version: 3.7.1.5              BIOS Version: 1.33.5.0                       |\n|------------------+-----------------+---------------------+----------------------|\n| Board       Name | GPU   Persist-M | Bus-id              | GPU-Util      sGPU-M |\n| Pwr:Usage/Cap    | Temp       Perf | Memory-Usage        | GPU-State            |\n|==================+=================+=====================+======================|\n| 0     MetaX C500 | 0           Off | 0000:37:00.0        | 100%         Enabled |\n| 111W / 350W      | 40C          P9 | 928/65536 MiB       | Available            |\n+------------------+-----------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Sliced GPU                                                                      |\n|------------------------------------+---------------------+----------------------|\n| Minor    GPU    sGPU-Id    Compute | Vram Quota          | sGPU-Util            |\n|====================================+=====================+======================|\n| 020      0      0          25%     | 102/16000 MiB       | 0%                   |\n+------------------------------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Process:                                                                        |\n|  GPU                    PID         Process Name                 GPU Memory     |\n|                                                                  Usage(MiB)     |\n|=================================================================================|\n|  0-s0                589146         python                       102            |\n+---------------------------------------------------------------------------------+\n\nEnd of Log",
-      "worker_returncode": 0
+      "worker_returncode": 0,
+      "shapes_raw_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_hash_scheme": "SHA256 after CRLF-to-LF normalization"
     },
     {
       "timestamp_utc": "2026-10-16T01:36:05.586453+00:00",
@@ -1684,7 +1708,7 @@
       "source_sha256": "c4336d43344953d9436ca7733aae8e08314b13cd4a61740afc030c151933cf13",
       "harness_sha256": "90ec3691cb4a11960950cc17d8b44d88a402de9804d535f56de1c10101997eed",
       "library_sha256": "c3630de69b551b7a48061f4f275c5e5e04fabc57894e9d92ff287ce0144ab67f",
-      "shapes_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_sha256": "dfd03ec3a85afa75170f6fc9ad1c8c0c5ec5f5ee02a86a853dd1f9ec251dec5f",
       "settings": {
         "shapes": "/root/MOE/C500_int8_02All/01_naive_gemm/shapes.json",
         "output": "/tmp/moe_bench_4h5o7bfb/case_14.json",
@@ -1700,7 +1724,9 @@
       "timing": "MACA events around repeated native grouped calls, same buffers, warmed; excludes input preparation, transfers, CPU reference; includes native launch gaps",
       "precision": "quantized INT8 CPU INT64 dot + FP64 scale, atol=1e-6 rtol=1e-5; not quantization-quality acceptance",
       "mx_smi_after": "mx-smi  version: 2.3.1\n\n=================== MetaX System Management Interface Log ===================\nTimestamp                                         : Fri Oct 16 01:36:16 2026\n\nAttached GPUs                                     : 1\n+---------------------------------------------------------------------------------+\n| MX-SMI 2.3.1                       Kernel Mode Driver Version: 3.8.30           |\n| MACA Version: 3.7.1.5              BIOS Version: 1.33.5.0                       |\n|------------------+-----------------+---------------------+----------------------|\n| Board       Name | GPU   Persist-M | Bus-id              | GPU-Util      sGPU-M |\n| Pwr:Usage/Cap    | Temp       Perf | Memory-Usage        | GPU-State            |\n|==================+=================+=====================+======================|\n| 0     MetaX C500 | 0           Off | 0000:37:00.0        | 100%         Enabled |\n| 106W / 350W      | 39C          P9 | 928/65536 MiB       | Available            |\n+------------------+-----------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Sliced GPU                                                                      |\n|------------------------------------+---------------------+----------------------|\n| Minor    GPU    sGPU-Id    Compute | Vram Quota          | sGPU-Util            |\n|====================================+=====================+======================|\n| 020      0      0          25%     | 102/16000 MiB       | 100%                 |\n+------------------------------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Process:                                                                        |\n|  GPU                    PID         Process Name                 GPU Memory     |\n|                                                                  Usage(MiB)     |\n|=================================================================================|\n|  0-s0                589640         python                       102            |\n+---------------------------------------------------------------------------------+\n\nEnd of Log",
-      "worker_returncode": 0
+      "worker_returncode": 0,
+      "shapes_raw_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_hash_scheme": "SHA256 after CRLF-to-LF normalization"
     },
     {
       "timestamp_utc": "2026-10-16T01:36:49.507578+00:00",
@@ -1713,7 +1739,7 @@
       "source_sha256": "c4336d43344953d9436ca7733aae8e08314b13cd4a61740afc030c151933cf13",
       "harness_sha256": "90ec3691cb4a11960950cc17d8b44d88a402de9804d535f56de1c10101997eed",
       "library_sha256": "c3630de69b551b7a48061f4f275c5e5e04fabc57894e9d92ff287ce0144ab67f",
-      "shapes_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_sha256": "dfd03ec3a85afa75170f6fc9ad1c8c0c5ec5f5ee02a86a853dd1f9ec251dec5f",
       "settings": {
         "shapes": "/root/MOE/C500_int8_02All/01_naive_gemm/shapes.json",
         "output": "/tmp/moe_bench_4h5o7bfb/case_15.json",
@@ -1729,7 +1755,9 @@
       "timing": "MACA events around repeated native grouped calls, same buffers, warmed; excludes input preparation, transfers, CPU reference; includes native launch gaps",
       "precision": "quantized INT8 CPU INT64 dot + FP64 scale, atol=1e-6 rtol=1e-5; not quantization-quality acceptance",
       "mx_smi_after": "mx-smi  version: 2.3.1\n\n=================== MetaX System Management Interface Log ===================\nTimestamp                                         : Fri Oct 16 01:36:56 2026\n\nAttached GPUs                                     : 1\n+---------------------------------------------------------------------------------+\n| MX-SMI 2.3.1                       Kernel Mode Driver Version: 3.8.30           |\n| MACA Version: 3.7.1.5              BIOS Version: 1.33.5.0                       |\n|------------------+-----------------+---------------------+----------------------|\n| Board       Name | GPU   Persist-M | Bus-id              | GPU-Util      sGPU-M |\n| Pwr:Usage/Cap    | Temp       Perf | Memory-Usage        | GPU-State            |\n|==================+=================+=====================+======================|\n| 0     MetaX C500 | 0           Off | 0000:37:00.0        | 100%         Enabled |\n| 104W / 350W      | 39C          P9 | 928/65536 MiB       | Available            |\n+------------------+-----------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Sliced GPU                                                                      |\n|------------------------------------+---------------------+----------------------|\n| Minor    GPU    sGPU-Id    Compute | Vram Quota          | sGPU-Util            |\n|====================================+=====================+======================|\n| 020      0      0          25%     | 102/16000 MiB       | 100%                 |\n+------------------------------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Process:                                                                        |\n|  GPU                    PID         Process Name                 GPU Memory     |\n|                                                                  Usage(MiB)     |\n|=================================================================================|\n|  0-s0                590106         python                       102            |\n+---------------------------------------------------------------------------------+\n\nEnd of Log",
-      "worker_returncode": 0
+      "worker_returncode": 0,
+      "shapes_raw_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_hash_scheme": "SHA256 after CRLF-to-LF normalization"
     },
     {
       "timestamp_utc": "2026-10-16T01:37:29.178553+00:00",
@@ -1742,7 +1770,7 @@
       "source_sha256": "c4336d43344953d9436ca7733aae8e08314b13cd4a61740afc030c151933cf13",
       "harness_sha256": "90ec3691cb4a11960950cc17d8b44d88a402de9804d535f56de1c10101997eed",
       "library_sha256": "c3630de69b551b7a48061f4f275c5e5e04fabc57894e9d92ff287ce0144ab67f",
-      "shapes_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_sha256": "dfd03ec3a85afa75170f6fc9ad1c8c0c5ec5f5ee02a86a853dd1f9ec251dec5f",
       "settings": {
         "shapes": "/root/MOE/C500_int8_02All/01_naive_gemm/shapes.json",
         "output": "/tmp/moe_bench_4h5o7bfb/case_16.json",
@@ -1758,7 +1786,9 @@
       "timing": "MACA events around repeated native grouped calls, same buffers, warmed; excludes input preparation, transfers, CPU reference; includes native launch gaps",
       "precision": "quantized INT8 CPU INT64 dot + FP64 scale, atol=1e-6 rtol=1e-5; not quantization-quality acceptance",
       "mx_smi_after": "mx-smi  version: 2.3.1\n\n=================== MetaX System Management Interface Log ===================\nTimestamp                                         : Fri Oct 16 01:37:32 2026\n\nAttached GPUs                                     : 1\n+---------------------------------------------------------------------------------+\n| MX-SMI 2.3.1                       Kernel Mode Driver Version: 3.8.30           |\n| MACA Version: 3.7.1.5              BIOS Version: 1.33.5.0                       |\n|------------------+-----------------+---------------------+----------------------|\n| Board       Name | GPU   Persist-M | Bus-id              | GPU-Util      sGPU-M |\n| Pwr:Usage/Cap    | Temp       Perf | Memory-Usage        | GPU-State            |\n|==================+=================+=====================+======================|\n| 0     MetaX C500 | 0           Off | 0000:37:00.0        | 100%         Enabled |\n| 97W / 350W       | 38C          P9 | 928/65536 MiB       | Available            |\n+------------------+-----------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Sliced GPU                                                                      |\n|------------------------------------+---------------------+----------------------|\n| Minor    GPU    sGPU-Id    Compute | Vram Quota          | sGPU-Util            |\n|====================================+=====================+======================|\n| 020      0      0          25%     | 102/16000 MiB       | 100%                 |\n+------------------------------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Process:                                                                        |\n|  GPU                    PID         Process Name                 GPU Memory     |\n|                                                                  Usage(MiB)     |\n|=================================================================================|\n|  0-s0                590557         python                       102            |\n+---------------------------------------------------------------------------------+\n\nEnd of Log",
-      "worker_returncode": 0
+      "worker_returncode": 0,
+      "shapes_raw_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_hash_scheme": "SHA256 after CRLF-to-LF normalization"
     },
     {
       "timestamp_utc": "2026-10-16T01:38:05.396575+00:00",
@@ -1771,7 +1801,7 @@
       "source_sha256": "c4336d43344953d9436ca7733aae8e08314b13cd4a61740afc030c151933cf13",
       "harness_sha256": "90ec3691cb4a11960950cc17d8b44d88a402de9804d535f56de1c10101997eed",
       "library_sha256": "c3630de69b551b7a48061f4f275c5e5e04fabc57894e9d92ff287ce0144ab67f",
-      "shapes_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_sha256": "dfd03ec3a85afa75170f6fc9ad1c8c0c5ec5f5ee02a86a853dd1f9ec251dec5f",
       "settings": {
         "shapes": "/root/MOE/C500_int8_02All/01_naive_gemm/shapes.json",
         "output": "/tmp/moe_bench_4h5o7bfb/case_17.json",
@@ -1787,7 +1817,9 @@
       "timing": "MACA events around repeated native grouped calls, same buffers, warmed; excludes input preparation, transfers, CPU reference; includes native launch gaps",
       "precision": "quantized INT8 CPU INT64 dot + FP64 scale, atol=1e-6 rtol=1e-5; not quantization-quality acceptance",
       "mx_smi_after": "mx-smi  version: 2.3.1\n\n=================== MetaX System Management Interface Log ===================\nTimestamp                                         : Fri Oct 16 01:38:07 2026\n\nAttached GPUs                                     : 1\n+---------------------------------------------------------------------------------+\n| MX-SMI 2.3.1                       Kernel Mode Driver Version: 3.8.30           |\n| MACA Version: 3.7.1.5              BIOS Version: 1.33.5.0                       |\n|------------------+-----------------+---------------------+----------------------|\n| Board       Name | GPU   Persist-M | Bus-id              | GPU-Util      sGPU-M |\n| Pwr:Usage/Cap    | Temp       Perf | Memory-Usage        | GPU-State            |\n|==================+=================+=====================+======================|\n| 0     MetaX C500 | 0           Off | 0000:37:00.0        | 100%         Enabled |\n| 100W / 350W      | 37C          P9 | 928/65536 MiB       | Available            |\n+------------------+-----------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Sliced GPU                                                                      |\n|------------------------------------+---------------------+----------------------|\n| Minor    GPU    sGPU-Id    Compute | Vram Quota          | sGPU-Util            |\n|====================================+=====================+======================|\n| 020      0      0          25%     | 102/16000 MiB       | 100%                 |\n+------------------------------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Process:                                                                        |\n|  GPU                    PID         Process Name                 GPU Memory     |\n|                                                                  Usage(MiB)     |\n|=================================================================================|\n|  0-s0                590980         python                       102            |\n+---------------------------------------------------------------------------------+\n\nEnd of Log",
-      "worker_returncode": 0
+      "worker_returncode": 0,
+      "shapes_raw_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_hash_scheme": "SHA256 after CRLF-to-LF normalization"
     },
     {
       "timestamp_utc": "2026-10-16T01:38:39.779513+00:00",
@@ -1800,7 +1832,7 @@
       "source_sha256": "c4336d43344953d9436ca7733aae8e08314b13cd4a61740afc030c151933cf13",
       "harness_sha256": "90ec3691cb4a11960950cc17d8b44d88a402de9804d535f56de1c10101997eed",
       "library_sha256": "c3630de69b551b7a48061f4f275c5e5e04fabc57894e9d92ff287ce0144ab67f",
-      "shapes_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_sha256": "dfd03ec3a85afa75170f6fc9ad1c8c0c5ec5f5ee02a86a853dd1f9ec251dec5f",
       "settings": {
         "shapes": "/root/MOE/C500_int8_02All/01_naive_gemm/shapes.json",
         "output": "/tmp/moe_bench_4h5o7bfb/case_18.json",
@@ -1816,7 +1848,9 @@
       "timing": "MACA events around repeated native grouped calls, same buffers, warmed; excludes input preparation, transfers, CPU reference; includes native launch gaps",
       "precision": "quantized INT8 CPU INT64 dot + FP64 scale, atol=1e-6 rtol=1e-5; not quantization-quality acceptance",
       "mx_smi_after": "mx-smi  version: 2.3.1\n\n=================== MetaX System Management Interface Log ===================\nTimestamp                                         : Fri Oct 16 01:38:41 2026\n\nAttached GPUs                                     : 1\n+---------------------------------------------------------------------------------+\n| MX-SMI 2.3.1                       Kernel Mode Driver Version: 3.8.30           |\n| MACA Version: 3.7.1.5              BIOS Version: 1.33.5.0                       |\n|------------------+-----------------+---------------------+----------------------|\n| Board       Name | GPU   Persist-M | Bus-id              | GPU-Util      sGPU-M |\n| Pwr:Usage/Cap    | Temp       Perf | Memory-Usage        | GPU-State            |\n|==================+=================+=====================+======================|\n| 0     MetaX C500 | 0           Off | 0000:37:00.0        | 89%          Enabled |\n| 97W / 350W       | 37C          P9 | 928/65536 MiB       | Available            |\n+------------------+-----------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Sliced GPU                                                                      |\n|------------------------------------+---------------------+----------------------|\n| Minor    GPU    sGPU-Id    Compute | Vram Quota          | sGPU-Util            |\n|====================================+=====================+======================|\n| 020      0      0          25%     | 102/16000 MiB       | 89%                  |\n+------------------------------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Process:                                                                        |\n|  GPU                    PID         Process Name                 GPU Memory     |\n|                                                                  Usage(MiB)     |\n|=================================================================================|\n|  0-s0                591390         python                       102            |\n+---------------------------------------------------------------------------------+\n\nEnd of Log",
-      "worker_returncode": 0
+      "worker_returncode": 0,
+      "shapes_raw_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_hash_scheme": "SHA256 after CRLF-to-LF normalization"
     },
     {
       "timestamp_utc": "2026-10-16T01:39:13.544265+00:00",
@@ -1829,7 +1863,7 @@
       "source_sha256": "c4336d43344953d9436ca7733aae8e08314b13cd4a61740afc030c151933cf13",
       "harness_sha256": "90ec3691cb4a11960950cc17d8b44d88a402de9804d535f56de1c10101997eed",
       "library_sha256": "c3630de69b551b7a48061f4f275c5e5e04fabc57894e9d92ff287ce0144ab67f",
-      "shapes_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_sha256": "dfd03ec3a85afa75170f6fc9ad1c8c0c5ec5f5ee02a86a853dd1f9ec251dec5f",
       "settings": {
         "shapes": "/root/MOE/C500_int8_02All/01_naive_gemm/shapes.json",
         "output": "/tmp/moe_bench_4h5o7bfb/case_19.json",
@@ -1845,7 +1879,9 @@
       "timing": "MACA events around repeated native grouped calls, same buffers, warmed; excludes input preparation, transfers, CPU reference; includes native launch gaps",
       "precision": "quantized INT8 CPU INT64 dot + FP64 scale, atol=1e-6 rtol=1e-5; not quantization-quality acceptance",
       "mx_smi_after": "mx-smi  version: 2.3.1\n\n=================== MetaX System Management Interface Log ===================\nTimestamp                                         : Fri Oct 16 01:39:14 2026\n\nAttached GPUs                                     : 1\n+---------------------------------------------------------------------------------+\n| MX-SMI 2.3.1                       Kernel Mode Driver Version: 3.8.30           |\n| MACA Version: 3.7.1.5              BIOS Version: 1.33.5.0                       |\n|------------------+-----------------+---------------------+----------------------|\n| Board       Name | GPU   Persist-M | Bus-id              | GPU-Util      sGPU-M |\n| Pwr:Usage/Cap    | Temp       Perf | Memory-Usage        | GPU-State            |\n|==================+=================+=====================+======================|\n| 0     MetaX C500 | 0           Off | 0000:37:00.0        | 89%          Enabled |\n| 97W / 350W       | 37C          P9 | 928/65536 MiB       | Available            |\n+------------------+-----------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Sliced GPU                                                                      |\n|------------------------------------+---------------------+----------------------|\n| Minor    GPU    sGPU-Id    Compute | Vram Quota          | sGPU-Util            |\n|====================================+=====================+======================|\n| 020      0      0          25%     | 102/16000 MiB       | 89%                  |\n+------------------------------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Process:                                                                        |\n|  GPU                    PID         Process Name                 GPU Memory     |\n|                                                                  Usage(MiB)     |\n|=================================================================================|\n|  0-s0                591799         python                       102            |\n+---------------------------------------------------------------------------------+\n\nEnd of Log",
-      "worker_returncode": 0
+      "worker_returncode": 0,
+      "shapes_raw_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_hash_scheme": "SHA256 after CRLF-to-LF normalization"
     },
     {
       "timestamp_utc": "2026-10-16T01:39:46.964728+00:00",
@@ -1858,7 +1894,7 @@
       "source_sha256": "c4336d43344953d9436ca7733aae8e08314b13cd4a61740afc030c151933cf13",
       "harness_sha256": "90ec3691cb4a11960950cc17d8b44d88a402de9804d535f56de1c10101997eed",
       "library_sha256": "c3630de69b551b7a48061f4f275c5e5e04fabc57894e9d92ff287ce0144ab67f",
-      "shapes_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_sha256": "dfd03ec3a85afa75170f6fc9ad1c8c0c5ec5f5ee02a86a853dd1f9ec251dec5f",
       "settings": {
         "shapes": "/root/MOE/C500_int8_02All/01_naive_gemm/shapes.json",
         "output": "/tmp/moe_bench_4h5o7bfb/case_20.json",
@@ -1874,7 +1910,9 @@
       "timing": "MACA events around repeated native grouped calls, same buffers, warmed; excludes input preparation, transfers, CPU reference; includes native launch gaps",
       "precision": "quantized INT8 CPU INT64 dot + FP64 scale, atol=1e-6 rtol=1e-5; not quantization-quality acceptance",
       "mx_smi_after": "mx-smi  version: 2.3.1\n\n=================== MetaX System Management Interface Log ===================\nTimestamp                                         : Fri Oct 16 01:39:47 2026\n\nAttached GPUs                                     : 1\n+---------------------------------------------------------------------------------+\n| MX-SMI 2.3.1                       Kernel Mode Driver Version: 3.8.30           |\n| MACA Version: 3.7.1.5              BIOS Version: 1.33.5.0                       |\n|------------------+-----------------+---------------------+----------------------|\n| Board       Name | GPU   Persist-M | Bus-id              | GPU-Util      sGPU-M |\n| Pwr:Usage/Cap    | Temp       Perf | Memory-Usage        | GPU-State            |\n|==================+=================+=====================+======================|\n| 0     MetaX C500 | 0           Off | 0000:37:00.0        | 82%          Enabled |\n| 98W / 350W       | 37C          P9 | 928/65536 MiB       | Available            |\n+------------------+-----------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Sliced GPU                                                                      |\n|------------------------------------+---------------------+----------------------|\n| Minor    GPU    sGPU-Id    Compute | Vram Quota          | sGPU-Util            |\n|====================================+=====================+======================|\n| 020      0      0          25%     | 102/16000 MiB       | 0%                   |\n+------------------------------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Process:                                                                        |\n|  GPU                    PID         Process Name                 GPU Memory     |\n|                                                                  Usage(MiB)     |\n|=================================================================================|\n|  0-s0                592195         python                       102            |\n+---------------------------------------------------------------------------------+\n\nEnd of Log",
-      "worker_returncode": 0
+      "worker_returncode": 0,
+      "shapes_raw_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_hash_scheme": "SHA256 after CRLF-to-LF normalization"
     },
     {
       "timestamp_utc": "2026-10-16T01:40:20.360581+00:00",
@@ -1887,7 +1925,7 @@
       "source_sha256": "c4336d43344953d9436ca7733aae8e08314b13cd4a61740afc030c151933cf13",
       "harness_sha256": "90ec3691cb4a11960950cc17d8b44d88a402de9804d535f56de1c10101997eed",
       "library_sha256": "c3630de69b551b7a48061f4f275c5e5e04fabc57894e9d92ff287ce0144ab67f",
-      "shapes_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_sha256": "dfd03ec3a85afa75170f6fc9ad1c8c0c5ec5f5ee02a86a853dd1f9ec251dec5f",
       "settings": {
         "shapes": "/root/MOE/C500_int8_02All/01_naive_gemm/shapes.json",
         "output": "/tmp/moe_bench_4h5o7bfb/case_21.json",
@@ -1903,7 +1941,9 @@
       "timing": "MACA events around repeated native grouped calls, same buffers, warmed; excludes input preparation, transfers, CPU reference; includes native launch gaps",
       "precision": "quantized INT8 CPU INT64 dot + FP64 scale, atol=1e-6 rtol=1e-5; not quantization-quality acceptance",
       "mx_smi_after": "mx-smi  version: 2.3.1\n\n=================== MetaX System Management Interface Log ===================\nTimestamp                                         : Fri Oct 16 01:40:20 2026\n\nAttached GPUs                                     : 1\n+---------------------------------------------------------------------------------+\n| MX-SMI 2.3.1                       Kernel Mode Driver Version: 3.8.30           |\n| MACA Version: 3.7.1.5              BIOS Version: 1.33.5.0                       |\n|------------------+-----------------+---------------------+----------------------|\n| Board       Name | GPU   Persist-M | Bus-id              | GPU-Util      sGPU-M |\n| Pwr:Usage/Cap    | Temp       Perf | Memory-Usage        | GPU-State            |\n|==================+=================+=====================+======================|\n| 0     MetaX C500 | 0           Off | 0000:37:00.0        | 72%          Enabled |\n| 91W / 350W       | 37C          P9 | 928/65536 MiB       | Available            |\n+------------------+-----------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Sliced GPU                                                                      |\n|------------------------------------+---------------------+----------------------|\n| Minor    GPU    sGPU-Id    Compute | Vram Quota          | sGPU-Util            |\n|====================================+=====================+======================|\n| 020      0      0          25%     | 102/16000 MiB       | 0%                   |\n+------------------------------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Process:                                                                        |\n|  GPU                    PID         Process Name                 GPU Memory     |\n|                                                                  Usage(MiB)     |\n|=================================================================================|\n|  0-s0                592591         python                       102            |\n+---------------------------------------------------------------------------------+\n\nEnd of Log",
-      "worker_returncode": 0
+      "worker_returncode": 0,
+      "shapes_raw_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_hash_scheme": "SHA256 after CRLF-to-LF normalization"
     },
     {
       "timestamp_utc": "2026-10-16T01:40:53.459199+00:00",
@@ -1916,7 +1956,7 @@
       "source_sha256": "c4336d43344953d9436ca7733aae8e08314b13cd4a61740afc030c151933cf13",
       "harness_sha256": "90ec3691cb4a11960950cc17d8b44d88a402de9804d535f56de1c10101997eed",
       "library_sha256": "c3630de69b551b7a48061f4f275c5e5e04fabc57894e9d92ff287ce0144ab67f",
-      "shapes_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_sha256": "dfd03ec3a85afa75170f6fc9ad1c8c0c5ec5f5ee02a86a853dd1f9ec251dec5f",
       "settings": {
         "shapes": "/root/MOE/C500_int8_02All/01_naive_gemm/shapes.json",
         "output": "/tmp/moe_bench_4h5o7bfb/case_22.json",
@@ -1932,7 +1972,9 @@
       "timing": "MACA events around repeated native grouped calls, same buffers, warmed; excludes input preparation, transfers, CPU reference; includes native launch gaps",
       "precision": "quantized INT8 CPU INT64 dot + FP64 scale, atol=1e-6 rtol=1e-5; not quantization-quality acceptance",
       "mx_smi_after": "mx-smi  version: 2.3.1\n\n=================== MetaX System Management Interface Log ===================\nTimestamp                                         : Fri Oct 16 01:40:53 2026\n\nAttached GPUs                                     : 1\n+---------------------------------------------------------------------------------+\n| MX-SMI 2.3.1                       Kernel Mode Driver Version: 3.8.30           |\n| MACA Version: 3.7.1.5              BIOS Version: 1.33.5.0                       |\n|------------------+-----------------+---------------------+----------------------|\n| Board       Name | GPU   Persist-M | Bus-id              | GPU-Util      sGPU-M |\n| Pwr:Usage/Cap    | Temp       Perf | Memory-Usage        | GPU-State            |\n|==================+=================+=====================+======================|\n| 0     MetaX C500 | 0           Off | 0000:37:00.0        | 80%          Enabled |\n| 85W / 350W       | 37C          P9 | 928/65536 MiB       | Available            |\n+------------------+-----------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Sliced GPU                                                                      |\n|------------------------------------+---------------------+----------------------|\n| Minor    GPU    sGPU-Id    Compute | Vram Quota          | sGPU-Util            |\n|====================================+=====================+======================|\n| 020      0      0          25%     | 102/16000 MiB       | 0%                   |\n+------------------------------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Process:                                                                        |\n|  GPU                    PID         Process Name                 GPU Memory     |\n|                                                                  Usage(MiB)     |\n|=================================================================================|\n|  0-s0                592999         python                       102            |\n+---------------------------------------------------------------------------------+\n\nEnd of Log",
-      "worker_returncode": 0
+      "worker_returncode": 0,
+      "shapes_raw_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_hash_scheme": "SHA256 after CRLF-to-LF normalization"
     },
     {
       "timestamp_utc": "2026-10-16T01:41:26.333739+00:00",
@@ -1945,7 +1987,7 @@
       "source_sha256": "c4336d43344953d9436ca7733aae8e08314b13cd4a61740afc030c151933cf13",
       "harness_sha256": "90ec3691cb4a11960950cc17d8b44d88a402de9804d535f56de1c10101997eed",
       "library_sha256": "c3630de69b551b7a48061f4f275c5e5e04fabc57894e9d92ff287ce0144ab67f",
-      "shapes_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_sha256": "dfd03ec3a85afa75170f6fc9ad1c8c0c5ec5f5ee02a86a853dd1f9ec251dec5f",
       "settings": {
         "shapes": "/root/MOE/C500_int8_02All/01_naive_gemm/shapes.json",
         "output": "/tmp/moe_bench_4h5o7bfb/case_23.json",
@@ -1961,9 +2003,14 @@
       "timing": "MACA events around repeated native grouped calls, same buffers, warmed; excludes input preparation, transfers, CPU reference; includes native launch gaps",
       "precision": "quantized INT8 CPU INT64 dot + FP64 scale, atol=1e-6 rtol=1e-5; not quantization-quality acceptance",
       "mx_smi_after": "mx-smi  version: 2.3.1\n\n=================== MetaX System Management Interface Log ===================\nTimestamp                                         : Fri Oct 16 01:41:26 2026\n\nAttached GPUs                                     : 1\n+---------------------------------------------------------------------------------+\n| MX-SMI 2.3.1                       Kernel Mode Driver Version: 3.8.30           |\n| MACA Version: 3.7.1.5              BIOS Version: 1.33.5.0                       |\n|------------------+-----------------+---------------------+----------------------|\n| Board       Name | GPU   Persist-M | Bus-id              | GPU-Util      sGPU-M |\n| Pwr:Usage/Cap    | Temp       Perf | Memory-Usage        | GPU-State            |\n|==================+=================+=====================+======================|\n| 0     MetaX C500 | 0           Off | 0000:37:00.0        | 50%          Enabled |\n| 74W / 350W       | 37C          P9 | 928/65536 MiB       | Available            |\n+------------------+-----------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Sliced GPU                                                                      |\n|------------------------------------+---------------------+----------------------|\n| Minor    GPU    sGPU-Id    Compute | Vram Quota          | sGPU-Util            |\n|====================================+=====================+======================|\n| 020      0      0          25%     | 102/16000 MiB       | 0%                   |\n+------------------------------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Process:                                                                        |\n|  GPU                    PID         Process Name                 GPU Memory     |\n|                                                                  Usage(MiB)     |\n|=================================================================================|\n|  0-s0                593395         python                       102            |\n+---------------------------------------------------------------------------------+\n\nEnd of Log",
-      "worker_returncode": 0
+      "worker_returncode": 0,
+      "shapes_raw_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+      "shapes_hash_scheme": "SHA256 after CRLF-to-LF normalization"
     }
   ],
   "isolation": "one fresh process per case; GPU events exclude process startup",
-  "controller_sha256": "90ec3691cb4a11960950cc17d8b44d88a402de9804d535f56de1c10101997eed"
+  "controller_sha256": "90ec3691cb4a11960950cc17d8b44d88a402de9804d535f56de1c10101997eed",
+  "shapes_raw_sha256": "40e40bc62ee71179d0d74307d1780dc8e8163ed65ce0f420f70586a4eeb15fc7",
+  "shapes_hash_scheme": "SHA256 after CRLF-to-LF normalization",
+  "metadata_postprocessing": "Shape digest normalized after measurement for Git line-ending portability. Original measured-byte digests preserved as shapes_raw_sha256. Cases, timings and validation results unchanged."
 }

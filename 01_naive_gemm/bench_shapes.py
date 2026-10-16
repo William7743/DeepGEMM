@@ -236,7 +236,8 @@ def main():
     library = ROOT / "libmoe_int8.so"
     signature = dict(source_sha256=hashlib.sha256((ROOT / "naive_gemm.cpp").read_bytes()).hexdigest(),
                      library_sha256=hashlib.sha256(library.read_bytes()).hexdigest(),
-                     shapes_sha256=hashlib.sha256(raw).hexdigest())
+                     shapes_sha256=hashlib.sha256(raw.replace(b"\r\n", b"\n")).hexdigest(),
+                     shapes_hash_scheme="SHA256 after CRLF-to-LF normalization")
     if not args.single_process:
         return run_isolated(cases, args, signature)
     lib = ctypes.CDLL(str(library))
@@ -254,7 +255,9 @@ def main():
         source_sha256=hashlib.sha256((ROOT / "naive_gemm.cpp").read_bytes()).hexdigest(),
         harness_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         library_sha256=hashlib.sha256(library.read_bytes()).hexdigest(),
-        shapes_sha256=hashlib.sha256(raw).hexdigest(),
+        shapes_sha256=signature["shapes_sha256"],
+        shapes_raw_sha256=hashlib.sha256(raw).hexdigest(),
+        shapes_hash_scheme=signature["shapes_hash_scheme"],
         settings={k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()},
         timing="MACA events around repeated native grouped calls, same buffers, warmed; excludes input preparation, transfers, CPU reference; includes native launch gaps",
         precision="quantized INT8 CPU INT64 dot + FP64 scale, atol=1e-6 rtol=1e-5; not quantization-quality acceptance",
