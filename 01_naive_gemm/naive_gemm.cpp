@@ -25,6 +25,10 @@
 // is 536870912, safely within INT32 even for raw full-range INT8 inputs.
 constexpr int max_expert_rows = 65536;
 constexpr int max_nk = 32768;
+constexpr int max_groups = 4096; // Bounded API contract, not a hardware limit.
+constexpr int groups_per_launch = 64;
+static_assert(int64_t(max_groups) * max_expert_rows <= std::numeric_limits<int32_t>::max(),
+              "contiguous offsets must fit INT32");
 static_assert(sizeof(size_t) >= 8, "large buffers require 64-bit indexing");
 
 // Borrowed GPU views. Inputs are read-only; the caller owns every allocation.
@@ -37,8 +41,9 @@ struct GemmView {
 };
 
 __global__ void naive_contiguous_int8_gemm(GemmView data,
-                                          int groups, int total_m, int n, int k) {
-    int group = blockIdx.z;
+                                          int groups, int total_m, int n, int k,
+                                          int group_base) {
+    int group = group_base + blockIdx.z;
     if (group >= groups) return;
     int begin = data.meta[group], end = data.meta[group + 1];
     // Callers must validate metadata. These guards prevent out-of-range accesses
@@ -58,8 +63,9 @@ __global__ void naive_contiguous_int8_gemm(GemmView data,
 }
 
 __global__ void naive_masked_int8_gemm(GemmView data,
-                                      int groups, int capacity, int n, int k) {
-    int group = blockIdx.z;
+                                      int groups, int capacity, int n, int k,
+                                      int group_base) {
+    int group = group_base + blockIdx.z;
     if (group >= groups) return;
     int valid = data.meta[group]; // Read CURRENT lengths from GPU on every call.
     if (valid < 0 || valid > capacity) return;
@@ -86,7 +92,7 @@ bool overlaps_output(const void* input, size_t bytes, float* output, size_t out_
 // Pointers must refer to sufficiently large buffers on the current device.
 static mcError_t launch_grouped(GemmView data, int groups, int rows, int n, int k,
                                bool masked, mcStream_t stream) {
-    if (groups < 1 || groups > 64 || n < 1 || n > max_nk || k < 1 || k > max_nk ||
+    if (groups < 1 || groups > max_groups || n < 1 || n > max_nk || k < 1 || k > max_nk ||
         rows < 0 || rows > (masked ? max_expert_rows : groups * max_expert_rows))
         return mcErrorInvalidValue;
     // T=0 or capacity=0: no GPU work, and null data pointers are allowed.
@@ -109,12 +115,21 @@ static mcError_t launch_grouped(GemmView data, int groups, int rows, int n, int 
     // For contiguous, T is an upper bound on every expert's M. The teaching
     // contract limits M<=max_expert_rows, so this grid needs no CPU readback of offsets.
     int row_bound = masked ? rows : std::min(rows, max_expert_rows);
-    dim3 block(16, 16), grid((n + 15) / 16, (row_bound + 15) / 16, groups);
-    if (masked)
-        naive_masked_int8_gemm<<<grid, block, 0, stream>>>(data, groups, rows, n, k);
-    else
-        naive_contiguous_int8_gemm<<<grid, block, 0, stream>>>(data, groups, rows, n, k);
-    return mcGetLastError(); // Launch status only; execution errors surface on synchronization.
+    dim3 block(16, 16);
+    // Keep global pointers/metadata: group_base + blockIdx.z selects the expert.
+    // In particular, contiguous offsets remain GLOBAL; no CPU readback/rebasing.
+    // All batches are enqueued on the caller's stream without intermediate sync.
+    for (int group_base = 0; group_base < groups; group_base += groups_per_launch) {
+        int batch_groups = std::min(groups_per_launch, groups - group_base);
+        dim3 grid((n + 15) / 16, (row_bound + 15) / 16, batch_groups);
+        if (masked)
+            naive_masked_int8_gemm<<<grid, block, 0, stream>>>(data, groups, rows, n, k, group_base);
+        else
+            naive_contiguous_int8_gemm<<<grid, block, 0, stream>>>(data, groups, rows, n, k, group_base);
+        mcError_t status = mcGetLastError();
+        if (status != mcSuccess) return status; // Earlier batches may already be queued.
+    }
+    return mcSuccess; // Execution errors surface on caller synchronization.
 }
 
 // Stable C entry points: borrowed device pointers, caller-provided output,
@@ -261,7 +276,7 @@ int parse_dimension(const char* value, int minimum = 1, int maximum = max_nk) {
     return result;
 }
 
-// A bounded teaching interface: 1..64 groups, with one M per group.
+// A bounded teaching interface: 1..max_groups, with one M per group.
 std::vector<int> parse_tokens(const char* value) {
     std::string text(value);
     std::vector<int> tokens;
@@ -270,8 +285,8 @@ std::vector<int> parse_tokens(const char* value) {
         size_t end = text.find(',', begin);
         std::string item = text.substr(begin, end == std::string::npos ? end : end - begin);
         tokens.push_back(parse_dimension(item.c_str(), 0, max_expert_rows));
-        if (tokens.size() > 64)
-            throw std::invalid_argument("the teaching example supports 1..64 experts");
+        if (tokens.size() > max_groups)
+            throw std::invalid_argument("the teaching example supports 1..4096 experts");
         if (end == std::string::npos) break;
         begin = end + 1;
     }
@@ -578,7 +593,8 @@ int main(int argc, char** argv) {
                   << ", padding_errors=" << padding_errors << '\n';
         if (padding_errors) passed = false;
     }
-    std::cout << "\nExperts=" << groups << ", GEMM kernel launches=" << (rows > 0 ? 1 : 0)
+    std::cout << "\nExperts=" << groups << ", GEMM kernel launches="
+              << (rows > 0 ? (groups + groups_per_launch - 1) / groups_per_launch : 0)
               << "\nGrouped result: " << (passed ? "PASS" : "FAIL") << '\n';
     return passed ? EXIT_SUCCESS : EXIT_FAILURE;
 }

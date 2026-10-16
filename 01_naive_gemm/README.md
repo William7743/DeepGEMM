@@ -1,6 +1,6 @@
 # INT8 grouped GEMM：contiguous / masked 与调用入口
 
-本课为两种布局提供独立的 C 调用入口。kernel 仍是朴素 INT8 点积、INT32 累加和 FP32 缩放输出，尚未使用硬件矩阵指令。
+本课为两种布局提供独立的 C 调用入口。当前入口支持 1～4096 个专家，内部每次 kernel 启动最多处理 64 个。kernel 仍是朴素 INT8 点积、INT32 累加和 FP32 缩放输出，尚未使用硬件矩阵指令。
 
 ## 两种布局
 
@@ -47,11 +47,12 @@ extern "C" mcError_t moe_int8_masked(
 
 接口约束：
 
-- G 为 1～64，N/K 为 1～32768，每专家 M 为 0～65536；masked capacity 为 0～65536；contiguous T 为 0～G*65536。尺寸在范围内仍须有足够的主机内存和显存，不保证所有上限的组合都能在当前设备上分配。
+- G 为 1～4096，N/K 为 1～32768，每专家 M 为 0～65536；masked capacity 为 0～65536；contiguous T 为 0～G*65536。尺寸在范围内仍须有足够的主机内存和显存，不保证所有上限的组合都能在当前设备上分配。
 - 所有指针指向当前 GPU 上足够大的缓冲区。INT8 地址无额外对齐要求，FP32 和 INT32 地址至少 4 字节对齐。
 - 输出 C 不得与输入、scale 或分组信息重叠；入口检查给定地址范围的重叠、空指针、对齐和主机尺寸。裸指针接口无法确认真实分配大小或张量所属设备，这由调用者保证。
 - 调用者必须保证 GPU 分组信息合法、scale 为有限值。入口不为读取 GPU 元数据而隐式同步。kernel 对越界长度/偏移有保护，但非法 GPU 元数据不保证结果正确，也不会同步返回一个校验错误。
-- T=0 或 capacity=0 时不启动 kernel，允许数据指针为空。capacity>0 且所有 masked_m=0 时仍启动一次 kernel，由 GPU 判断无有效行；整个输出保持不变。这允许 CPU 不读取动态长度。
+- T=0 或 capacity=0 时不启动 kernel，允许数据指针为空。capacity>0 且所有 masked_m=0 时仍启动 ceil(G/64) 次 kernel，由 GPU 判断无有效行；整个输出保持不变。这允许 CPU 不读取动态长度。
+- 每批在同一调用者 stream 上提交，批间不做同步。若某次启动失败，立即返回错误，之前的批可能已提交；调用者仍需等这些工作结束再释放缓冲区。
 
 只有计算调用异步。演示程序的打包、上传、同步、拷回和 CPU 对照都放在入口之外。
 
@@ -269,7 +270,7 @@ C500 上分别构建演示可执行文件和共享库成功。验证结果如下
 
 - 同时扩大 CLI、C 接口、kernel 元数据检查和 launch 行数覆盖范围。
 - 数组索引和元素数量使用 64 位 `size_t`。必须先转换再相乘，例如 `size_t(group) * n * k`；仅把已经溢出的 INT32 结果赋给 64 位变量无效。
-- offsets 和 masked_m 仍为 INT32，当前最多 64*65536 行，足够表示。
+- offsets 和 masked_m 仍为 INT32，该阶段最多 64*65536 行，足够表示；后续自动拆批阶段扩至 4096*65536 行，仍在 INT32 范围内。
 - K 上限为 32768；即使输入包含 -128，点积绝对值也不超过 `32768*128*128=536870912`，不会溢出 INT32。
 - 保留 16x16 block、一线程一个输出元素、全量 INT64/FP64 CPU 对照。扩大范围不意味着已经达到高性能；大 M/N/K 同时出现时，GPU 朴素点积和 CPU 全量参考都可能耗时很长。
 
@@ -511,3 +512,64 @@ masked 共检查 65,138,688 个填充元素。最大采样绝对误差约 `5.25e
 
 结果文件下载后已核对 SHA256；16 组配置与 shape 文件逐项一致，所有运行的
 kernel 源码、共享库、批测脚本和 shape 摘要一致，吞吐公式和进程退出状态检查通过。
+
+## 调用层自动拆批（2026-10-16）
+
+两个公开 C 接口的签名、张量布局、scale 规则不变。`launch_grouped()` 先校验整个调用，
+随后以 64 为步长遍历专家，在同一 stream 上提交各批。每批的 `grid.z` 为
+`min(64, groups-group_base)`，两个 kernel 用 `group_base + blockIdx.z` 得到全局专家编号。
+
+以 G=129 为例，三批分别为专家 `[0,64)`、`[64,128)`、`[128,129)`。
+所有指针保持原值：contiguous 读取全局 `offsets[group]`，masked 读取
+`masked_m[group]`，权重和 B_scale 也按全局 group 定位。因此不需要 CPU 读取 GPU offsets，
+也不需要切片、拷贝或重新打包数据。全体专家数据仍需驻留显存；拆批本身不会降低权重显存占用。
+
+当前 G=4096 是教学接口的安全边界，不是硬件限制。代码用静态断言保证
+`4096*65536` 可由 INT32 offsets 表示。Python 配置检查和命令行解析同步支持此范围。
+`bench_shapes.py` 的一次计时调用现在包含全部批次，并记录 `kernel_launches_per_call`。
+旧性能报告继续保留原提交的实测意义；本次没有重新跑大 shape 性能，旧报告也不能用新源码直接 `--resume`。
+
+### 快速正确性验证
+
+C500 上重新编译普通程序和共享库，原始记录在
+[batching_correctness_results.json](batching_correctness_results.json)。
+
+- 26 组普通程序用例全部通过全量 CPU INT64/FP64 参考和 masked 填充检查。
+  覆盖 G=1/63/64/65/128/129/384、4096 专家的稀疏输入、首/中/末整批为空、
+  全空零容量、全空正容量及旧的双专家命令行。M 包含 17，N=19、K=23，验证尾部边界。
+- 18 项 C 接口检查确认合法 G 的零工作调用成功，G=-1/0/4097/INT_MAX 被拒绝。
+  CLI 拒绝 4097 个专家；Python schema 接受 64/65/384/4096，拒绝 0/4097。
+- 两种布局分别通过 G=129 的共享库计时入口测试，包含跨批的专家 63/64、127/128，
+  均为全量数值参考。这里的单轮计时只验证入口可用，不作为性能结论。
+- 合计全量核对 168,350 个有效输出和 441,276 个 masked 填充元素，错误数均为 0。
+  启动数按调度循环/程序摘要核对：G=65 为 2 次、129 为 3 次、384 为 6 次，
+  非零容量的 G=4096 为 64 次；本轮未使用 profiler 统计启动次数。
+
+在服务器复现普通程序的 26 组小尺寸用例：
+
+```bash
+cd /root/MOE/C500_int8_02All/01_naive_gemm
+bash build.sh
+bash build.sh --shared
+export LD_LIBRARY_PATH=/opt/maca/lib:/opt/mxdriver/lib:${LD_LIBRARY_PATH:-}
+python - <<'PY'
+import json, re, subprocess
+cases = json.load(open('batching_correctness_results.json'))['results']
+for case in cases:
+    command = ['./naive_gemm.out']
+    if case['layout'] == 'masked':
+        command += ['--masked', str(case['capacity'])]
+    if case['name'] == 'legacy_two_expert_cli':
+        command += ['3', '5']
+    else:
+        command += ['--tokens', ','.join(map(str, case['counts']))]
+    command += [str(case['n']), str(case['k']), '--zero-edges']
+    out = subprocess.check_output(command, text=True)
+    assert 'Grouped result: PASS' in out and 'FAIL' not in out
+    assert sum(map(int, re.findall(r'checked_elements=(\d+)', out))) == case['checked_elements']
+    assert f"GEMM kernel launches={case['kernel_launches']}\n" in out
+    if case['layout'] == 'masked':
+        assert f"padding_checked={case['padding_checked']}, padding_errors=0" in out
+    print(case['name'], case['layout'], 'PASS')
+PY
+```

@@ -27,8 +27,8 @@ def validate_case(case):
         return type(x) is int and low <= x <= high
 
     counts = case["counts"]
-    if not isinstance(counts, list) or not 1 <= len(counts) <= 64:
-        raise ValueError("counts must contain 1..64 expert lengths")
+    if not isinstance(counts, list) or not 1 <= len(counts) <= 4096:
+        raise ValueError("counts must contain 1..4096 expert lengths")
     if not all(integer(m, 0, 65536) for m in counts):
         raise ValueError("each M must be in [0,65536]")
     if not all(integer(case[x], 1, 32768) for x in ("n", "k")):
@@ -136,7 +136,8 @@ def run_case(case, fn, args):
                 padding_checked=padding_checked, padding_errors=padding_errors,
                 median_ms=median, min_ms=min(ms), max_ms=max(ms), samples_ms=ms,
                 useful_int8_tops=(2 * total * n * k) / (median * 1e9),
-                allocated_bytes=allocation_bytes, launched_blocks=launched_blocks,
+                allocated_bytes=allocation_bytes, kernel_launches_per_call=math.ceil(g / 64) if rows else 0,
+                launched_blocks=launched_blocks,
                 useful_blocks=useful_blocks,
                 useful_block_fraction=useful_blocks / launched_blocks if launched_blocks else 0)
 

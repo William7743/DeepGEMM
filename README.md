@@ -43,3 +43,7 @@
 `01_naive_gemm/prepare_flame_shapes.py` 从固定版本的 FLAME-MoE 路由片段提取各专家 token 数，
 生成独立的 `shapes_flame.json`。它使用模型专家层尺寸，在单卡上测试 64 个专家的 FC1/FC2、
 contiguous/masked 共 16 组配置；输入矩阵与 scale 仍随机生成，不是完整 MoE 或原训练部署的重现。
+
+当前两个 C 接口支持 1～4096 个专家，内部每批最多启动 64 个专家，保持上游一次调用。
+自动拆批的小尺寸正确性记录见 `01_naive_gemm/batching_correctness_results.json`；
+该步骤验证调用层与跨批索引，尚未增加分块复用或矩阵指令优化。
