@@ -9,7 +9,7 @@
 下方测试命令和配置链接已更新；历史报告原文、输入配置和 kernel 均未修改。
 路径调整改变了测试脚本哈希，旧报告保持归档，不能与新脚本混合 `--resume`；复测请指定新输出文件。
 迁移后本实现通过 contiguous/masked 两个 G=129 尾部 case；记录见
-[公共测试入口迁移检查](benchmarks_migration_2026-10-20.json)。本轮仅验证调用链，不作为新的性能基线。
+[公共测试入口迁移检查](reports/benchmarks_migration_2026-10-20.json)。本轮仅验证调用链，不作为新的性能基线。
 
 ## 两种布局
 
@@ -320,13 +320,13 @@ bash build.sh
 ```bash
 cd /root/MOE/C500_int8_02All/01_naive_gemm
 bash build.sh --shared
-python ../benchmarks/bench_shapes.py --output benchmark_rerun.json
+python ../benchmarks/bench_shapes.py --output reports/benchmark_rerun.json
 # 中断后恢复；源码、共享库、shape 和计时参数须与已保存结果一致
-python ../benchmarks/bench_shapes.py --output benchmark_rerun.json --resume
+python ../benchmarks/bench_shapes.py --output reports/benchmark_rerun.json --resume
 # 只运行匹配的 case，另外保存结果
-python ../benchmarks/bench_shapes.py --match masked_g6_m20 --output selected_results.json
+python ../benchmarks/bench_shapes.py --match masked_g6_m20 --output reports/selected_results.json
 # 可指定预热次数、每批重复次数、计时批数、每专家校验数量
-python ../benchmarks/bench_shapes.py --output benchmark_rerun.json --warmup 1 --iterations 1 --rounds 5 --check-samples 128
+python ../benchmarks/bench_shapes.py --output reports/benchmark_rerun.json --warmup 1 --iterations 1 --rounds 5 --check-samples 128
 ```
 
 计时与指标：
@@ -358,7 +358,7 @@ python ../benchmarks/bench_shapes.py --output benchmark_rerun.json --warmup 1 --
 
 ### 24 组实测结果
 
-原始数据见 [benchmark_results.json](benchmark_results.json)。24/24 均为 sampled PASS：共 45056 个数值参考点通过，所有有效输出的有限值检查通过，所有 masked 填充区保持不变。此前小例子全量对照不替代这次大 shape 的抽样口径。
+原始数据见 [benchmark_results.json](reports/benchmark_results.json)。24/24 均为 sampled PASS：共 45056 个数值参考点通过，所有有效输出的有限值检查通过，所有 masked 填充区保持不变。此前小例子全量对照不替代这次大 shape 的抽样口径。
 
 前 3 组保留首轮中断前的同参数结果；其余 21 组在独立进程中完成，来源可由 run_index 查到。测量使用同一个共享库、同一份 C++ 源码、相同数据生成规则及 warmup=1、iterations=1、rounds=5。所有 case 的五次样本相对极差 `(max-min)/median` 最大约为 1.35%。
 
@@ -397,7 +397,7 @@ T 是所有专家实际有效 M 的总和；每专家具体 counts 见 JSON。�
 - 每专家约 20 个 token 时，吞吐量降至约 0.0994～0.1091 TOPS；最小 case 为 G=6、T=103、N=4096、K=2048，中位 17.3834 ms。这比约 0.11 TOPS 的大 M 基线低约一成，并非耗时短就一定效率高。
 - 当前源码仍是一线程一个输出、普通 INT32 点积，没有显式使用硬件矩阵指令。这些数字是朴素实现的基线，不是 C500 的最佳 INT8 能力。
 - 小 M 下并行度、尾部线程和无效 block 调度都可能影响效率，当前测试没有隔离这些因素的贡献；不得仅凭该表判定访存/计算瓶颈。
-- 后续可以先做分块与数据复用，再以相同 shape、输入规则和计时范围复测；硬件矩阵指令作为下一阶段。保持本 JSON 作为基线，复测可用 `--output benchmark_repeat.json` 保存另一份结果。
+- 后续可以先做分块与数据复用，再以相同 shape、输入规则和计时范围复测；硬件矩阵指令作为下一阶段。保持本 JSON 作为基线，复测可用 `--output reports/benchmark_repeat.json` 保存另一份结果。
 
 独立进程完成剩余 21 组后，容器 OOM kill 计数仍为 2，本次恢复阶段未出现新的 OOM kill。
 
@@ -467,10 +467,10 @@ python -m venv .venv
 ```bash
 bash build.sh --shared
 export LD_LIBRARY_PATH=/opt/maca/lib:/opt/mxdriver/lib:${LD_LIBRARY_PATH:-}
-python ../benchmarks/bench_shapes.py --shapes ../benchmarks/shapes_flame.json --output benchmark_flame_rerun.json \
+python ../benchmarks/bench_shapes.py --shapes ../benchmarks/shapes_flame.json --output reports/benchmark_flame_rerun.json \
   --warmup 1 --iterations 1 --rounds 5
 # 中断后按相同参数续跑
-python ../benchmarks/bench_shapes.py --shapes ../benchmarks/shapes_flame.json --output benchmark_flame_rerun.json --resume
+python ../benchmarks/bench_shapes.py --shapes ../benchmarks/shapes_flame.json --output reports/benchmark_flame_rerun.json --resume
 ```
 
 正确性与计时沿用上一节的口径：每专家最多 128 个参考点（含边界），
@@ -482,7 +482,7 @@ python ../benchmarks/bench_shapes.py --shapes ../benchmarks/shapes_flame.json --
 
 ### C500 实测结果
 
-原始记录：[benchmark_flame_results.json](benchmark_flame_results.json)。
+原始记录：[benchmark_flame_results.json](reports/benchmark_flame_results.json)。
 本次使用原先的 C500 16 GB sGPU 实例，mx-smi 登记计算配额 25%，
 mcPyTorch `2.8.0+metax3.7.1.3`；源码、共享库和批测脚本与上一轮保持一致。
 配额不等于物理固定四分之一计算单元，结果不能乘四推算整卡性能。
@@ -541,7 +541,7 @@ kernel 源码、共享库、批测脚本和 shape 摘要一致，吞吐公式和
 ### 快速正确性验证
 
 C500 上重新编译普通程序和共享库，原始记录在
-[batching_correctness_results.json](batching_correctness_results.json)。
+[batching_correctness_results.json](reports/batching_correctness_results.json)。
 
 - 26 组普通程序用例全部通过全量 CPU INT64/FP64 参考和 masked 填充检查。
   覆盖 G=1/63/64/65/128/129/384、4096 专家的稀疏输入、首/中/末整批为空、
@@ -563,7 +563,7 @@ bash build.sh --shared
 export LD_LIBRARY_PATH=/opt/maca/lib:/opt/mxdriver/lib:${LD_LIBRARY_PATH:-}
 python - <<'PY'
 import json, re, subprocess
-cases = json.load(open('batching_correctness_results.json'))['results']
+cases = json.load(open('reports/batching_correctness_results.json'))['results']
 for case in cases:
     command = ['./naive_gemm.out']
     if case['layout'] == 'masked':
@@ -589,7 +589,7 @@ PY
 测量版本为 `bb0f39b`：已支持每次最多 64 组的自动拆批，计算仍是朴素 INT8 点积。
 本次不修改 `naive_gemm.cpp`、`bench_shapes.py` 或构建参数，保留原始实现供后续优化对照。
 配置见 [baseline_shapes_2026-10-16.json](../benchmarks/baseline_shapes_2026-10-16.json)，
-原始测量见 [baseline_results_2026-10-16.json](baseline_results_2026-10-16.json)。
+原始测量见 [baseline_results_2026-10-16.json](reports/baseline_results_2026-10-16.json)。
 
 ### 固定的 7 个 case
 
@@ -619,7 +619,7 @@ bash build.sh --shared
 export LD_LIBRARY_PATH=/opt/maca/lib:/opt/mxdriver/lib:${LD_LIBRARY_PATH:-}
 python ../benchmarks/bench_shapes.py \
   --shapes ../benchmarks/baseline_shapes_2026-10-16.json \
-  --output baseline_rerun.json \
+  --output reports/baseline_rerun.json \
   --warmup 3 --iterations 2 --rounds 7 --check-samples 256 --seed 20261016
 ```
 
@@ -657,3 +657,10 @@ masked padding 共 20,519,202 个元素全量检查，错误数均为 0。最大
 后续第一项优化为共享内存分块复用，先保持接口、两种布局、缩放和边界规则不变，
 再用这 7 个配置逐项对照。原始性能报告保留本轮 7 组各 7 个耗时样本，测量时源码提交为
 `bb0f39be7c6a609f23c3ab70661039ed84ada569`。本次归档提交仅增加配置、报告和文档。
+
+
+## 目录与报告归档后的调用检查（2026-10-20）
+
+源码改名及报告移动后，本实现通过 contiguous/masked 两个 G=129 尾部 case。
+[本次检查报告](reports/reorganization_check_2026-10-20.json) 记录实际源码、库及测试脚本哈希。
+本轮 warmup=0、iterations=1、rounds=1，仅验证路径及调用可用，不作为新的性能基线。

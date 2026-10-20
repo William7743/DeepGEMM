@@ -215,7 +215,7 @@ def run_isolated(cases, args, signature):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--shapes", type=Path, default=ROOT / "shapes.json")
-    p.add_argument("--output", type=Path, default=NAIVE_ROOT / "benchmark_results.json")
+    p.add_argument("--output", type=Path, default=NAIVE_ROOT / "reports" / "benchmark_rerun.json")
     p.add_argument("--library", type=Path, default=NAIVE_ROOT / "libmoe_int8.so",
                    help="library exporting the teaching moe_int8_benchmark ABI")
     p.add_argument("--source", type=Path, default=NAIVE_ROOT / "naive_gemm.cpp",
