@@ -38,15 +38,24 @@
 
 ## 当前性能测试入口
 
-`01_naive_gemm/shapes.json` 保存 24 组上游生成 shape；`01_naive_gemm/bench_shapes.py` 读取配置、调用 MACA C++ 计时入口并保存正确性与性能记录。运行方法、计时口径和结果见 [第一课说明](01_naive_gemm/README.md)。这套数据用于建立朴素实现的基线，真实模型 TP/EP 采集数据仍需后续补充。
+`benchmarks/shapes.json` 保存 24 组上游生成 shape；`benchmarks/bench_shapes.py` 读取配置、调用 MACA C++ 计时入口并保存正确性与性能记录。运行方法、计时口径和结果见 [第一课说明](01_naive_gemm/README.md)。这套数据用于建立朴素实现的基线，真实模型 TP/EP 采集数据仍需后续补充。
 
-`01_naive_gemm/prepare_flame_shapes.py` 从固定版本的 FLAME-MoE 路由片段提取各专家 token 数，
+`benchmarks/prepare_flame_shapes.py` 从固定版本的 FLAME-MoE 路由片段提取各专家 token 数，
 生成独立的 `shapes_flame.json`。它使用模型专家层尺寸，在单卡上测试 64 个专家的 FC1/FC2、
 contiguous/masked 共 16 组配置；输入矩阵与 scale 仍随机生成，不是完整 MoE 或原训练部署的重现。
 
 当前两个 C 接口支持 1～4096 个专家，内部每批最多启动 64 个专家，保持上游一次调用。
-自动拆批的小尺寸正确性记录见 `01_naive_gemm/batching_correctness_results.json`；
+自动拆批的小尺寸正确性记录见 `01_naive_gemm/reports/batching_correctness_results.json`；
 该步骤验证调用层与跨批索引，尚未增加分块复用或矩阵指令优化。
 
-优化前固定基线使用 `01_naive_gemm/baseline_shapes_2026-10-16.json` 的 7 个代表性 case。
+优化前固定基线使用 `benchmarks/baseline_shapes_2026-10-16.json` 的 7 个代表性 case。
 当前朴素 kernel 保留不变；基线的环境、计时方法、结果与复现命令见第一课说明末尾。
+
+
+## reports 归档与优化前准备
+
+朴素版的历史测试结果统一归档到 `01_naive_gemm/reports/`，公共测试脚本和 shape 配置位于 `benchmarks/`。
+本提交不修改朴素 kernel；后续先原样复制源码与 README，再加入共享内存分块优化。
+历史报告中的提交号、源码和库哈希保持测量时的原文；原始细分提交保存在
+`backup/DeepGemm-MUXI-Learn-before-squash-2026-10-20` 备份分支，不把历史结果重新标为本提交测量。
+默认新报告输出到 `01_naive_gemm/reports/benchmark_rerun.json`；完整配置和运行命令见第一课 README。
