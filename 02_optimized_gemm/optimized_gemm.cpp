@@ -28,6 +28,9 @@ constexpr int max_nk = 32768;
 constexpr int max_groups = 4096; // Bounded API contract, not a hardware limit.
 constexpr int groups_per_launch = 64;
 constexpr int BLOCK_M = 16, BLOCK_N = 16, BLOCK_K = 32;
+static_assert(BLOCK_K % 4 == 0 &&
+              BLOCK_M * BLOCK_N == (BLOCK_M + BLOCK_N) * (BLOCK_K / 4),
+              "packed loader needs one four-byte word per thread");
 static_assert(int64_t(max_groups) * max_expert_rows <= std::numeric_limits<int32_t>::max(),
               "contiguous offsets must fit INT32");
 static_assert(sizeof(size_t) >= 8, "large buffers require 64-bit indexing");
@@ -41,8 +44,17 @@ struct GemmView {
     float* c;
 };
 
-// Two template instances implement the existing contiguous and masked contracts.
-template <bool Masked>
+// MACA's Clang aliasing extension permits a word read from an INT8 buffer.
+// The host dispatch guarantees that this naturally aligned load is legal.
+typedef uint32_t AliasLoadWord __attribute__((__may_alias__));
+__device__ __forceinline__ uint32_t load_int8x4(const int8_t* input) {
+    return *reinterpret_cast<const AliasLoadWord*>(input);
+}
+static_assert(__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__,
+              "packed INT8 extraction requires little-endian byte order");
+
+// Separate compile-time paths retain the original loader for arbitrary INT8 addresses/K.
+template <bool Masked, bool Vectorized>
 __global__ void shared_int8_gemm(GemmView data, int groups, int rows, int n, int k,
                                int group_base) {
     const int group = group_base + blockIdx.z;
@@ -75,17 +87,41 @@ __global__ void shared_int8_gemm(GemmView data, int groups, int rows, int n, int
     int32_t sum = 0; // One output per thread, as in the naive lesson.
 
     for (int k0 = 0; k0 < k; k0 += BLOCK_K) {
-        // 256 threads cooperate on 512 A elements and 512 B elements.
-        // Adjacent linear thread IDs read along the contiguous global K axis.
-        for (int i = tid; i < BLOCK_M * BLOCK_K; i += BLOCK_M * BLOCK_N) {
-            const int r = i / BLOCK_K, kk = i % BLOCK_K;
-            tile_a[r][kk] = (m0 + r < valid_m && k0 + kk < k)
-                ? data.a[(expert_row_base + m0 + r) * k + k0 + kk] : int8_t(0);
-        }
-        for (int i = tid; i < BLOCK_N * BLOCK_K; i += BLOCK_M * BLOCK_N) {
-            const int c = i / BLOCK_K, kk = i % BLOCK_K;
-            tile_b[kk][c] = (n0 + c < n && k0 + kk < k)
-                ? data.b[(size_t(group) * n + n0 + c) * k + k0 + kk] : int8_t(0);
+        if constexpr (Vectorized) {
+            // 128 threads load A and 128 load B: one aligned 32-bit word each.
+            // A/B rows are contiguous in K. All four bytes fit because K%4==0.
+            constexpr int packs_per_row = BLOCK_K / 4;
+            constexpr int a_packs = BLOCK_M * packs_per_row;
+            const bool loading_a = tid < a_packs;
+            const int pack = loading_a ? tid : tid - a_packs;
+            const int r = pack / packs_per_row, kk = (pack % packs_per_row) * 4;
+            uint32_t packed = 0;
+            if (loading_a) {
+                if (m0 + r < valid_m && k0 + kk < k)
+                    packed = load_int8x4(data.a + (expert_row_base + m0 + r) * k + k0 + kk);
+                #pragma unroll
+                for (int j = 0; j < 4; ++j)
+                    tile_a[r][kk + j] = static_cast<int8_t>(static_cast<uint8_t>(packed >> (8 * j)));
+            } else {
+                if (n0 + r < n && k0 + kk < k)
+                    packed = load_int8x4(data.b + (size_t(group) * n + n0 + r) * k + k0 + kk);
+                #pragma unroll
+                for (int j = 0; j < 4; ++j)
+                    tile_b[kk + j][r] = static_cast<int8_t>(static_cast<uint8_t>(packed >> (8 * j)));
+            }
+        } else {
+            // 256 threads cooperate on 512 A elements and 512 B elements.
+            // Adjacent linear thread IDs read along the contiguous global K axis.
+            for (int i = tid; i < BLOCK_M * BLOCK_K; i += BLOCK_M * BLOCK_N) {
+                const int r = i / BLOCK_K, kk = i % BLOCK_K;
+                tile_a[r][kk] = (m0 + r < valid_m && k0 + kk < k)
+                    ? data.a[(expert_row_base + m0 + r) * k + k0 + kk] : int8_t(0);
+            }
+            for (int i = tid; i < BLOCK_N * BLOCK_K; i += BLOCK_M * BLOCK_N) {
+                const int c = i / BLOCK_K, kk = i % BLOCK_K;
+                tile_b[kk][c] = (n0 + c < n && k0 + kk < k)
+                    ? data.b[(size_t(group) * n + n0 + c) * k + k0 + kk] : int8_t(0);
+            }
         }
         __syncthreads(); // All tile writes must finish before any reader uses them.
 
@@ -139,6 +175,9 @@ static mcError_t launch_grouped(GemmView data, int groups, int rows, int n, int 
     // For contiguous, T is an upper bound on every expert's M. The teaching
     // contract limits M<=max_expert_rows, so this grid needs no CPU readback of offsets.
     int row_bound = masked ? rows : std::min(rows, max_expert_rows);
+    const bool vectorized = k % 4 == 0 &&
+        (reinterpret_cast<uintptr_t>(data.a) & 3) == 0 &&
+        (reinterpret_cast<uintptr_t>(data.b) & 3) == 0;
     dim3 block(BLOCK_N, BLOCK_M);
     // Keep global pointers/metadata: group_base + blockIdx.z selects the expert.
     // In particular, contiguous offsets remain GLOBAL; no CPU readback/rebasing.
@@ -146,10 +185,17 @@ static mcError_t launch_grouped(GemmView data, int groups, int rows, int n, int 
     for (int group_base = 0; group_base < groups; group_base += groups_per_launch) {
         int batch_groups = std::min(groups_per_launch, groups - group_base);
         dim3 grid((n + BLOCK_N - 1) / BLOCK_N, (row_bound + BLOCK_M - 1) / BLOCK_M, batch_groups);
-        if (masked)
-            shared_int8_gemm<true><<<grid, block, 0, stream>>>(data, groups, rows, n, k, group_base);
-        else
-            shared_int8_gemm<false><<<grid, block, 0, stream>>>(data, groups, rows, n, k, group_base);
+        if (masked) {
+            if (vectorized)
+                shared_int8_gemm<true, true><<<grid, block, 0, stream>>>(data, groups, rows, n, k, group_base);
+            else
+                shared_int8_gemm<true, false><<<grid, block, 0, stream>>>(data, groups, rows, n, k, group_base);
+        } else {
+            if (vectorized)
+                shared_int8_gemm<false, true><<<grid, block, 0, stream>>>(data, groups, rows, n, k, group_base);
+            else
+                shared_int8_gemm<false, false><<<grid, block, 0, stream>>>(data, groups, rows, n, k, group_base);
+        }
         mcError_t status = mcGetLastError();
         if (status != mcSuccess) return status; // Earlier batches may already be queued.
     }

@@ -1,0 +1,34 @@
+Compiler IR check; not a hardware instruction or bandwidth counter.
+Source SHA256: 9825be3d9e7bbf16bbfb2f09dd3a3f6a06426c5934e6ab3bcc785d4c8909a065
+LLVM IR SHA256: 91fc9e32abd8dcf2d702d0c53d1f53f2cacad846f36d73eb9cf9ba905021d6eb
+Command: /opt/maca/mxgpu_llvm/bin/mxcc -DMOE_GEMM_LIBRARY -O2 -std=c++17 -x maca -offload-arch=xcore1000 -maca-device-only -S -emit-llvm -I/opt/maca/include -I/opt/maca/include/mcr 02_optimized_gemm/optimized_gemm.cpp -o /tmp/moe_vector_final.ll
+
+mxcc version 1.0.0 (d9102a1572)
+Target: x86_64-unknown-linux-gnu
+Thread model: posix
+InstalledDir: /opt/maca-3.7.1/mxgpu_llvm/bin
+
+
+define protected metaxgpu_kernel void @_Z16shared_int8_gemmILb1ELb1EEv8GemmViewiiiii(ptr addrspace(4) nocapture noundef readonly byref(%struct.GemmView) align 8 %0, i32 noundef %groups, i32 noundef %rows, i32 noundef %n, i32 noundef %k, i32 noundef %group_base) local_unnamed_addr #3 comdat {
+%8 = load i32, ptr addrspace(1) %arrayidx, align 4, !tbaa !16
+%16 = load i32, ptr addrspace(1) %gep, align 4, !tbaa !26
+
+define protected metaxgpu_kernel void @_Z16shared_int8_gemmILb1ELb0EEv8GemmViewiiiii(ptr addrspace(4) nocapture noundef readonly byref(%struct.GemmView) align 8 %0, i32 noundef %groups, i32 noundef %rows, i32 noundef %n, i32 noundef %k, i32 noundef %group_base) local_unnamed_addr #3 comdat {
+%8 = load i32, ptr addrspace(1) %arrayidx, align 4, !tbaa !16
+%26 = load i8, ptr addrspace(1) %gep223, align 1, !tbaa !26
+%96 = load i8, ptr addrspace(1) %gep, align 1, !tbaa !26
+
+define protected metaxgpu_kernel void @_Z16shared_int8_gemmILb0ELb1EEv8GemmViewiiiii(ptr addrspace(4) nocapture noundef readonly byref(%struct.GemmView) align 8 %0, i32 noundef %groups, i32 noundef %rows, i32 noundef %n, i32 noundef %k, i32 noundef %group_base) local_unnamed_addr #3 comdat {
+%8 = load i32, ptr addrspace(1) %arrayidx, align 4, !tbaa !16
+%9 = load i32, ptr addrspace(1) %arrayidx4, align 4, !tbaa !16
+%10 = load i32, ptr addrspace(1) %5, align 4, !tbaa !16
+%11 = load i32, ptr addrspace(1) %arrayidx10, align 4, !tbaa !16
+%20 = load i32, ptr addrspace(1) %gep, align 4, !tbaa !26
+
+define protected metaxgpu_kernel void @_Z16shared_int8_gemmILb0ELb0EEv8GemmViewiiiii(ptr addrspace(4) nocapture noundef readonly byref(%struct.GemmView) align 8 %0, i32 noundef %groups, i32 noundef %rows, i32 noundef %n, i32 noundef %k, i32 noundef %group_base) local_unnamed_addr #3 comdat {
+%8 = load i32, ptr addrspace(1) %arrayidx, align 4, !tbaa !16
+%9 = load i32, ptr addrspace(1) %arrayidx4, align 4, !tbaa !16
+%10 = load i32, ptr addrspace(1) %5, align 4, !tbaa !16
+%11 = load i32, ptr addrspace(1) %arrayidx10, align 4, !tbaa !16
+%30 = load i8, ptr addrspace(1) %gep260, align 1, !tbaa !26
+%100 = load i8, ptr addrspace(1) %gep, align 1, !tbaa !26
