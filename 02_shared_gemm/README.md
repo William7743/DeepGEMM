@@ -1,23 +1,33 @@
-# 教学对照起点：原样复制朴素 grouped GEMM
-
-本提交将 `01_naive_gemm/naive_gemm.cpp` 原样复制为本目录的 `shared_gemm.cpp`，
-下一提交将在同一路径上加入共享内存分块，方便通过 GitHub commit diff 学习。
-`bash build.sh` 编译共享库；`MOE_GEMM_LIBRARY` 仅排除 CPU 演示的 main。
-本提交的文件名仍为 shared_gemm.cpp，但计算暂为朴素实现。
-
-本目录已有的性能和正确性 JSON 来自历史共享内存实现（提交 5500e78），
-不是此教学起点的测量记录。后续提交会恢复课程说明，已有报告不覆盖。
-
----
-
-以下保留原共享内存课程说明，描述的是历史实现 5500e78；本教学起点尚未应用优化。
-
 # 第二课：共享内存分块 INT8 grouped GEMM
 
 本课保留第一课朴素 kernel，新增一个可独立编译的共享库。
 输入输出、INT8/INT32/FP32 数值约定、contiguous/masked 布局及每次最多 64 个专家的自动拆批保持一致。
 当前仍由一个线程计算一个输出元素，不包含 INT8 MMA、异步流水线或 persistent 调度。
 固定的 32 项块内累加循环使用展开；本轮不做消融实验，不将全部收益归因于单一改动。
+
+## 如何查看朴素版到共享内存版的修改
+
+为便于逐行学习，追加一个教学起点提交 `1d01af3`：`shared_gemm.cpp` 与朴素源码完全相同。
+随后在同一文件加入共享内存优化，保留 CPU 演示、量化、公共 C 接口和 event 计时代码。
+主要 diff 仅涉及 tile 常量、两个朴素 kernel 合并为模板共享 kernel、启动配置和 kernel 调用。
+
+在 GitHub 查看紧随 `1d01af3` 的优化提交，并选择 `02_shared_gemm/shared_gemm.cpp`；
+本地也可运行（把 `<优化提交>` 换为相应提交号）：
+
+```bash
+git diff 1d01af3 <优化提交> -- 02_shared_gemm/shared_gemm.cpp
+```
+
+这是追加教学历史，没有改写原有提交。后续优化继续修改同一份源码。
+
+本次两份源码均在 C500 上重新构建，分别通过 45 组全量参考、20 项 API 检查及 8 组原始输入检查：
+
+- `naive_copy_correctness_2026-10-20.json`：原样复制的朴素实现。
+- `shared_incremental_correctness_2026-10-20.json`：在朴素源码上增量修改的共享内存实现。
+
+本次整理没有重跑 7 个大尺寸性能 case。下方性能表及原有 `shared_results`、`shared_correctness`
+报告仍对应历史实现 `5500e78` 的源码与二进制哈希；不代表本次整理后的二进制重新测量值。
+当前计算 kernel 与该历史共享版相同，新增保留的主要是 CPU 演示及其头文件；最新正确性以新增报告为准。
 
 ## 核心变化
 
@@ -58,7 +68,8 @@ bash build.sh
 ```
 
 生成 `libmoe_int8_shared.so`，导出与第一课相同的 `moe_int8_contiguous`、`moe_int8_masked`
-及测量专用的 `moe_int8_benchmark`。本课没有重复拷贝 CPU 演示主程序，使用第一课 Python 入口调用共享库。
+及测量专用的 `moe_int8_benchmark`。为方便教学 diff，本课保留第一课全部 CPU 演示及量化代码，
+构建共享库时用 `MOE_GEMM_LIBRARY` 排除 main；批量测试仍使用第一课 Python 入口。
 compute 接口使用调用方的 stream，不分配、不复制、不同步；benchmark 入口为 GPU event 计时而同步。
 公共尺寸边界、指针检查及无工作调用与第一课一致。G=1～4096，N/K=1～32768，
 每专家 M≤65536；尺寸符合限制仍需有足够内存。输入与输出必须符合接口的分配及不重叠约定。

@@ -27,6 +27,7 @@ constexpr int max_expert_rows = 65536;
 constexpr int max_nk = 32768;
 constexpr int max_groups = 4096; // Bounded API contract, not a hardware limit.
 constexpr int groups_per_launch = 64;
+constexpr int BLOCK_M = 16, BLOCK_N = 16, BLOCK_K = 32;
 static_assert(int64_t(max_groups) * max_expert_rows <= std::numeric_limits<int32_t>::max(),
               "contiguous offsets must fit INT32");
 static_assert(sizeof(size_t) >= 8, "large buffers require 64-bit indexing");
@@ -40,45 +41,68 @@ struct GemmView {
     float* c;
 };
 
-__global__ void naive_contiguous_int8_gemm(GemmView data,
-                                          int groups, int total_m, int n, int k,
-                                          int group_base) {
-    int group = group_base + blockIdx.z;
-    if (group >= groups) return;
-    int begin = data.meta[group], end = data.meta[group + 1];
-    // Callers must validate metadata. These guards prevent out-of-range accesses
-    // for invalid offsets; they do NOT turn invalid metadata into a valid result.
-    if (data.meta[0] != 0 || data.meta[groups] != total_m ||
-        begin < 0 || end < begin || end > total_m || end - begin > max_expert_rows) return;
-    int col = blockIdx.x * blockDim.x + threadIdx.x;
-    int row = blockIdx.y * blockDim.y + threadIdx.y;
-    if (row >= end - begin || col >= n) return;
-    size_t global_row = size_t(begin) + row;
-    int32_t sum = 0;
-    for (size_t p = 0; p < k; ++p)
-        sum += static_cast<int32_t>(data.a[global_row * k + p]) *
-               static_cast<int32_t>(data.b[(size_t(group) * n + col) * k + p]);
-    data.c[global_row * n + col] = static_cast<float>(sum) *
-                                 data.a_scale[global_row] * data.b_scale[size_t(group) * n + col];
-}
+// Two template instances implement the existing contiguous and masked contracts.
+template <bool Masked>
+__global__ void shared_int8_gemm(GemmView data, int groups, int rows, int n, int k,
+                               int group_base) {
+    const int group = group_base + blockIdx.z;
+    if (group >= groups) return; // Uniform for the entire block.
 
-__global__ void naive_masked_int8_gemm(GemmView data,
-                                      int groups, int capacity, int n, int k,
-                                      int group_base) {
-    int group = group_base + blockIdx.z;
-    if (group >= groups) return;
-    int valid = data.meta[group]; // Read CURRENT lengths from GPU on every call.
-    if (valid < 0 || valid > capacity) return;
-    int col = blockIdx.x * blockDim.x + threadIdx.x;
-    int row = blockIdx.y * blockDim.y + threadIdx.y;
-    if (row >= valid || col >= n) return; // Padding must retain its original value.
-    size_t physical_row = size_t(group) * capacity + row;
-    int32_t sum = 0;
-    for (size_t p = 0; p < k; ++p)
-        sum += static_cast<int32_t>(data.a[physical_row * k + p]) *
-               static_cast<int32_t>(data.b[(size_t(group) * n + col) * k + p]);
-    data.c[physical_row * n + col] = static_cast<float>(sum) *
-                                   data.a_scale[physical_row] * data.b_scale[size_t(group) * n + col];
+    int valid_m;
+    size_t expert_row_base;
+    if constexpr (Masked) {
+        valid_m = data.meta[group];
+        if (valid_m < 0 || valid_m > rows) return;
+        expert_row_base = size_t(group) * rows;
+    } else {
+        const int begin = data.meta[group], end = data.meta[group + 1];
+        if (data.meta[0] != 0 || data.meta[groups] != rows ||
+            begin < 0 || end < begin || end > rows || end - begin > max_expert_rows) return;
+        valid_m = end - begin;
+        expert_row_base = begin;
+    }
+    const int m0 = blockIdx.y * BLOCK_M, n0 = blockIdx.x * BLOCK_N;
+    // Only BLOCK-uniform conditions may return before a barrier.
+    if (m0 >= valid_m || n0 >= n) return;
+
+    __shared__ int8_t tile_a[BLOCK_M][BLOCK_K];
+    // B is [G,N,K] globally; transpose the tile so output-column threads read
+    // consecutive shared addresses. The extra column changes the bank mapping.
+    __shared__ int8_t tile_b[BLOCK_K][BLOCK_N + 1];
+    const int tx = threadIdx.x, ty = threadIdx.y;
+    const int tid = ty * BLOCK_N + tx;
+    const int row = m0 + ty, col = n0 + tx;
+    int32_t sum = 0; // One output per thread, as in the naive lesson.
+
+    for (int k0 = 0; k0 < k; k0 += BLOCK_K) {
+        // 256 threads cooperate on 512 A elements and 512 B elements.
+        // Adjacent linear thread IDs read along the contiguous global K axis.
+        for (int i = tid; i < BLOCK_M * BLOCK_K; i += BLOCK_M * BLOCK_N) {
+            const int r = i / BLOCK_K, kk = i % BLOCK_K;
+            tile_a[r][kk] = (m0 + r < valid_m && k0 + kk < k)
+                ? data.a[(expert_row_base + m0 + r) * k + k0 + kk] : int8_t(0);
+        }
+        for (int i = tid; i < BLOCK_N * BLOCK_K; i += BLOCK_M * BLOCK_N) {
+            const int c = i / BLOCK_K, kk = i % BLOCK_K;
+            tile_b[kk][c] = (n0 + c < n && k0 + kk < k)
+                ? data.b[(size_t(group) * n + n0 + c) * k + k0 + kk] : int8_t(0);
+        }
+        __syncthreads(); // All tile writes must finish before any reader uses them.
+
+        #pragma unroll
+        for (int kk = 0; kk < BLOCK_K; ++kk)
+            sum += static_cast<int32_t>(tile_a[ty][kk]) *
+                   static_cast<int32_t>(tile_b[kk][tx]);
+
+        __syncthreads(); // All readers must finish before the next tile overwrites it.
+    }
+    // Partial-row/column threads still participated in every barrier.
+    // Write valid outputs only; masked padding must retain its original value.
+    if (row < valid_m && col < n) {
+        const size_t physical_row = expert_row_base + row;
+        data.c[physical_row * n + col] = static_cast<float>(sum) *
+            data.a_scale[physical_row] * data.b_scale[size_t(group) * n + col];
+    }
 }
 
 bool overlaps_output(const void* input, size_t bytes, float* output, size_t out_bytes) {
@@ -115,17 +139,17 @@ static mcError_t launch_grouped(GemmView data, int groups, int rows, int n, int 
     // For contiguous, T is an upper bound on every expert's M. The teaching
     // contract limits M<=max_expert_rows, so this grid needs no CPU readback of offsets.
     int row_bound = masked ? rows : std::min(rows, max_expert_rows);
-    dim3 block(16, 16);
+    dim3 block(BLOCK_N, BLOCK_M);
     // Keep global pointers/metadata: group_base + blockIdx.z selects the expert.
     // In particular, contiguous offsets remain GLOBAL; no CPU readback/rebasing.
     // All batches are enqueued on the caller's stream without intermediate sync.
     for (int group_base = 0; group_base < groups; group_base += groups_per_launch) {
         int batch_groups = std::min(groups_per_launch, groups - group_base);
-        dim3 grid((n + 15) / 16, (row_bound + 15) / 16, batch_groups);
+        dim3 grid((n + BLOCK_N - 1) / BLOCK_N, (row_bound + BLOCK_M - 1) / BLOCK_M, batch_groups);
         if (masked)
-            naive_masked_int8_gemm<<<grid, block, 0, stream>>>(data, groups, rows, n, k, group_base);
+            shared_int8_gemm<true><<<grid, block, 0, stream>>>(data, groups, rows, n, k, group_base);
         else
-            naive_contiguous_int8_gemm<<<grid, block, 0, stream>>>(data, groups, rows, n, k, group_base);
+            shared_int8_gemm<false><<<grid, block, 0, stream>>>(data, groups, rows, n, k, group_base);
         mcError_t status = mcGetLastError();
         if (status != mcSuccess) return status; // Earlier batches may already be queued.
     }
