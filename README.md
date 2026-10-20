@@ -50,3 +50,11 @@ contiguous/masked 共 16 组配置；输入矩阵与 scale 仍随机生成，不
 
 优化前固定基线使用 `01_naive_gemm/baseline_shapes_2026-10-16.json` 的 7 个代表性 case。
 当前朴素 kernel 保留不变；基线的环境、计时方法、结果与复现命令见第一课说明末尾。
+
+
+## 第二课：共享内存分块
+
+实现位于 [02_shared_gemm](02_shared_gemm/README.md)，独立生成 `libmoe_int8_shared.so`。
+保留第一课朴素 kernel 作为对照，仍提供 contiguous/masked 两种接口和超过 64 个专家的自动拆批。
+先通过 `16×16×32` 分块合作加载及共享内存复用改善数据访问，不使用硬件矩阵指令。
+构建、正确性证据及同一环境下的 7 个固定 case 性能对比见第二课说明。

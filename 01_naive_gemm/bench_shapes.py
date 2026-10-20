@@ -161,6 +161,8 @@ def run_isolated(cases, args, signature):
     report = dict(signature, settings=settings, results=[], runs=[])
     if args.resume and args.output.exists():
         report = json.loads(args.output.read_text())
+        if report.get("controller_sha256") != hashlib.sha256(Path(__file__).read_bytes()).hexdigest():
+            raise ValueError("cannot resume: benchmark harness differs")
         for key, value in signature.items():
             if report.get(key) != value:
                 raise ValueError(f"cannot resume: {key} differs")
@@ -182,7 +184,8 @@ def run_isolated(cases, args, signature):
             child_output = Path(directory) / f"case_{i}.json"
             command = [sys.executable, str(Path(__file__).resolve()), "--single-process",
                        "--shapes", str(args.shapes.resolve()), "--match", case["name"],
-                       "--output", str(child_output)]
+                       "--output", str(child_output),
+                       "--library", str(args.library), "--source", str(args.source)]
             for option in ("seed", "warmup", "iterations", "rounds", "check_samples"):
                 command += ["--" + option.replace("_", "-"), str(getattr(args, option))]
             print(f"[{i + 1}/{len(cases)}] worker {case['name']}", flush=True)
@@ -211,6 +214,10 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--shapes", type=Path, default=ROOT / "shapes.json")
     p.add_argument("--output", type=Path, default=ROOT / "benchmark_results.json")
+    p.add_argument("--library", type=Path, default=ROOT / "libmoe_int8.so",
+                   help="library exporting the teaching moe_int8_benchmark ABI")
+    p.add_argument("--source", type=Path, default=ROOT / "naive_gemm.cpp",
+                   help="compute source to hash and record for this library")
     p.add_argument("--match", default="", help="only case names containing this substring")
     p.add_argument("--warmup", type=int, default=1)
     p.add_argument("--iterations", type=int, default=1, help="native calls per timed batch")
@@ -220,6 +227,8 @@ def main():
     p.add_argument("--resume", action="store_true", help="retain compatible completed PASS cases")
     p.add_argument("--single-process", action="store_true", help=argparse.SUPPRESS)
     args = p.parse_args()
+    args.library = args.library.resolve()
+    args.source = args.source.resolve()
     if not (0 <= args.warmup <= 100 and 1 <= args.iterations <= 1000 and
             1 <= args.rounds <= 100 and 25 <= args.check_samples <= 65536):
         p.error("invalid counts: warmup 0..100, iterations 1..1000, rounds 1..100, checks 25..65536")
@@ -234,8 +243,8 @@ def main():
     cases = [c for c in cases if (c["name"] == args.match if args.single_process else args.match in c["name"])]
     if not cases:
         p.error("no cases matched")
-    library = ROOT / "libmoe_int8.so"
-    signature = dict(source_sha256=hashlib.sha256((ROOT / "naive_gemm.cpp").read_bytes()).hexdigest(),
+    library = args.library
+    signature = dict(source_sha256=hashlib.sha256(args.source.read_bytes()).hexdigest(),
                      library_sha256=hashlib.sha256(library.read_bytes()).hexdigest(),
                      shapes_sha256=hashlib.sha256(raw.replace(b"\r\n", b"\n")).hexdigest(),
                      shapes_hash_scheme="SHA256 after CRLF-to-LF normalization")
@@ -253,7 +262,7 @@ def main():
         visible_memory_bytes=torch.cuda.get_device_properties(0).total_memory,
         mx_smi=command_output(["mx-smi"]), git_head=command_output(["git", "rev-parse", "HEAD"]),
         git_status=command_output(["git", "status", "--short"]),
-        source_sha256=hashlib.sha256((ROOT / "naive_gemm.cpp").read_bytes()).hexdigest(),
+        source_sha256=signature["source_sha256"],
         harness_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         library_sha256=hashlib.sha256(library.read_bytes()).hexdigest(),
         shapes_sha256=signature["shapes_sha256"],
