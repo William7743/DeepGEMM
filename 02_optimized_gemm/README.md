@@ -1,6 +1,6 @@
-# INT8 grouped GEMM：共享内存分块与向量加载
+# INT8 grouped GEMM：共享内存、向量加载与寄存器分块
 
-本课为两种布局提供独立的 C 调用入口。当前入口支持 1～4096 个专家，内部每次 kernel 启动最多处理 64 个。本目录在朴素版基础上加入共享内存分块复用和对齐 INT8 向量加载，仍使用标量 INT8 乘法、INT32 累加和 FP32 缩放输出，尚未使用硬件矩阵指令。
+本课为两种布局提供独立的 C 调用入口。当前入口支持 1～4096 个专家，内部每次 kernel 启动最多处理 64 个。本目录在朴素版基础上加入共享内存分块复用、对齐 INT8 向量加载和每线程 2×2 寄存器分块，仍使用标量 INT8 乘法、INT32 累加和 FP32 缩放输出，尚未使用硬件矩阵指令。
 
 ## 目录
 
@@ -38,6 +38,11 @@
   - [向量阶段验证](#向量阶段验证)
   - [向量阶段性能对照](#向量阶段性能对照)
   - [向量阶段复现](#向量阶段复现)
+- [寄存器分块（2026-10-20）](#寄存器分块2026-10-20)
+  - [每线程的四个输出](#每线程的四个输出)
+  - [代价与编译证据](#代价与编译证据)
+  - [寄存器阶段验证与性能](#寄存器阶段验证与性能)
+  - [寄存器阶段复现](#寄存器阶段复现)
 
 历史实测记录（以下为朴素版的学习历史与基线记录，2026-10-15～2026-10-16）：
 
@@ -61,13 +66,14 @@
 ## 目录命名与优化阶段
 
 本目录统一命名为 `02_optimized_gemm`，源码为 `optimized_gemm.cpp`，后续优化继续修改同一文件。
-当前阶段为共享内存分块加对齐 INT8 向量加载，函数名 `shared_int8_gemm` 和库名 `libmoe_int8_shared.so` 暂时保留。
+当前阶段在共享内存分块、对齐 INT8 向量加载之上增加每线程 2×2 寄存器分块，函数名 `shared_int8_gemm` 和库名 `libmoe_int8_shared.so` 暂时保留。
 优化含义由 commit、阶段说明和报告名记录；改名不改变 kernel、接口或数值规则。
 
 | 阶段 | 源码提交 | 性能证据 |
 |---|---|---|
 | 共享内存分块 | 当前历史中的 `23528c1`；下方保留整理前的历史引用 | [共享内存阶段报告](reports/shared_results_2026-10-20.json) |
-| 对齐 INT8 向量加载 | 在 `23528c1` 上的下一次功能提交 | [向量阶段对照](reports/vector_comparison_2026-10-20.json) |
+| 对齐 INT8 向量加载 | `8621c29` | [向量阶段对照](reports/vector_comparison_2026-10-20.json) |
+| 每线程 2×2 寄存器分块 | 在 `8621c29` 上的下一次功能提交 | [寄存器阶段对照](reports/register_comparison_2026-10-20.json) |
 
 查看跨改名的源码历史：
 
@@ -79,6 +85,8 @@ git log --follow --oneline -- 02_optimized_gemm/optimized_gemm.cpp
 所有 JSON 报告移入 `reports/`，报告内部的旧路径和提交号保留为历史证据，不改写内容。
 
 ## 共享内存优化相对朴素版的变化
+
+本节记录共享内存阶段的 16×16 输出分块；当前 32×32 分块见文末寄存器阶段。
 
 `BLOCK_M=16, BLOCK_N=16, BLOCK_K=32`，线程块为 `dim3(16,16)`，共 256 个线程。
 一个线程块负责输出的 16×16 区域，沿 K 方向逐段累加。
@@ -989,6 +997,8 @@ PY
 
 ## INT8 向量加载（2026-10-20）
 
+本节记录 `8621c29` 完成时的实现及测量，当前寄存器分块的变化见下一节。
+
 本阶段直接在共享内存版上修改，比较起点是提交 `23528c1`，不是第一课朴素版。
 原来的加载已经沿连续 K 方向组织线程；这次继续组织加载线程，让符合条件的输入
 从逐字节读取变为一次读取连续四个 INT8。输出仍是一线程一个元素，计算、共享内存布局、
@@ -1123,3 +1133,152 @@ python /tmp/vector_comparison_2026-10-20_rerun.py
 
 源码仍在 `optimized_gemm.cpp` 中：先读 `load_int8x4`，再读 `if constexpr (Vectorized)`，
 最后读 `launch_grouped` 的对齐判断。用本阶段提交相对 `23528c1` 的 diff 即可看到完整增量。
+
+
+## 寄存器分块（2026-10-20）
+
+从向量加载版 `8621c29` 继续修改同一个 `optimized_gemm.cpp`。
+本阶段每个线程维护四个 INT32 累加器，复用从共享内存读出的 A/B 值。
+INT8 输入、FP32 scales/output、contiguous/masked 两种入口以及每批最多 64 专家的规则保持一致。
+这次同时扩大输出 tile，测量反映的是整套修改，不能把全部收益仅归因于四个累加器。
+
+### 每线程的四个输出
+
+| 项目 | 向量加载基线 | 当前寄存器分块 |
+|---|---:|---:|
+| 线程块 `(x,y)` | 16×16 | 16×16 |
+| 输出块 `BLOCK_M×BLOCK_N` | 16×16 | 32×32 |
+| 每线程输出块 `REG_M×REG_N` | 1×1 | 2×2 |
+| K 分块 `BLOCK_K` | 32 | 32 |
+| 源码共享内存大小 | 1056 字节 | 2080 字节 |
+
+`THREAD_M/THREAD_N` 描述线程排布，`BLOCK_M/BLOCK_N` 描述输出覆盖范围，二者现在不同。
+`BLOCK_M=THREAD_M*REG_M`、`BLOCK_N=THREAD_N*REG_N`；启动仍用 `dim3(16,16)`，
+不能直接拿 32×32 的输出块大小作为线程块大小。
+
+线程 `(tx,ty)` 负责输出 tile 中的四个位置：
+
+```text
+                 col = tx        col = tx+16
+row = ty         sum[0][0]       sum[0][1]
+row = ty+16      sum[1][0]       sum[1][1]
+```
+
+例如线程 `(0,0)` 计算 `(0,0)、(0,16)、(16,0)、(16,16)`；
+线程 `(15,15)` 计算 `(15,15)、(15,31)、(31,15)、(31,31)`。
+256 个线程覆盖 1024 个输出，不重叠、不遗漏。这四个位置按 16 行/列间距分布，
+不是同一线程负责显存中四个相邻元素。
+
+对每一个 K 位置，先从共享内存读出两个 A、两个 B 值，再进行四次乘加：
+
+```cpp
+sum[0][0] += a_frag[0] * b_frag[0];
+sum[0][1] += a_frag[0] * b_frag[1];
+sum[1][0] += a_frag[1] * b_frag[0];
+sum[1][1] += a_frag[1] * b_frag[1];
+```
+
+原来计算四个输出，源码分别读取八个共享输入值；现在读取四个，在线程内部复用。
+这些 fragment 是线程私有的标量数组，循环展开后成为标量值，尚未使用 warp 级矩阵指令。
+四个累加器跨越所有 K tile 保留，最后分别执行相同的 scale 缩放和有效位置写回。
+
+完整的 32×32 输出区域原本由四个 16×16 block 处理，每段 K 合作加载合计 4096 个输入字节；
+当前一个 block 合作加载 2048 字节。这里是源码读取量对比，跨 block 缓存可能已复用部分数据，
+不能据此宣称实际 HBM 流量减半。
+
+向量路径的合作加载增加为 512 个四字节包：每个线程先加载一个 A 包，再加载一个 B 包。
+标量回退也按照 256 个线程的步长循环加载完整 tile。不能继续用 `BLOCK_M*BLOCK_N=1024`
+作为线程数量，否则共享内存会有位置无人加载。K%4 和地址对齐条件保持原样。
+
+每个输出分别检查行列有效性。比如 M=17、N=19 时 `(16,16)` 有效，`(17,16)` 无效。
+边界线程仍参与两次 block 同步；无效输入在共享内存中补零，无效输出不写回，
+masked 未使用容量保持哨兵值。显存中的数据布局及尺寸没有因此扩大。
+
+### 代价与编译证据
+
+较大 tile 减少 block 数并提高复用，同时增加寄存器与共享内存开销。
+小 M 下可能计算更多无效行；剩余 block 数也可能不足以充分并行，因此不能保证每个 shape 都更快。
+本阶段固定使用 2×2，尚未加入按 shape 选择 1×1/2×2 的策略。
+
+[编译器 IR 记录](reports/register_codegen_2026-10-20.txt) 显示四个独立 INT32 累加状态，
+四个 kernel 特化均没有 IR `alloca`。
+[实际测试库的运行时资源记录](reports/register_resources_2026-10-20.json) 使用
+`mcFuncGetAttributes` 查询导出的 kernel stub：基线 `numRegs=92`，
+当前向量加载特化为 107、标量加载特化为 113；共享内存分别为 1056 和 2080 字节，
+两版 `localSizeBytes` 都报告为 0。寄存器总数还包含地址和临时值，不能将四个累加器理解为只使用四个寄存器。
+这些是编译/运行时元数据，未测实际 occupancy、共享内存冲突或动态 spill 流量。
+
+### 寄存器阶段验证与性能
+
+[正确性报告](reports/register_correctness_2026-10-20.json) 中 67 组全量 CPU INT64/FP64 参考、
+20 项接口和 8 项极值/元数据复用检查全部通过；
+[地址偏移报告](reports/register_alignment_checks_2026-10-20.json) 中 12 项检查全部通过，
+新旧两版结果逐位一致。合计检查 548,210 个有效输出和 617,058 个 padding 元素。
+覆盖原有案例，并增加 M/N=31/32/33/63/64/65、K=36 的组合及 M=65536 的非零计算。
+量化后算术仍使用 `atol=1e-6, rtol=1e-5`；这不是原始浮点模型的量化精度验收。
+
+性能对照起点为向量加载版 `8621c29`，两版在同一 C500 16 GB、25% 计算配额实例上重新构建。
+固定 7 case、seed、warmup=3、iterations=2、rounds=7；每个 case 使用一个新进程，
+按基线→寄存器→寄存器→基线测量，每版汇总 14 个单次调用平均值并取中位数。
+每次运行保留数值抽查、全量有限值和 padding 检查。
+
+| Case | 向量加载基线 ms | 寄存器分块 ms | 基线/当前 |
+|---|---:|---:|---:|
+| FLAME T=16 / contiguous | 0.3994 | 0.4244 | 0.941× |
+| FLAME T=16 / masked | 0.3654 | 0.4193 | 0.871× |
+| FLAME T=4096 / contiguous | 52.6125 | 17.0196 | 3.091× |
+| FLAME T=4096 / masked | 24.8460 | 14.2152 | 1.748× |
+| 上游大 M / contiguous | 232.4426 | 126.8986 | 1.832× |
+| G=129、K=259 / contiguous | 0.3969 | 0.2918 | 1.360× |
+| G=129、K=259 / masked | 0.2342 | 0.2258 | 1.037× |
+
+本轮两个 T=4096 case 分别加速 3.09×、1.75×，上游大 M 加速 1.83×；
+两个 G=129 case 分别为 1.36×、1.04×，其中 masked 的小幅收益仍需考虑计时波动。
+两个 T=16 case 的耗时增加约 6.25% 和 14.75%。这套固定配置适合部分负载，
+没有解决小 M 下的资源浪费；后续按 shape 选择配置时可以再比较 1×1 与 2×2。
+
+加速比小于 1 表示变慢；完整样本、参数和源码/库哈希见
+[7 case 原始对照](reports/register_comparison_2026-10-20.json)。
+这里同时改变了线程私有计算量、输出 tile 和 grid 数量，没有做每项因素的单独消融。
+两种布局的无效 block 数也不同，不能直接把它们的耗时差解释成布局本身的优劣。
+结果只是当前实例上的 grouped GEMM 测量，不代表全卡峰值、A100 对标或 fused MoE 吞吐。
+
+公共 `bench_shapes.py` 的历史 block 统计公式仍假设 16×16；本轮驱动只修正报告中的
+`block_m/block_n`、`launched_blocks/useful_blocks/useful_block_fraction`，基线使用 16、新版使用 32。
+数值参考和原生 MACA event 计时函数保持不变。直接用旧公共脚本测新版时，耗时和数值检查有效，
+但 block 统计不适用；本阶段可复现的准确统计请使用下面归档的驱动。
+
+### 寄存器阶段复现
+
+从 C500 仓库根目录重新构建基线和当前实现：
+
+```bash
+mkdir -p /tmp/moe_register_baseline_2026_10_20
+git archive 8621c29b3324d13ed0aba3ae1267b6effb6b059e \
+  02_optimized_gemm/optimized_gemm.cpp 02_optimized_gemm/build.sh \
+  | tar -x -C /tmp/moe_register_baseline_2026_10_20
+bash /tmp/moe_register_baseline_2026_10_20/02_optimized_gemm/build.sh
+bash 02_optimized_gemm/build.sh
+```
+
+提取本轮实际运行的脚本并改用新输出名，依次执行，避免覆盖归档结果或同时运行 GPU 测试：
+
+```bash
+python - <<'PY'
+import json
+from pathlib import Path
+for kind in ('correctness', 'alignment_checks', 'resources', 'comparison'):
+    name = 'register_' + kind + '_2026-10-20'
+    d = json.loads((Path('02_optimized_gemm/reports') / (name + '.json')).read_text())
+    script = d['reproduction_script'].replace(name + '.json', name + '_rerun.json')
+    Path('/tmp/' + name + '_rerun.py').write_text(script)
+PY
+python /tmp/register_correctness_2026-10-20_rerun.py
+python /tmp/register_alignment_checks_2026-10-20_rerun.py
+python /tmp/register_resources_2026-10-20_rerun.py
+python /tmp/register_comparison_2026-10-20_rerun.py
+```
+
+脚本沿用本实例的绝对工作目录。阅读源码时依次看 `THREAD_M/REG_M/BLOCK_M`、
+`sum[REG_M][REG_N]`、`a_frag/b_frag`、四个输出的边界写回，最后检查合作加载的循环步长。
+与 `8621c29` 比较即可查看本阶段完整代码增量。

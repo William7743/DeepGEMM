@@ -1,0 +1,29 @@
+Compiler IR check: four scalar INT32 accumulators per thread; no alloca in optimized device IR.
+Source SHA256: 1d23bbe9e8af23923413685394498f324b92f17a2bc263ead4b1c413d980674c
+LLVM IR SHA256: 55884bf2562c7a856097cea2e228f6ff863eeab56a2f7965af6bfdc8800233e6
+Command: /opt/maca/mxgpu_llvm/bin/mxcc -DMOE_GEMM_LIBRARY -O2 -std=c++17 -x maca -offload-arch=xcore1000 -maca-device-only -S -emit-llvm -I/opt/maca/include -I/opt/maca/include/mcr 02_optimized_gemm/optimized_gemm.cpp -o /tmp/moe_register.ll
+IR evidence is not a profiler trace or measured occupancy. Runtime resource attributes are recorded separately.
+
+_Z16shared_int8_gemmILb1ELb1EEv8GemmViewiiiii
+%sum.sroa.0.0 = phi i32 [ 0, %for.cond20.preheader.lr.ph ], [ %add155.31, %for.cond.cleanup22 ]
+%sum.sroa.68.0 = phi i32 [ 0, %for.cond20.preheader.lr.ph ], [ %add155.1.31, %for.cond.cleanup22 ]
+%sum.sroa.133.0 = phi i32 [ 0, %for.cond20.preheader.lr.ph ], [ %add155.1325.31, %for.cond.cleanup22 ]
+%sum.sroa.198.0 = phi i32 [ 0, %for.cond20.preheader.lr.ph ], [ %add155.1.1.31, %for.cond.cleanup22 ]
+
+_Z16shared_int8_gemmILb1ELb0EEv8GemmViewiiiii
+%sum.sroa.0.0 = phi i32 [ 0, %for.cond20.preheader.lr.ph ], [ %add138.31, %for.cond.cleanup47 ]
+%sum.sroa.68.0 = phi i32 [ 0, %for.cond20.preheader.lr.ph ], [ %add138.1.31, %for.cond.cleanup47 ]
+%sum.sroa.133.0 = phi i32 [ 0, %for.cond20.preheader.lr.ph ], [ %add138.1309.31, %for.cond.cleanup47 ]
+%sum.sroa.198.0 = phi i32 [ 0, %for.cond20.preheader.lr.ph ], [ %add138.1.1.31, %for.cond.cleanup47 ]
+
+_Z16shared_int8_gemmILb0ELb1EEv8GemmViewiiiii
+%sum.sroa.0.0 = phi i32 [ 0, %for.cond37.preheader.lr.ph ], [ %add178.31, %for.cond.cleanup39 ]
+%sum.sroa.68.0 = phi i32 [ 0, %for.cond37.preheader.lr.ph ], [ %add178.1.31, %for.cond.cleanup39 ]
+%sum.sroa.133.0 = phi i32 [ 0, %for.cond37.preheader.lr.ph ], [ %add178.1370.31, %for.cond.cleanup39 ]
+%sum.sroa.198.0 = phi i32 [ 0, %for.cond37.preheader.lr.ph ], [ %add178.1.1.31, %for.cond.cleanup39 ]
+
+_Z16shared_int8_gemmILb0ELb0EEv8GemmViewiiiii
+%sum.sroa.0.0 = phi i32 [ 0, %for.cond37.preheader.lr.ph ], [ %add159.31, %for.cond.cleanup65 ]
+%sum.sroa.68.0 = phi i32 [ 0, %for.cond37.preheader.lr.ph ], [ %add159.1.31, %for.cond.cleanup65 ]
+%sum.sroa.133.0 = phi i32 [ 0, %for.cond37.preheader.lr.ph ], [ %add159.1352.31, %for.cond.cleanup65 ]
+%sum.sroa.198.0 = phi i32 [ 0, %for.cond37.preheader.lr.ph ], [ %add159.1.1.31, %for.cond.cleanup65 ]

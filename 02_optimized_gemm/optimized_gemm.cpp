@@ -27,10 +27,11 @@ constexpr int max_expert_rows = 65536;
 constexpr int max_nk = 32768;
 constexpr int max_groups = 4096; // Bounded API contract, not a hardware limit.
 constexpr int groups_per_launch = 64;
-constexpr int BLOCK_M = 16, BLOCK_N = 16, BLOCK_K = 32;
-static_assert(BLOCK_K % 4 == 0 &&
-              BLOCK_M * BLOCK_N == (BLOCK_M + BLOCK_N) * (BLOCK_K / 4),
-              "packed loader needs one four-byte word per thread");
+constexpr int THREAD_M = 16, THREAD_N = 16;
+constexpr int REG_M = 2, REG_N = 2;
+constexpr int BLOCK_M = THREAD_M * REG_M, BLOCK_N = THREAD_N * REG_N, BLOCK_K = 32;
+constexpr int BLOCK_THREADS = THREAD_M * THREAD_N;
+static_assert(BLOCK_K % 4 == 0, "packed loader needs complete four-byte words");
 static_assert(int64_t(max_groups) * max_expert_rows <= std::numeric_limits<int32_t>::max(),
               "contiguous offsets must fit INT32");
 static_assert(sizeof(size_t) >= 8, "large buffers require 64-bit indexing");
@@ -82,42 +83,45 @@ __global__ void shared_int8_gemm(GemmView data, int groups, int rows, int n, int
     // consecutive shared addresses. The extra column changes the bank mapping.
     __shared__ int8_t tile_b[BLOCK_K][BLOCK_N + 1];
     const int tx = threadIdx.x, ty = threadIdx.y;
-    const int tid = ty * BLOCK_N + tx;
-    const int row = m0 + ty, col = n0 + tx;
-    int32_t sum = 0; // One output per thread, as in the naive lesson.
+    const int tid = ty * THREAD_N + tx;
+    // Each thread owns rows ty/ty+16 and columns tx/tx+16 of the output tile.
+    int32_t sum[REG_M][REG_N] = {};
 
     for (int k0 = 0; k0 < k; k0 += BLOCK_K) {
         if constexpr (Vectorized) {
-            // 128 threads load A and 128 load B: one aligned 32-bit word each.
+            // Cooperatively load the larger tile, one aligned word per step.
             // A/B rows are contiguous in K. All four bytes fit because K%4==0.
             constexpr int packs_per_row = BLOCK_K / 4;
             constexpr int a_packs = BLOCK_M * packs_per_row;
-            const bool loading_a = tid < a_packs;
-            const int pack = loading_a ? tid : tid - a_packs;
-            const int r = pack / packs_per_row, kk = (pack % packs_per_row) * 4;
-            uint32_t packed = 0;
-            if (loading_a) {
-                if (m0 + r < valid_m && k0 + kk < k)
-                    packed = load_int8x4(data.a + (expert_row_base + m0 + r) * k + k0 + kk);
-                #pragma unroll
-                for (int j = 0; j < 4; ++j)
-                    tile_a[r][kk + j] = static_cast<int8_t>(static_cast<uint8_t>(packed >> (8 * j)));
-            } else {
-                if (n0 + r < n && k0 + kk < k)
-                    packed = load_int8x4(data.b + (size_t(group) * n + n0 + r) * k + k0 + kk);
-                #pragma unroll
-                for (int j = 0; j < 4; ++j)
-                    tile_b[kk + j][r] = static_cast<int8_t>(static_cast<uint8_t>(packed >> (8 * j)));
+            constexpr int total_packs = a_packs + BLOCK_N * packs_per_row;
+            for (int i = tid; i < total_packs; i += BLOCK_THREADS) {
+                const bool loading_a = i < a_packs;
+                const int pack = loading_a ? i : i - a_packs;
+                const int r = pack / packs_per_row, kk = (pack % packs_per_row) * 4;
+                uint32_t packed = 0;
+                if (loading_a) {
+                    if (m0 + r < valid_m && k0 + kk < k)
+                        packed = load_int8x4(data.a + (expert_row_base + m0 + r) * k + k0 + kk);
+                    #pragma unroll
+                    for (int j = 0; j < 4; ++j)
+                        tile_a[r][kk + j] = static_cast<int8_t>(static_cast<uint8_t>(packed >> (8 * j)));
+                } else {
+                    if (n0 + r < n && k0 + kk < k)
+                        packed = load_int8x4(data.b + (size_t(group) * n + n0 + r) * k + k0 + kk);
+                    #pragma unroll
+                    for (int j = 0; j < 4; ++j)
+                        tile_b[kk + j][r] = static_cast<int8_t>(static_cast<uint8_t>(packed >> (8 * j)));
+                }
             }
         } else {
-            // 256 threads cooperate on 512 A elements and 512 B elements.
+            // Scalar fallback also cooperatively fills the larger shared tiles.
             // Adjacent linear thread IDs read along the contiguous global K axis.
-            for (int i = tid; i < BLOCK_M * BLOCK_K; i += BLOCK_M * BLOCK_N) {
+            for (int i = tid; i < BLOCK_M * BLOCK_K; i += BLOCK_THREADS) {
                 const int r = i / BLOCK_K, kk = i % BLOCK_K;
                 tile_a[r][kk] = (m0 + r < valid_m && k0 + kk < k)
                     ? data.a[(expert_row_base + m0 + r) * k + k0 + kk] : int8_t(0);
             }
-            for (int i = tid; i < BLOCK_N * BLOCK_K; i += BLOCK_M * BLOCK_N) {
+            for (int i = tid; i < BLOCK_N * BLOCK_K; i += BLOCK_THREADS) {
                 const int c = i / BLOCK_K, kk = i % BLOCK_K;
                 tile_b[kk][c] = (n0 + c < n && k0 + kk < k)
                     ? data.b[(size_t(group) * n + n0 + c) * k + k0 + kk] : int8_t(0);
@@ -126,18 +130,37 @@ __global__ void shared_int8_gemm(GemmView data, int groups, int rows, int n, int
         __syncthreads(); // All tile writes must finish before any reader uses them.
 
         #pragma unroll
-        for (int kk = 0; kk < BLOCK_K; ++kk)
-            sum += static_cast<int32_t>(tile_a[ty][kk]) *
-                   static_cast<int32_t>(tile_b[kk][tx]);
+        for (int kk = 0; kk < BLOCK_K; ++kk) {
+            int32_t a_frag[REG_M], b_frag[REG_N];
+            #pragma unroll
+            for (int i = 0; i < REG_M; ++i)
+                a_frag[i] = static_cast<int32_t>(tile_a[ty + i * THREAD_M][kk]);
+            #pragma unroll
+            for (int j = 0; j < REG_N; ++j)
+                b_frag[j] = static_cast<int32_t>(tile_b[kk][tx + j * THREAD_N]);
+            #pragma unroll
+            for (int i = 0; i < REG_M; ++i)
+                #pragma unroll
+                for (int j = 0; j < REG_N; ++j)
+                    sum[i][j] += a_frag[i] * b_frag[j];
+        }
 
         __syncthreads(); // All readers must finish before the next tile overwrites it.
     }
     // Partial-row/column threads still participated in every barrier.
     // Write valid outputs only; masked padding must retain its original value.
-    if (row < valid_m && col < n) {
-        const size_t physical_row = expert_row_base + row;
-        data.c[physical_row * n + col] = static_cast<float>(sum) *
-            data.a_scale[physical_row] * data.b_scale[size_t(group) * n + col];
+    #pragma unroll
+    for (int i = 0; i < REG_M; ++i) {
+        const int row = m0 + ty + i * THREAD_M;
+        #pragma unroll
+        for (int j = 0; j < REG_N; ++j) {
+            const int col = n0 + tx + j * THREAD_N;
+            if (row < valid_m && col < n) {
+                const size_t physical_row = expert_row_base + row;
+                data.c[physical_row * n + col] = static_cast<float>(sum[i][j]) *
+                    data.a_scale[physical_row] * data.b_scale[size_t(group) * n + col];
+            }
+        }
     }
 }
 
@@ -178,7 +201,7 @@ static mcError_t launch_grouped(GemmView data, int groups, int rows, int n, int 
     const bool vectorized = k % 4 == 0 &&
         (reinterpret_cast<uintptr_t>(data.a) & 3) == 0 &&
         (reinterpret_cast<uintptr_t>(data.b) & 3) == 0;
-    dim3 block(BLOCK_N, BLOCK_M);
+    dim3 block(THREAD_N, THREAD_M);
     // Keep global pointers/metadata: group_base + blockIdx.z selects the expert.
     // In particular, contiguous offsets remain GLOBAL; no CPU readback/rebasing.
     // All batches are enqueued on the caller's stream without intermediate sync.

@@ -1,0 +1,169 @@
+{
+  "scope": "mcFuncGetAttributes on host kernel stub pointers exported from the exact measured libraries; resource metadata, not measured occupancy or profiler spill counters",
+  "struct_bytes": 56,
+  "header_sha256": "d5939dab1bf9fe0bacef1d8412de6e743b74de1026f17642d67ab09c352a91cd",
+  "results": [
+    {
+      "version": "vector",
+      "masked": false,
+      "vectorized": false,
+      "library_sha256": "71260cc918ff7ddbe7a0bd7e651932a681e1e4b762fffd55cf05d408389e25c1",
+      "source_sha256": "9825be3d9e7bbf16bbfb2f09dd3a3f6a06426c5934e6ab3bcc785d4c8909a065",
+      "symbol": "_Z31__device_stub__shared_int8_gemmILb0ELb0EEv8GemmViewiiiii",
+      "attributes": {
+        "binaryVersion": 10,
+        "cacheModeCA": 0,
+        "constSizeBytes": 0,
+        "localSizeBytes": 0,
+        "maxDynamicSharedSizeBytes": 64480,
+        "maxThreadsPerBlock": 512,
+        "numRegs": 92,
+        "preferredShmemCarveout": 50,
+        "ptxVersion": 10,
+        "sharedSizeBytes": 1056
+      }
+    },
+    {
+      "version": "vector",
+      "masked": false,
+      "vectorized": true,
+      "library_sha256": "71260cc918ff7ddbe7a0bd7e651932a681e1e4b762fffd55cf05d408389e25c1",
+      "source_sha256": "9825be3d9e7bbf16bbfb2f09dd3a3f6a06426c5934e6ab3bcc785d4c8909a065",
+      "symbol": "_Z31__device_stub__shared_int8_gemmILb0ELb1EEv8GemmViewiiiii",
+      "attributes": {
+        "binaryVersion": 10,
+        "cacheModeCA": 0,
+        "constSizeBytes": 0,
+        "localSizeBytes": 0,
+        "maxDynamicSharedSizeBytes": 64480,
+        "maxThreadsPerBlock": 512,
+        "numRegs": 92,
+        "preferredShmemCarveout": 50,
+        "ptxVersion": 10,
+        "sharedSizeBytes": 1056
+      }
+    },
+    {
+      "version": "vector",
+      "masked": true,
+      "vectorized": false,
+      "library_sha256": "71260cc918ff7ddbe7a0bd7e651932a681e1e4b762fffd55cf05d408389e25c1",
+      "source_sha256": "9825be3d9e7bbf16bbfb2f09dd3a3f6a06426c5934e6ab3bcc785d4c8909a065",
+      "symbol": "_Z31__device_stub__shared_int8_gemmILb1ELb0EEv8GemmViewiiiii",
+      "attributes": {
+        "binaryVersion": 10,
+        "cacheModeCA": 0,
+        "constSizeBytes": 0,
+        "localSizeBytes": 0,
+        "maxDynamicSharedSizeBytes": 64480,
+        "maxThreadsPerBlock": 512,
+        "numRegs": 92,
+        "preferredShmemCarveout": 50,
+        "ptxVersion": 10,
+        "sharedSizeBytes": 1056
+      }
+    },
+    {
+      "version": "vector",
+      "masked": true,
+      "vectorized": true,
+      "library_sha256": "71260cc918ff7ddbe7a0bd7e651932a681e1e4b762fffd55cf05d408389e25c1",
+      "source_sha256": "9825be3d9e7bbf16bbfb2f09dd3a3f6a06426c5934e6ab3bcc785d4c8909a065",
+      "symbol": "_Z31__device_stub__shared_int8_gemmILb1ELb1EEv8GemmViewiiiii",
+      "attributes": {
+        "binaryVersion": 10,
+        "cacheModeCA": 0,
+        "constSizeBytes": 0,
+        "localSizeBytes": 0,
+        "maxDynamicSharedSizeBytes": 64480,
+        "maxThreadsPerBlock": 512,
+        "numRegs": 92,
+        "preferredShmemCarveout": 50,
+        "ptxVersion": 10,
+        "sharedSizeBytes": 1056
+      }
+    },
+    {
+      "version": "register",
+      "masked": false,
+      "vectorized": false,
+      "library_sha256": "a9812c68e2065093ae1dc465edf4e31987f86a53a65ad130b535f5799a7eac75",
+      "source_sha256": "1d23bbe9e8af23923413685394498f324b92f17a2bc263ead4b1c413d980674c",
+      "symbol": "_Z31__device_stub__shared_int8_gemmILb0ELb0EEv8GemmViewiiiii",
+      "attributes": {
+        "binaryVersion": 10,
+        "cacheModeCA": 0,
+        "constSizeBytes": 0,
+        "localSizeBytes": 0,
+        "maxDynamicSharedSizeBytes": 63456,
+        "maxThreadsPerBlock": 512,
+        "numRegs": 113,
+        "preferredShmemCarveout": 50,
+        "ptxVersion": 10,
+        "sharedSizeBytes": 2080
+      }
+    },
+    {
+      "version": "register",
+      "masked": false,
+      "vectorized": true,
+      "library_sha256": "a9812c68e2065093ae1dc465edf4e31987f86a53a65ad130b535f5799a7eac75",
+      "source_sha256": "1d23bbe9e8af23923413685394498f324b92f17a2bc263ead4b1c413d980674c",
+      "symbol": "_Z31__device_stub__shared_int8_gemmILb0ELb1EEv8GemmViewiiiii",
+      "attributes": {
+        "binaryVersion": 10,
+        "cacheModeCA": 0,
+        "constSizeBytes": 0,
+        "localSizeBytes": 0,
+        "maxDynamicSharedSizeBytes": 63456,
+        "maxThreadsPerBlock": 512,
+        "numRegs": 107,
+        "preferredShmemCarveout": 50,
+        "ptxVersion": 10,
+        "sharedSizeBytes": 2080
+      }
+    },
+    {
+      "version": "register",
+      "masked": true,
+      "vectorized": false,
+      "library_sha256": "a9812c68e2065093ae1dc465edf4e31987f86a53a65ad130b535f5799a7eac75",
+      "source_sha256": "1d23bbe9e8af23923413685394498f324b92f17a2bc263ead4b1c413d980674c",
+      "symbol": "_Z31__device_stub__shared_int8_gemmILb1ELb0EEv8GemmViewiiiii",
+      "attributes": {
+        "binaryVersion": 10,
+        "cacheModeCA": 0,
+        "constSizeBytes": 0,
+        "localSizeBytes": 0,
+        "maxDynamicSharedSizeBytes": 63456,
+        "maxThreadsPerBlock": 512,
+        "numRegs": 113,
+        "preferredShmemCarveout": 50,
+        "ptxVersion": 10,
+        "sharedSizeBytes": 2080
+      }
+    },
+    {
+      "version": "register",
+      "masked": true,
+      "vectorized": true,
+      "library_sha256": "a9812c68e2065093ae1dc465edf4e31987f86a53a65ad130b535f5799a7eac75",
+      "source_sha256": "1d23bbe9e8af23923413685394498f324b92f17a2bc263ead4b1c413d980674c",
+      "symbol": "_Z31__device_stub__shared_int8_gemmILb1ELb1EEv8GemmViewiiiii",
+      "attributes": {
+        "binaryVersion": 10,
+        "cacheModeCA": 0,
+        "constSizeBytes": 0,
+        "localSizeBytes": 0,
+        "maxDynamicSharedSizeBytes": 63456,
+        "maxThreadsPerBlock": 512,
+        "numRegs": 107,
+        "preferredShmemCarveout": 50,
+        "ptxVersion": 10,
+        "sharedSizeBytes": 2080
+      }
+    }
+  ],
+  "status": "PASS",
+  "reproduction_script": "from pathlib import Path\nimport ctypes,hashlib,json,subprocess\nROOT=Path('/root/MOE/C500_int8_02All')\nBASE=Path('/tmp/moe_register_baseline_2026_10_20/02_optimized_gemm')\nclass Attr(ctypes.Structure):\n _fields_=[('binaryVersion',ctypes.c_int),('cacheModeCA',ctypes.c_int),('constSizeBytes',ctypes.c_size_t),('localSizeBytes',ctypes.c_size_t),('maxDynamicSharedSizeBytes',ctypes.c_int),('maxThreadsPerBlock',ctypes.c_int),('numRegs',ctypes.c_int),('preferredShmemCarveout',ctypes.c_int),('ptxVersion',ctypes.c_int),('sharedSizeBytes',ctypes.c_size_t)]\nruntime=ctypes.CDLL('/opt/maca/lib/libmcruntime.so')\nassert runtime.mcSetDevice(0)==0\nfn=runtime.mcFuncGetAttributes;fn.argtypes=[ctypes.POINTER(Attr),ctypes.c_void_p];fn.restype=ctypes.c_int\nreport=dict(scope='mcFuncGetAttributes on host kernel stub pointers exported from the exact measured libraries; resource metadata, not measured occupancy or profiler spill counters',struct_bytes=ctypes.sizeof(Attr),header_sha256=hashlib.sha256(Path('/opt/maca/include/mcr/mc_runtime_types.h').read_bytes()).hexdigest(),results=[],status='PASS')\nfor version,folder in [('vector',BASE),('register',ROOT/'02_optimized_gemm')]:\n path=folder/'libmoe_int8_shared.so';lib=ctypes.CDLL(str(path))\n for masked in (0,1):\n  for vectorized in (0,1):\n   symbol=f'_Z31__device_stub__shared_int8_gemmILb{masked}ELb{vectorized}EEv8GemmViewiiiii'\n   addr=ctypes.cast(getattr(lib,symbol),ctypes.c_void_p);attr=Attr();rc=fn(ctypes.byref(attr),addr);assert rc==0,(symbol,rc)\n   data={k:getattr(attr,k) for k,_ in Attr._fields_}\n   report['results'].append(dict(version=version,masked=bool(masked),vectorized=bool(vectorized),library_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),source_sha256=hashlib.sha256((folder/'optimized_gemm.cpp').read_bytes()).hexdigest(),symbol=symbol,attributes=data))\n   print(version,masked,vectorized,data,flush=True)\nreport['reproduction_script']=Path(__file__).read_text()\n(ROOT/'02_optimized_gemm/reports/register_resources_2026-10-20.json').write_text(json.dumps(report,indent=2)+'\\n')\n"
+}

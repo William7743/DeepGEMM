@@ -1,0 +1,131 @@
+{
+  "scope": "full CPU references and bitwise vector-loader baseline comparison for aligned and deliberately unaligned INT8 input addresses",
+  "source_sha256": "1d23bbe9e8af23923413685394498f324b92f17a2bc263ead4b1c413d980674c",
+  "library_sha256": "a9812c68e2065093ae1dc465edf4e31987f86a53a65ad130b535f5799a7eac75",
+  "baseline_library_sha256": "71260cc918ff7ddbe7a0bd7e651932a681e1e4b762fffd55cf05d408389e25c1",
+  "checks": [
+    {
+      "layout": "contiguous",
+      "a_offset": 0,
+      "b_offset": 0,
+      "packed_path": true,
+      "checked_elements": 399,
+      "padding_checked": 0,
+      "max_abs_error": 5.025105153322329e-06,
+      "status": "PASS"
+    },
+    {
+      "layout": "contiguous",
+      "a_offset": 1,
+      "b_offset": 0,
+      "packed_path": false,
+      "checked_elements": 399,
+      "padding_checked": 0,
+      "max_abs_error": 3.6332362114421812e-06,
+      "status": "PASS"
+    },
+    {
+      "layout": "contiguous",
+      "a_offset": 0,
+      "b_offset": 1,
+      "packed_path": false,
+      "checked_elements": 399,
+      "padding_checked": 0,
+      "max_abs_error": 5.287632092176864e-06,
+      "status": "PASS"
+    },
+    {
+      "layout": "contiguous",
+      "a_offset": 1,
+      "b_offset": 1,
+      "packed_path": false,
+      "checked_elements": 399,
+      "padding_checked": 0,
+      "max_abs_error": 3.951435957105787e-06,
+      "status": "PASS"
+    },
+    {
+      "layout": "contiguous",
+      "a_offset": 2,
+      "b_offset": 3,
+      "packed_path": false,
+      "checked_elements": 399,
+      "padding_checked": 0,
+      "max_abs_error": 4.206756983649029e-06,
+      "status": "PASS"
+    },
+    {
+      "layout": "contiguous",
+      "a_offset": 3,
+      "b_offset": 2,
+      "packed_path": false,
+      "checked_elements": 399,
+      "padding_checked": 0,
+      "max_abs_error": 3.106914334694011e-06,
+      "status": "PASS"
+    },
+    {
+      "layout": "masked",
+      "a_offset": 0,
+      "b_offset": 0,
+      "packed_path": true,
+      "checked_elements": 399,
+      "padding_checked": 1045,
+      "max_abs_error": 5.025105153322329e-06,
+      "status": "PASS"
+    },
+    {
+      "layout": "masked",
+      "a_offset": 1,
+      "b_offset": 0,
+      "packed_path": false,
+      "checked_elements": 399,
+      "padding_checked": 1045,
+      "max_abs_error": 5.245916085527824e-06,
+      "status": "PASS"
+    },
+    {
+      "layout": "masked",
+      "a_offset": 0,
+      "b_offset": 1,
+      "packed_path": false,
+      "checked_elements": 399,
+      "padding_checked": 1045,
+      "max_abs_error": 4.566841028008639e-06,
+      "status": "PASS"
+    },
+    {
+      "layout": "masked",
+      "a_offset": 1,
+      "b_offset": 1,
+      "packed_path": false,
+      "checked_elements": 399,
+      "padding_checked": 1045,
+      "max_abs_error": 4.790434132928567e-06,
+      "status": "PASS"
+    },
+    {
+      "layout": "masked",
+      "a_offset": 2,
+      "b_offset": 3,
+      "packed_path": false,
+      "checked_elements": 399,
+      "padding_checked": 1045,
+      "max_abs_error": 4.237137474660813e-06,
+      "status": "PASS"
+    },
+    {
+      "layout": "masked",
+      "a_offset": 3,
+      "b_offset": 2,
+      "packed_path": false,
+      "checked_elements": 399,
+      "padding_checked": 1045,
+      "max_abs_error": 4.420567705665235e-06,
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS",
+  "reproduction_script": "from pathlib import Path\nimport ctypes,hashlib,json,numpy as np,torch\nr=Path('/root/MOE/C500_int8_02All')\npaths=[Path('/tmp/moe_register_baseline_2026_10_20/02_optimized_gemm/libmoe_int8_shared.so'),r/'02_optimized_gemm/libmoe_int8_shared.so']\nlibs=[ctypes.CDLL(str(p)) for p in paths]\nfor lib in libs:\n for layout in ('contiguous','masked'):\n  fn=getattr(lib,'moe_int8_'+layout);fn.argtypes=[ctypes.c_void_p]*6+[ctypes.c_int]*4+[ctypes.c_void_p];fn.restype=ctypes.c_int\nreport=dict(scope='full CPU references and bitwise vector-loader baseline comparison for aligned and deliberately unaligned INT8 input addresses',source_sha256=hashlib.sha256((r/'02_optimized_gemm/optimized_gemm.cpp').read_bytes()).hexdigest(),library_sha256=hashlib.sha256(paths[1].read_bytes()).hexdigest(),baseline_library_sha256=hashlib.sha256(paths[0].read_bytes()).hexdigest(),checks=[])\ncounts=[1,0,3,17];g=4;n=19;k=64;cap=19\nfor layout in ('contiguous','masked'):\n for ao,bo in ((0,0),(1,0),(0,1),(1,1),(2,3),(3,2)):\n  stream=torch.cuda.Stream()\n  with torch.cuda.stream(stream):\n   torch.manual_seed(20261020+ao*10+bo)\n   rows=cap if layout=='masked' else sum(counts);physical=g*rows if layout=='masked' else rows\n   ast=torch.randint(-128,128,(physical*k+ao,),device='cuda',dtype=torch.int8)\n   bst=torch.randint(-128,128,(g*n*k+bo,),device='cuda',dtype=torch.int8)\n   a=ast[ao:].view(physical,k);b=bst[bo:].view(g,n,k)\n   assert a.data_ptr()%4==ao and b.data_ptr()%4==bo\n   sa=torch.rand(physical,device='cuda')*.03+.005;sb=torch.rand(g,n,device='cuda')*.03+.005\n   offsets=np.cumsum([0]+counts,dtype=np.int32)\n   meta=torch.tensor(counts if layout=='masked' else offsets.tolist(),dtype=torch.int32,device='cuda')\n   outs=[torch.full((physical,n),-123456.75,device='cuda') for _ in libs]\n   for e,m in enumerate(counts):\n    start=e*cap if layout=='masked' else int(offsets[e])\n    for out in outs:out[start:start+m].fill_(float('nan'))\n   for lib,out in zip(libs,outs):\n    rc=getattr(lib,'moe_int8_'+layout)(*(v.data_ptr() for v in (a,b,sa,sb,meta,out)),g,rows,n,k,stream.cuda_stream)\n    assert rc==0,rc\n  stream.synchronize()\n  aa=a.cpu().numpy().astype(np.int64);bb=b.cpu().numpy().astype(np.int64)\n  sa_cpu=sa.cpu().numpy().astype(np.float64);sb_cpu=sb.cpu().numpy().astype(np.float64)\n  vals=[out.cpu().numpy() for out in outs]\n  assert np.array_equal(vals[0].view(np.uint32),vals[1].view(np.uint32))\n  checked=padding=0;max_abs=0.\n  for e,m in enumerate(counts):\n   start=e*cap if layout=='masked' else int(offsets[e])\n   expected=(aa[start:start+m]@bb[e].T).astype(np.float64)*sa_cpu[start:start+m,None]*sb_cpu[e,None,:]\n   got=vals[1][start:start+m].astype(np.float64)\n   assert np.isfinite(got).all() and np.all(np.abs(got-expected)<=1e-6+1e-5*np.abs(expected))\n   if m:max_abs=max(max_abs,float(np.max(np.abs(got-expected))))\n   checked+=m*n\n   if layout=='masked':\n    assert (vals[1][start+m:start+cap]==-123456.75).all();padding+=(cap-m)*n\n  report['checks'].append(dict(layout=layout,a_offset=ao,b_offset=bo,packed_path=ao==bo==0,checked_elements=checked,padding_checked=padding,max_abs_error=max_abs,status='PASS'))\n  print(layout,ao,bo,'PASS',flush=True)\nreport['status']='PASS'\n(r/'02_optimized_gemm/reports/register_alignment_checks_2026-10-20.json').write_text(json.dumps(report,indent=2)+'\\n')\nprint('ALIGNMENT_ALL_PASS',len(report['checks']),flush=True)\n",
+  "driver_sha256": "9da3e3ad9d1d990c744d23584ac9d0cc1fb8165e901659a49b732bef15f46b29"
+}
