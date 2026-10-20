@@ -1,0 +1,156 @@
+{
+  "stage": "naive INT8 single GEMM correctness; no performance measurement",
+  "date": "2026-10-20",
+  "timezone": "Asia/Shanghai",
+  "validation": "Full CPU INT64 reference, exact integer equality",
+  "build_command": "bash 03_gemm_profiling/build.sh",
+  "source_sha256": "093039a77983d64e20d45050da523dacf3b793f666fe8c7a248c0970ea5910a9",
+  "build_script_sha256": "90326feee5d1befca2939f8b13b85893331f13fbc96a04c4ae1d6683aa99ea84",
+  "results": [
+    {
+      "arguments": [],
+      "returncode": 0,
+      "passed": true,
+      "stdout": "Device: MetaX C500\nM=64, N=64, K=64\nRow-major INT8 A[M,K] * INT8 B[K,N] -> INT32 C[M,N]\nChecked elements: 4096, mismatches: 0, max_abs_error: 0\nPASS\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "1",
+        "1",
+        "1"
+      ],
+      "returncode": 0,
+      "passed": true,
+      "stdout": "Device: MetaX C500\nM=1, N=1, K=1\nRow-major INT8 A[M,K] * INT8 B[K,N] -> INT32 C[M,N]\nChecked elements: 1, mismatches: 0, max_abs_error: 0\nPASS\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "3",
+        "5",
+        "7"
+      ],
+      "returncode": 0,
+      "passed": true,
+      "stdout": "Device: MetaX C500\nM=3, N=5, K=7\nRow-major INT8 A[M,K] * INT8 B[K,N] -> INT32 C[M,N]\nChecked elements: 15, mismatches: 0, max_abs_error: 0\nPASS\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "16",
+        "16",
+        "16"
+      ],
+      "returncode": 0,
+      "passed": true,
+      "stdout": "Device: MetaX C500\nM=16, N=16, K=16\nRow-major INT8 A[M,K] * INT8 B[K,N] -> INT32 C[M,N]\nChecked elements: 256, mismatches: 0, max_abs_error: 0\nPASS\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "17",
+        "19",
+        "33"
+      ],
+      "returncode": 0,
+      "passed": true,
+      "stdout": "Device: MetaX C500\nM=17, N=19, K=33\nRow-major INT8 A[M,K] * INT8 B[K,N] -> INT32 C[M,N]\nChecked elements: 323, mismatches: 0, max_abs_error: 0\nPASS\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "64",
+        "96",
+        "128"
+      ],
+      "returncode": 0,
+      "passed": true,
+      "stdout": "Device: MetaX C500\nM=64, N=96, K=128\nRow-major INT8 A[M,K] * INT8 B[K,N] -> INT32 C[M,N]\nChecked elements: 6144, mismatches: 0, max_abs_error: 0\nPASS\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "17",
+        "257",
+        "259"
+      ],
+      "returncode": 0,
+      "passed": true,
+      "stdout": "Device: MetaX C500\nM=17, N=257, K=259\nRow-major INT8 A[M,K] * INT8 B[K,N] -> INT32 C[M,N]\nChecked elements: 4369, mismatches: 0, max_abs_error: 0\nPASS\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "1",
+        "2",
+        "32768"
+      ],
+      "returncode": 0,
+      "passed": true,
+      "stdout": "Device: MetaX C500\nM=1, N=2, K=32768\nRow-major INT8 A[M,K] * INT8 B[K,N] -> INT32 C[M,N]\nChecked elements: 2, mismatches: 0, max_abs_error: 0\nPASS\n",
+      "stderr": ""
+    },
+    {
+      "arguments": [
+        "0",
+        "2",
+        "3"
+      ],
+      "invalid_input": true,
+      "returncode": 1,
+      "passed": true,
+      "stdout": "",
+      "stderr": "dimensions must be integers: 1<=M,N<=4096, 1<=K<=32768\n"
+    },
+    {
+      "arguments": [
+        "3",
+        "4"
+      ],
+      "invalid_input": true,
+      "returncode": 1,
+      "passed": true,
+      "stdout": "",
+      "stderr": "Usage: /root/MOE/C500_int8_02All/03_gemm_profiling/build/gemm [M N K]\n"
+    },
+    {
+      "arguments": [
+        "x",
+        "2",
+        "3"
+      ],
+      "invalid_input": true,
+      "returncode": 1,
+      "passed": true,
+      "stdout": "",
+      "stderr": "dimensions must be integers: 1<=M,N<=4096, 1<=K<=32768\n"
+    },
+    {
+      "arguments": [
+        "1",
+        "1",
+        "32769"
+      ],
+      "invalid_input": true,
+      "returncode": 1,
+      "passed": true,
+      "stdout": "",
+      "stderr": "dimensions must be integers: 1<=M,N<=4096, 1<=K<=32768\n"
+    },
+    {
+      "arguments": [
+        "4097",
+        "1",
+        "1"
+      ],
+      "invalid_input": true,
+      "returncode": 1,
+      "passed": true,
+      "stdout": "",
+      "stderr": "dimensions must be integers: 1<=M,N<=4096, 1<=K<=32768\n"
+    }
+  ],
+  "mx_smi": "mx-smi  version: 2.3.1\n\n=================== MetaX System Management Interface Log ===================\nTimestamp                                         : Tue Oct 20 09:43:52 2026\n\nAttached GPUs                                     : 1\n+---------------------------------------------------------------------------------+\n| MX-SMI 2.3.1                       Kernel Mode Driver Version: 3.8.30           |\n| MACA Version: 3.7.1.5              BIOS Version: 1.33.5.0                       |\n|------------------+-----------------+---------------------+----------------------|\n| Board       Name | GPU   Persist-M | Bus-id              | GPU-Util      sGPU-M |\n| Pwr:Usage/Cap    | Temp       Perf | Memory-Usage        | GPU-State            |\n|==================+=================+=====================+======================|\n| 0     MetaX C500 | 0           Off | 0000:37:00.0        | 0%           Enabled |\n| 57W / 350W       | 37C          P9 | 826/65536 MiB       | Available            |\n+------------------+-----------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Sliced GPU                                                                      |\n|------------------------------------+---------------------+----------------------|\n| Minor    GPU    sGPU-Id    Compute | Vram Quota          | sGPU-Util            |\n|====================================+=====================+======================|\n| 020      0      0          25%     | 0/16000 MiB         | 0%                   |\n+------------------------------------+---------------------+----------------------+\n\n+---------------------------------------------------------------------------------+\n| Process:                                                                        |\n|  GPU                    PID         Process Name                 GPU Memory     |\n|                                                                  Usage(MiB)     |\n|=================================================================================|\n|  no process found                                                               |\n+---------------------------------------------------------------------------------+\n\nEnd of Log\n",
+  "passed": true
+}
