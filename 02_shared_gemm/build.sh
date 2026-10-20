@@ -8,7 +8,7 @@ if [[ "$#" != 0 ]]; then
   echo "Usage: bash build.sh" >&2
   exit 1
 fi
-"$MACA_PATH/mxgpu_llvm/bin/mxcc" -fPIC -shared \
+"$MACA_PATH/mxgpu_llvm/bin/mxcc" -fPIC -shared -DMOE_GEMM_LIBRARY \
   -O2 -std=c++17 -x maca -offload-arch=xcore1000 \
   -I"$MACA_PATH/include" -I"$MACA_PATH/include/mcr" \
   shared_gemm.cpp -L"$MACA_PATH/lib" -lmcruntime \

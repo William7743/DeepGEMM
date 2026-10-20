@@ -1,3 +1,17 @@
+# 教学对照起点：原样复制朴素 grouped GEMM
+
+本提交将 `01_naive_gemm/naive_gemm.cpp` 原样复制为本目录的 `shared_gemm.cpp`，
+下一提交将在同一路径上加入共享内存分块，方便通过 GitHub commit diff 学习。
+`bash build.sh` 编译共享库；`MOE_GEMM_LIBRARY` 仅排除 CPU 演示的 main。
+本提交的文件名仍为 shared_gemm.cpp，但计算暂为朴素实现。
+
+本目录已有的性能和正确性 JSON 来自历史共享内存实现（提交 5500e78），
+不是此教学起点的测量记录。后续提交会恢复课程说明，已有报告不覆盖。
+
+---
+
+以下保留原共享内存课程说明，描述的是历史实现 5500e78；本教学起点尚未应用优化。
+
 # 第二课：共享内存分块 INT8 grouped GEMM
 
 本课保留第一课朴素 kernel，新增一个可独立编译的共享库。
