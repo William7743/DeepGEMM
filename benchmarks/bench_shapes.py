@@ -19,6 +19,8 @@ import numpy as np
 import torch
 
 ROOT = Path(__file__).resolve().parent
+PROJECT_ROOT = ROOT.parent
+NAIVE_ROOT = PROJECT_ROOT / "01_naive_gemm"
 SENTINEL = -123456.75
 
 
@@ -144,7 +146,7 @@ def run_case(case, fn, args):
 
 def command_output(command):
     try:
-        return subprocess.check_output(command, cwd=ROOT, stderr=subprocess.STDOUT,
+        return subprocess.check_output(command, cwd=PROJECT_ROOT, stderr=subprocess.STDOUT,
                                        text=True, timeout=15).strip()
     except (OSError, subprocess.SubprocessError) as exc:
         return f"unavailable: {exc}"
@@ -213,10 +215,10 @@ def run_isolated(cases, args, signature):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--shapes", type=Path, default=ROOT / "shapes.json")
-    p.add_argument("--output", type=Path, default=ROOT / "benchmark_results.json")
-    p.add_argument("--library", type=Path, default=ROOT / "libmoe_int8.so",
+    p.add_argument("--output", type=Path, default=NAIVE_ROOT / "benchmark_results.json")
+    p.add_argument("--library", type=Path, default=NAIVE_ROOT / "libmoe_int8.so",
                    help="library exporting the teaching moe_int8_benchmark ABI")
-    p.add_argument("--source", type=Path, default=ROOT / "naive_gemm.cpp",
+    p.add_argument("--source", type=Path, default=NAIVE_ROOT / "naive_gemm.cpp",
                    help="compute source to hash and record for this library")
     p.add_argument("--match", default="", help="only case names containing this substring")
     p.add_argument("--warmup", type=int, default=1)

@@ -2,6 +2,15 @@
 
 本课为两种布局提供独立的 C 调用入口。当前入口支持 1～4096 个专家，内部每次 kernel 启动最多处理 64 个。kernel 仍是朴素 INT8 点积、INT32 累加和 FP32 缩放输出，尚未使用硬件矩阵指令。
 
+## 公共测试目录（2026-10-20）
+
+两份测试脚本和三份 shape 配置现统一放在 `../benchmarks/`；各版本的结果报告仍保留在各自实现目录。
+`bench_shapes.py` 默认使用第一课的源码、共享库及报告路径，`--library` 和 `--source` 可选择共享内存版。
+下方测试命令和配置链接已更新；历史报告原文、输入配置和 kernel 均未修改。
+路径调整改变了测试脚本哈希，旧报告保持归档，不能与新脚本混合 `--resume`；复测请指定新输出文件。
+迁移后本实现通过 contiguous/masked 两个 G=129 尾部 case；记录见
+[公共测试入口迁移检查](benchmarks_migration_2026-10-20.json)。本轮仅验证调用链，不作为新的性能基线。
+
 ## 两种布局
 
 令 G 为专家数，T 为总有效 token 数，capacity 为每个专家的固定容量。所有数组按行紧密存储，权重 B 的最后一维 K 连续。
@@ -311,13 +320,13 @@ bash build.sh
 ```bash
 cd /root/MOE/C500_int8_02All/01_naive_gemm
 bash build.sh --shared
-python bench_shapes.py
+python ../benchmarks/bench_shapes.py --output benchmark_rerun.json
 # 中断后恢复；源码、共享库、shape 和计时参数须与已保存结果一致
-python bench_shapes.py --resume
+python ../benchmarks/bench_shapes.py --output benchmark_rerun.json --resume
 # 只运行匹配的 case，另外保存结果
-python bench_shapes.py --match masked_g6_m20 --output selected_results.json
+python ../benchmarks/bench_shapes.py --match masked_g6_m20 --output selected_results.json
 # 可指定预热次数、每批重复次数、计时批数、每专家校验数量
-python bench_shapes.py --warmup 1 --iterations 1 --rounds 5 --check-samples 128
+python ../benchmarks/bench_shapes.py --output benchmark_rerun.json --warmup 1 --iterations 1 --rounds 5 --check-samples 128
 ```
 
 计时与指标：
@@ -449,7 +458,7 @@ shape 哈希统一以 CRLF 转 LF 后的字节计算，避免 Git 换行转换�
 cd /root/MOE/C500_int8_02All/01_naive_gemm
 python -m venv .venv
 .venv/bin/python -m pip install 'pyarrow>=18' huggingface_hub
-.venv/bin/python prepare_flame_shapes.py
+.venv/bin/python ../benchmarks/prepare_flame_shapes.py
 ```
 
 这只需在重新提取路由时运行；仓库中已有生成好的 `shapes_flame.json`。
@@ -458,10 +467,10 @@ python -m venv .venv
 ```bash
 bash build.sh --shared
 export LD_LIBRARY_PATH=/opt/maca/lib:/opt/mxdriver/lib:${LD_LIBRARY_PATH:-}
-python bench_shapes.py --shapes shapes_flame.json --output benchmark_flame_results.json \
+python ../benchmarks/bench_shapes.py --shapes ../benchmarks/shapes_flame.json --output benchmark_flame_rerun.json \
   --warmup 1 --iterations 1 --rounds 5
 # 中断后按相同参数续跑
-python bench_shapes.py --shapes shapes_flame.json --output benchmark_flame_results.json --resume
+python ../benchmarks/bench_shapes.py --shapes ../benchmarks/shapes_flame.json --output benchmark_flame_rerun.json --resume
 ```
 
 正确性与计时沿用上一节的口径：每专家最多 128 个参考点（含边界），
@@ -579,7 +588,7 @@ PY
 
 测量版本为 `bb0f39b`：已支持每次最多 64 组的自动拆批，计算仍是朴素 INT8 点积。
 本次不修改 `naive_gemm.cpp`、`bench_shapes.py` 或构建参数，保留原始实现供后续优化对照。
-配置见 [baseline_shapes_2026-10-16.json](baseline_shapes_2026-10-16.json)，
+配置见 [baseline_shapes_2026-10-16.json](../benchmarks/baseline_shapes_2026-10-16.json)，
 原始测量见 [baseline_results_2026-10-16.json](baseline_results_2026-10-16.json)。
 
 ### 固定的 7 个 case
@@ -608,8 +617,8 @@ MACA event 得到每轮总时间后除以 2，报告 7 个单次调用均值的�
 cd /root/MOE/C500_int8_02All/01_naive_gemm
 bash build.sh --shared
 export LD_LIBRARY_PATH=/opt/maca/lib:/opt/mxdriver/lib:${LD_LIBRARY_PATH:-}
-python bench_shapes.py \
-  --shapes baseline_shapes_2026-10-16.json \
+python ../benchmarks/bench_shapes.py \
+  --shapes ../benchmarks/baseline_shapes_2026-10-16.json \
   --output baseline_rerun.json \
   --warmup 3 --iterations 2 --rounds 7 --check-samples 256 --seed 20261016
 ```
