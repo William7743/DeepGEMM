@@ -1,0 +1,104 @@
+{
+  "scope": "same-session naive versus shared-memory teaching kernels on C500 16GB/25% sGPU; not MMA or full fused MoE",
+  "report_sha256": {
+    "shared_correctness_2026-10-20.json": "3a39ec4940b09bdbcca280be4cb0420b2bdc4ba3ba4aa461a8afea1924e525f0",
+    "shared_results_2026-10-20.json": "2bc6202f2f00f4bcf12b21b738dbdfd5265cd75a827bbe9ab8e265da8fce0a01",
+    "naive_results_2026-10-20.json": "c8f10ce63de6df03bd91cf8cb87e34acb5b02463e61354251a0ac0afe50cb2fb"
+  },
+  "source_sha256": {
+    "naive": "f69a371730166ac53bb0d5304f28bac8c4dee3af8a2fd68b0473130ac0d7291a",
+    "shared": "1da7cf48c4d3eb03869ea0474abbfa32eea6e0bf66d8545f187cc1267c8d8bcf"
+  },
+  "library_sha256": {
+    "naive": "06f817ca8cacb10cd71a6663a5b35d1eee7fa79266ddc00129712bf98c92e3a6",
+    "shared": "02b78e2dcd501afe989211008322864926d4b70a6e15adbf23c6297549c04993"
+  },
+  "harness_sha256": "fbd865b2568755d63f4f10dfac8426fe15a972abb6aaa2524ee1c85bca40c1d9",
+  "shapes_sha256": "9577798dd60c76f8215cf267a4a2347f9dd107067d3bc16c23a5e2350491cc58",
+  "timing_parameters": {
+    "seed": 20261016,
+    "warmup": 3,
+    "iterations": 2,
+    "rounds": 7,
+    "check_samples": 256
+  },
+  "results": [
+    {
+      "label": "FLAME T=16 / contiguous",
+      "case_name": "flame290m_i5473_l02_r0_t16_fc1_contiguous",
+      "input_seed": 1955812342,
+      "naive_ms": 2.8823039531707764,
+      "shared_ms": 0.47974398732185364,
+      "speedup": 6.008004330103419,
+      "shared_useful_int8_tops": 0.5770245616737298,
+      "naive_range_percent": 3.4061640998840375,
+      "shared_range_percent": 0.61365909579832
+    },
+    {
+      "label": "FLAME T=16 / masked",
+      "case_name": "flame290m_i5473_l02_r0_t16_fc1_masked",
+      "input_seed": 3865352105,
+      "naive_ms": 2.8884479999542236,
+      "shared_ms": 0.4431360065937042,
+      "speedup": 6.518197476565112,
+      "shared_useful_int8_tops": 0.6246932316060027,
+      "naive_range_percent": 2.820703111812609,
+      "shared_range_percent": 0.25996731359106157
+    },
+    {
+      "label": "FLAME T=4096 / contiguous",
+      "case_name": "flame290m_i5473_l02_r0_t4096_fc1_contiguous",
+      "input_seed": 2977704971,
+      "naive_ms": 644.5789184570312,
+      "shared_ms": 57.000064849853516,
+      "speedup": 11.308389212449953,
+      "shared_useful_int8_tops": 1.2432785922379896,
+      "naive_range_percent": 0.02676885355353927,
+      "shared_range_percent": 0.24185153148209185
+    },
+    {
+      "label": "FLAME T=4096 / masked",
+      "case_name": "flame290m_i5473_l02_r0_t4096_fc1_masked",
+      "input_seed": 623161903,
+      "naive_ms": 644.2264404296875,
+      "shared_ms": 30.009599685668945,
+      "speedup": 21.467345355404298,
+      "shared_useful_int8_tops": 2.3614763651060113,
+      "naive_range_percent": 0.008621501494172528,
+      "shared_range_percent": 0.054170440684765724
+    },
+    {
+      "label": "上游大 M / contiguous",
+      "case_name": "contiguous_g4_m8192_n4096_k2048",
+      "input_seed": 2999942144,
+      "naive_ms": 5943.412109375,
+      "shared_ms": 287.45037841796875,
+      "speedup": 20.676306436211924,
+      "shared_useful_int8_tops": 2.276317063199585,
+      "naive_range_percent": 0.001298049606526659,
+      "shared_range_percent": 0.049876984967047004
+    },
+    {
+      "label": "合成 G=129 / contiguous",
+      "case_name": "synthetic_g129_tail_n257_k259_contiguous",
+      "input_seed": 1633668250,
+      "naive_ms": 0.914687991142273,
+      "shared_ms": 0.3960320055484772,
+      "speedup": 2.3096314902011335,
+      "shared_useful_int8_tops": 0.2100934996018024,
+      "naive_range_percent": 8.928068037376454,
+      "shared_range_percent": 2.488684122342493
+    },
+    {
+      "label": "合成 G=129 / masked",
+      "case_name": "synthetic_g129_tail_n257_k259_masked",
+      "input_seed": 4177749571,
+      "naive_ms": 0.8142079710960388,
+      "shared_ms": 0.23641599714756012,
+      "speedup": 3.443963102834565,
+      "shared_useful_int8_tops": 0.3519379018504742,
+      "naive_range_percent": 7.121521348641812,
+      "shared_range_percent": 9.4748206639909
+    }
+  ]
+}

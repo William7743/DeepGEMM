@@ -31,12 +31,33 @@
 3. 在 C500 上运行，记录正确性结果；涉及优化时记录前后计时口径和数据。
 4. 用自己的话解释关键部分，再提交该功能并推送到教学分支。
 
-每个练习使用独立的编号目录，例如 `01_naive_gemm/`。目录中包含源码、构建/运行命令和简短笔记；运行产物不提交。功能尚未验证时明确标注，不写成“通过”。
+计算实现使用编号目录，例如 `01_naive_gemm/`、`02_optimized_gemm/`；两者共用 `benchmarks/` 中的测试工具与 shape 配置。目录中包含源码、构建/运行命令和简短笔记；运行产物不提交。功能尚未验证时明确标注，不写成“通过”。
 
 每个完成的小功能对应一个清晰的 Git 提交，便于逐步查看变化和回顾，不把多个学习阶段压在一个提交里。
 
 
 ## 当前性能测试入口
+
+公共目录 `benchmarks/` 包含 `bench_shapes.py`、`prepare_flame_shapes.py`，以及
+`shapes.json`、`shapes_flame.json`、`baseline_shapes_2026-10-16.json`。
+测试报告保留在对应实现目录。两份 kernel、共享库和既有报告没有移动。
+从仓库根目录可用相同配置分别运行：
+
+```bash
+bash 01_naive_gemm/build.sh --shared
+bash 02_optimized_gemm/build.sh
+python benchmarks/bench_shapes.py \
+  --shapes benchmarks/baseline_shapes_2026-10-16.json \
+  --output 01_naive_gemm/reports/baseline_rerun.json \
+  --warmup 3 --iterations 2 --rounds 7 --check-samples 256 --seed 20261016
+python benchmarks/bench_shapes.py \
+  --shapes benchmarks/baseline_shapes_2026-10-16.json \
+  --library 02_optimized_gemm/libmoe_int8_shared.so --source 02_optimized_gemm/optimized_gemm.cpp \
+  --output 02_optimized_gemm/reports/shared_rerun.json \
+  --warmup 3 --iterations 2 --rounds 7 --check-samples 256 --seed 20261016
+```
+
+脚本默认库和源码仍指向朴素版，默认输出为 `01_naive_gemm/reports/benchmark_rerun.json`。使用新输出文件保留历史报告；路径调整改变脚本哈希，旧报告不能用新脚本直接 `--resume`。
 
 `benchmarks/shapes.json` 保存 24 组上游生成 shape；`benchmarks/bench_shapes.py` 读取配置、调用 MACA C++ 计时入口并保存正确性与性能记录。运行方法、计时口径和结果见 [第一课说明](01_naive_gemm/README.md)。这套数据用于建立朴素实现的基线，真实模型 TP/EP 采集数据仍需后续补充。
 
@@ -52,10 +73,43 @@ contiguous/masked 共 16 组配置；输入矩阵与 scale 仍随机生成，不
 当前朴素 kernel 保留不变；基线的环境、计时方法、结果与复现命令见第一课说明末尾。
 
 
-## reports 归档与优化前准备
+## 第二课：共享内存分块
 
-朴素版的历史测试结果统一归档到 `01_naive_gemm/reports/`，公共测试脚本和 shape 配置位于 `benchmarks/`。
-本提交不修改朴素 kernel；后续先原样复制源码与 README，再加入共享内存分块优化。
-历史报告中的提交号、源码和库哈希保持测量时的原文；原始细分提交保存在
-`backup/DeepGemm-MUXI-Learn-before-squash-2026-10-20` 备份分支，不把历史结果重新标为本提交测量。
-默认新报告输出到 `01_naive_gemm/reports/benchmark_rerun.json`；完整配置和运行命令见第一课 README。
+实现位于 [02_optimized_gemm](02_optimized_gemm/README.md)，独立生成 `libmoe_int8_shared.so`。
+保留第一课朴素 kernel 作为对照，仍提供 contiguous/masked 两种接口和超过 64 个专家的自动拆批。
+先通过 `16×16×32` 分块合作加载及共享内存复用改善数据访问，不使用硬件矩阵指令。
+构建、正确性证据及同一环境下的 7 个固定 case 性能对比见第二课说明。
+
+
+## 公共测试目录迁移验证（2026-10-20）
+
+两份脚本和三份配置移入 `benchmarks/`，FLAME 提取脚本及三份配置与移动前逐字节一致。
+测试脚本只调整默认路径和获取环境信息的工作目录，计算、采样、数值检查和计时逻辑保持原样。
+朴素版从 `/tmp` 启动，共享内存版从仓库根目录启动；均通过固定基线中两个 G=129 尾部 case，
+每个 case 覆盖三次 kernel 启动，两种布局共 4/4 PASS。每份报告抽查 52,736 个有效输出、
+检查 469,282 个 padding 元素，错误数均为 0。两版使用相同 case、输入 seed 和计时参数。
+本轮 warmup=0、iterations=1、rounds=1，仅验证迁移后的入口，不作为新性能基线。
+两份报告完整保存此次截取的两条配置；未重跑其余大尺寸 case 或重新下载 FLAME trace。
+
+- [朴素版迁移检查](01_naive_gemm/reports/benchmarks_migration_2026-10-20.json)
+- [共享内存版迁移检查](02_optimized_gemm/reports/benchmarks_migration_2026-10-20.json)
+
+另确认新报告 `--resume` 可保留两项 PASS，旧测试脚本报告被拒绝续跑且原文未修改；
+默认 24 组 shape 能从新目录读取及验证，FLAME 提取工具的 `--help` 可运行。
+
+
+## 报告归档与持续优化目录（2026-10-20）
+
+计算实现分别位于 `01_naive_gemm/naive_gemm.cpp` 与 `02_optimized_gemm/optimized_gemm.cpp`。
+各实现的 JSON 报告集中在各自的 `reports/`，公共脚本和 shape 配置仍位于 `benchmarks/`。
+本次只整理名称与路径，不修改 kernel；12 份历史报告内容保持不变。
+后续在优化源码上逐步提交，当前共享内存阶段及报告名仍保留，可用 `git log --follow` 跨改名查阅。
+
+
+C500 上从新目录重新构建优化版成功；朴素版和优化版的 contiguous/masked 共 4 个 case 全部通过。
+每份报告抽查 52,736 个有效输出、检查 469,282 个 padding 元素，均无错误。
+另验证默认报告目录存在，12 份历史报告在服务器移动前后的 SHA256 一致。
+本次未重跑完整性能集合，新检查只验证改名和路径调整后的调用。
+
+- [朴素版整理检查](01_naive_gemm/reports/reorganization_check_2026-10-20.json)
+- [优化版整理检查](02_optimized_gemm/reports/reorganization_check_2026-10-20.json)
