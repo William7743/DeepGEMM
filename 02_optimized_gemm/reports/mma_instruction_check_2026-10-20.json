@@ -1,0 +1,92 @@
+{
+  "scope": "Actual C500 probe execution plus compiler target-intrinsic evidence; no disassembled ISA or profiler counters",
+  "source_sha256": "4a2172ad3bb9b9050f09801ee37050bd947b2e69a2df38fbdffa5b605d466135",
+  "library_sha256": "07a184aa9da90c4d11db1b8338b8cf5809e3d0d1fd2305aa7a047032e022016e",
+  "llvm_ir_sha256": "bb08316979087c0169b831f805cc32f062013cdd44b1318b1c008fdd7f68d3a3",
+  "llvm_ir_command": "/opt/maca/mxgpu_llvm/bin/mxcc -DMOE_GEMM_LIBRARY -O2 -std=c++17 -x maca -offload-arch=xcore1000 -maca-device-only -S -emit-llvm -I/opt/maca/include -I/opt/maca/include/mcr 02_optimized_gemm/optimized_gemm.cpp -o /tmp/moe_mma.ll",
+  "kernels": [
+    {
+      "name": "_Z16shared_int8_gemmILb1ELb1EEv8GemmViewiiiii",
+      "mma_intrinsic_call_sites": 2,
+      "excerpt": [
+        "%24 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %19, i32 %or.3, <4 x i32> %sum.0283)",
+        "%30 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %25, i32 %or.3.1, <4 x i32> %24)"
+      ]
+    },
+    {
+      "name": "_Z16shared_int8_gemmILb1ELb0EEv8GemmViewiiiii",
+      "mma_intrinsic_call_sites": 6,
+      "excerpt": [
+        "%45 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %40, i32 %or.3.epil, <4 x i32> %sum.0260.unr)",
+        "%51 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %46, i32 %or.3.1.epil, <4 x i32> %45)"
+      ]
+    },
+    {
+      "name": "_Z16shared_int8_gemmILb0ELb1EEv8GemmViewiiiii",
+      "mma_intrinsic_call_sites": 2,
+      "excerpt": [
+        "%28 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %23, i32 %or.3, <4 x i32> %sum.0324)",
+        "%34 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %29, i32 %or.3.1, <4 x i32> %28)"
+      ]
+    },
+    {
+      "name": "_Z16shared_int8_gemmILb0ELb0EEv8GemmViewiiiii",
+      "mma_intrinsic_call_sites": 6,
+      "excerpt": [
+        "%49 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %44, i32 %or.3.epil, <4 x i32> %sum.0299.unr)",
+        "%55 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %50, i32 %or.3.1.epil, <4 x i32> %49)"
+      ]
+    }
+  ],
+  "installed_primary_sources": [
+    {
+      "path": "/opt/maca/include/mctlass/arch/maca_mma.h",
+      "sha256": "d3903b82908f9c14033f0e16defce78dd5683fd52eaac7b6b447bcd16fba3df1",
+      "lines": [
+        59,
+        88
+      ],
+      "excerpt": "/// Matrix multiply-add operation: I32 = I8 * I8 + I32, C5XX\ntemplate <typename ElementC_>\nstruct MacaMma<int8_t, layout::RowMajor,\n               int8_t, layout::ColumnMajor,\n               ElementC_, layout::ColumnMajor,\n               mctlass::arch::Sm80> {\n    using Shape = gemm::GemmShape<16, 16, 16>;\n    using ElementA = int8_t;\n    using LayoutA = layout::RowMajor;\n    using FragmentA = int32_t;\n    using ElementB = int8_t;\n    using LayoutB = layout::ColumnMajor;\n    using FragmentB = int32_t;\n    using ElementC = ElementC_;\n    using LayoutC = layout::ColumnMajor;\n    using FragmentC = __NATIVE_VECTOR__(4, int32_t);\n    using Arch = mctlass::arch::Sm80;\n    using ElementAccumulator = int32_t;\n\n    MCTLASS_DEVICE\n    void operator()(\n        FragmentC &d,\n        FragmentA const &a,\n        FragmentB const &b,\n        FragmentC const &c\n    ) const {\n#if defined(__MACA_ARCH__) && (__MACA_ARCH__ == 1000)\n        // not supported in 1500\n        d = __builtin_mxc_mma_16x16x16i8(a, b, c);\n#endif"
+    },
+    {
+      "path": "/opt/maca/mxgpu_llvm/lib/clang/19/include/__clang_maca_mma_functions.h",
+      "sha256": "c2ec4b9eb55b08c028b7ec16e9e37330807e6a1db0473ef23e2adb22a986ab27",
+      "lines": [
+        455,
+        459
+      ],
+      "excerpt": "load_matrix_sync(fragment<matrix_a, 16, 16, 16, signed char, row_major> &f,\n                 const signed char *p, unsigned int ldm) {\n  unsigned row = __lane_id() & 0xf;\n  unsigned col = ((__lane_id() >> 4) << 2);\n  f.x[0] = *(int *)(p + row * ldm + col);"
+    },
+    {
+      "path": "/opt/maca/mxgpu_llvm/lib/clang/19/include/__clang_maca_mma_functions.h",
+      "sha256": "c2ec4b9eb55b08c028b7ec16e9e37330807e6a1db0473ef23e2adb22a986ab27",
+      "lines": [
+        514,
+        519
+      ],
+      "excerpt": "load_matrix_sync(fragment<matrix_b, 16, 16, 16, signed char, col_major> &f,\n                 const signed char *p, unsigned int ldm) {\n  unsigned row = ((__lane_id() >> 4) << 2);\n  unsigned col = __lane_id() & 0xf;\n  f.x[0] = *(int *)(p + col * ldm + row);\n}"
+    },
+    {
+      "path": "/opt/maca/mxgpu_llvm/lib/clang/19/include/__clang_maca_mma_functions.h",
+      "sha256": "c2ec4b9eb55b08c028b7ec16e9e37330807e6a1db0473ef23e2adb22a986ab27",
+      "lines": [
+        2092,
+        2106
+      ],
+      "excerpt": "store_matrix_sync(int *p, const fragment<accumulator, 16, 16, 16, int> &f,\n                  unsigned int ldm, layout_t layout) {\n  unsigned row = (__lane_id() >> 4) << 2;\n  unsigned col = __lane_id() & 0xf;\n  if (layout_t::mem_row_major == layout) {\n    p[row * ldm + col] = f.x[0];\n    p[(row + 1) * ldm + col] = f.x[1];\n    p[(row + 2) * ldm + col] = f.x[2];\n    p[(row + 3) * ldm + col] = f.x[3];\n  } else {\n    p[col * ldm + row] = f.x[0];\n    p[col * ldm + row + 1] = f.x[1];\n    p[col * ldm + row + 2] = f.x[2];\n    p[col * ldm + row + 3] = f.x[3];\n  }"
+    }
+  ],
+  "probe": {
+    "status": "PASS",
+    "cases": 20,
+    "checked_int32_outputs": 5120,
+    "warp_size": 64,
+    "mma": "__builtin_mxc_mma_16x16x16i8",
+    "lane_input": "mn=lane%16,k=4*(lane/16)+byte",
+    "lane_output": "m=4*(lane/16)+component,n=lane%16"
+  },
+  "probe_source": "#include <mcr/mc_runtime.h>\n#include <cstdint>\n#include <cstdio>\n#include <vector>\n#include <random>\n#include <cstdlib>\nusing I4 = int32_t __attribute__((ext_vector_type(4)));\n#define CHECK(x) do { auto rc=(x); if(rc!=mcSuccess){std::fprintf(stderr,\"%s: %s\\n\",#x,mcGetErrorString(rc));return 1;} }while(0)\n__global__ void probe(const int8_t* a,const int8_t* b,int32_t* out,int k,int bias) {\n  int lane=threadIdx.x, mn=lane%16, kp=(lane/16)*4;\n  I4 accum={bias,bias+1,bias+2,bias+3};\n  for(int k0=0;k0<k;k0+=16){\n    uint32_t aw=0,bw=0;\n    for(int j=0;j<4;++j){\n      aw|=uint32_t(uint8_t(a[mn*k+k0+kp+j]))<<(8*j);\n      bw|=uint32_t(uint8_t(b[mn*k+k0+kp+j]))<<(8*j);\n    }\n    accum=__builtin_mxc_mma_16x16x16i8(int32_t(aw),int32_t(bw),accum);\n  }\n  for(int j=0;j<4;++j)out[((lane/16)*4+j)*16+mn]=accum[j];\n}\nint main(){\n  mcDeviceProp_t prop{};CHECK(mcGetDeviceProperties(&prop,0));\n  if(prop.warpSize!=64){std::fprintf(stderr,\"Unexpected warpSize=%d\\n\",prop.warpSize);return 1;}\n  std::mt19937 rng(20261020);int cases=0;int64_t checked=0;\n  for(int k:{16,32,64,256}) for(int mode=0;mode<5;++mode){\n    std::vector<int8_t>a(16*k),b(16*k);std::vector<int32_t>out(256);\n    for(int i=0;i<16*k;++i){\n      a[i]=mode==1?-128:mode==2?127:mode==3?0:mode==4?int8_t((i/k+3*(i%k))%127-63):int8_t(rng()%256-128);\n      b[i]=mode==1?-128:mode==2?-128:mode==3?127:mode==4?int8_t((5*(i/k)+7*(i%k))%127-63):int8_t(rng()%256-128);\n    }\n    int8_t *da,*db;int32_t*dc;CHECK(mcMalloc((void**)&da,a.size()));CHECK(mcMalloc((void**)&db,b.size()));CHECK(mcMalloc((void**)&dc,1024));\n    CHECK(mcMemcpy(da,a.data(),a.size(),mcMemcpyHostToDevice));CHECK(mcMemcpy(db,b.data(),b.size(),mcMemcpyHostToDevice));\n    int bias=mode-2;probe<<<1,64>>>(da,db,dc,k,bias);CHECK(mcGetLastError());CHECK(mcDeviceSynchronize());\n    CHECK(mcMemcpy(out.data(),dc,1024,mcMemcpyDeviceToHost));\n    for(int m=0;m<16;++m)for(int n=0;n<16;++n){\n      int64_t expected=bias+(m%4);for(int p=0;p<k;++p)expected+=int64_t(a[m*k+p])*b[n*k+p];\n      if(out[m*16+n]!=expected){std::fprintf(stderr,\"FAIL k=%d mode=%d m=%d n=%d got=%d expected=%lld\\n\",k,mode,m,n,out[m*16+n],(long long)expected);return 1;}\n      ++checked;\n    }\n    CHECK(mcFree(da));CHECK(mcFree(db));CHECK(mcFree(dc));++cases;\n  }\n  std::printf(\"{\\\"status\\\":\\\"PASS\\\",\\\"cases\\\":%d,\\\"checked_int32_outputs\\\":%lld,\\\"warp_size\\\":%d,\\\"mma\\\":\\\"__builtin_mxc_mma_16x16x16i8\\\",\\\"lane_input\\\":\\\"mn=lane%%16,k=4*(lane/16)+byte\\\",\\\"lane_output\\\":\\\"m=4*(lane/16)+component,n=lane%%16\\\"}\\n\",cases,(long long)checked,prop.warpSize);\n}\n",
+  "probe_source_sha256": "ccea422c8c85843ba24a6ca626b297a7c3f08c3e269f431ee9b997e4d7c6052e",
+  "probe_build_command": "/opt/maca/mxgpu_llvm/bin/mxcc -O2 -std=c++17 -x maca -offload-arch=xcore1000 -I/opt/maca/include -I/opt/maca/include/mcr /tmp/moe_mma_probe.cpp -L/opt/maca/lib -lmcruntime -Wl,-rpath,/opt/maca/lib:/opt/mxdriver/lib -o /tmp/moe_mma_probe",
+  "status": "PASS"
+}

@@ -1,6 +1,9 @@
-# INT8 grouped GEMM：共享内存、向量加载与寄存器分块
+# INT8 grouped GEMM：共享内存、向量加载、寄存器分块与 MMA
 
-本课为两种布局提供独立的 C 调用入口。当前入口支持 1～4096 个专家，内部每次 kernel 启动最多处理 64 个。本目录在朴素版基础上加入共享内存分块复用、对齐 INT8 向量加载和每线程 2×2 寄存器分块，仍使用标量 INT8 乘法、INT32 累加和 FP32 缩放输出，尚未使用硬件矩阵指令。
+本课为两种布局提供独立的 C 调用入口。当前入口支持 1～4096 个专家，内部每次 kernel 启动最多处理 64 个。本目录已依次加入共享内存分块、对齐 INT8 向量加载、寄存器分块和 C500 INT8 矩阵乘加指令；当前使用 INT32 累加和 FP32 缩放输出。
+
+性能汇总统一采用每个版本选定的固定结果，见[根 README 的四阶段对照表](../README.md#四阶段优化效果汇总)。
+下文历史阶段性能表保留当时的原始测量，可能包含旧版本复测值；后续优化只测新版本，旧版本直接引用固定结果。
 
 ## 目录
 
@@ -43,6 +46,11 @@
   - [代价与编译证据](#代价与编译证据)
   - [寄存器阶段验证与性能](#寄存器阶段验证与性能)
   - [寄存器阶段复现](#寄存器阶段复现)
+- [硬件矩阵乘加（2026-10-20）](#硬件矩阵乘加2026-10-20)
+  - [64 个线程如何协作](#64-个线程如何协作)
+  - [尾部、对齐与同步](#尾部对齐与同步)
+  - [MMA 阶段证据与性能](#mma-阶段证据与性能)
+  - [MMA 阶段复现](#mma-阶段复现)
 
 历史实测记录（以下为朴素版的学习历史与基线记录，2026-10-15～2026-10-16）：
 
@@ -66,14 +74,15 @@
 ## 目录命名与优化阶段
 
 本目录统一命名为 `02_optimized_gemm`，源码为 `optimized_gemm.cpp`，后续优化继续修改同一文件。
-当前阶段在共享内存分块、对齐 INT8 向量加载之上增加每线程 2×2 寄存器分块，函数名 `shared_int8_gemm` 和库名 `libmoe_int8_shared.so` 暂时保留。
+当前阶段在原有共享内存与输入加载基础上使用 C500 INT8 MMA，函数名 `shared_int8_gemm` 和库名 `libmoe_int8_shared.so` 暂时保留。
 优化含义由 commit、阶段说明和报告名记录；改名不改变 kernel、接口或数值规则。
 
 | 阶段 | 源码提交 | 性能证据 |
 |---|---|---|
 | 共享内存分块 | 当前历史中的 `23528c1`；下方保留整理前的历史引用 | [共享内存阶段报告](reports/shared_results_2026-10-20.json) |
 | 对齐 INT8 向量加载 | `8621c29` | [向量阶段对照](reports/vector_comparison_2026-10-20.json) |
-| 每线程 2×2 寄存器分块 | 在 `8621c29` 上的下一次功能提交 | [寄存器阶段对照](reports/register_comparison_2026-10-20.json) |
+| 每线程 2×2 寄存器分块 | `b1f0623` | [寄存器阶段原始报告](reports/register_comparison_2026-10-20.json) |
+| C500 INT8 MMA | 在 `b1f0623` 上的下一次功能提交 | [仅测试新版本的报告](reports/mma_results_2026-10-20.json) |
 
 查看跨改名的源码历史：
 
@@ -1137,6 +1146,8 @@ python /tmp/vector_comparison_2026-10-20_rerun.py
 
 ## 寄存器分块（2026-10-20）
 
+本节记录 `b1f0623` 完成时的历史实现及测量；当前 MMA 实现见下一节。
+
 从向量加载版 `8621c29` 继续修改同一个 `optimized_gemm.cpp`。
 本阶段每个线程维护四个 INT32 累加器，复用从共享内存读出的 A/B 值。
 INT8 输入、FP32 scales/output、contiguous/masked 两种入口以及每批最多 64 专家的规则保持一致。
@@ -1282,3 +1293,134 @@ python /tmp/register_comparison_2026-10-20_rerun.py
 脚本沿用本实例的绝对工作目录。阅读源码时依次看 `THREAD_M/REG_M/BLOCK_M`、
 `sum[REG_M][REG_N]`、`a_frag/b_frag`、四个输出的边界写回，最后检查合作加载的循环步长。
 与 `8621c29` 比较即可查看本阶段完整代码增量。
+
+
+## 硬件矩阵乘加（2026-10-20）
+
+在同一个 `optimized_gemm.cpp` 中，将 K 内层标量乘加改为
+`__builtin_mxc_mma_16x16x16i8(a_frag, b_frag, sum)`。
+它执行 INT8×INT8、INT32 累加。这里没有调用 mcBLAS 或 mcTlass 的 GEMM 实现；
+分块、共享内存加载、scale 写回和专家调度仍由本课代码组织。
+调用的是当前编译器提供的底层矩阵 intrinsic，输入/输出片段分布不能照搬 NVIDIA 的 32 线程假设。
+
+环境固定为 MACA 3.7.1.5、`xcore1000`。参考来源是本机官方
+`mctlass/arch/maca_mma.h` 及编译器 `__clang_maca_mma_functions.h`，相关路径、SHA256 和片段
+保存在[指令验证报告](reports/mma_instruction_check_2026-10-20.json)。
+新代码带有架构断言，不把 C500 的 16×16×16 INT8 intrinsic 直接当成 C600 的指令接口。
+
+### 64 个线程如何协作
+
+本实例运行时查询得到 `warpSize=64`。线程块仍为 16×16、共 256 个线程，输出 tile 仍为 32×32，
+K tile 仍为 32；四个 64 线程 warp 分别负责四个 16×16 输出区域：
+
+```text
+                 输出列 0～15    输出列 16～31
+输出行 0～15     warp 0          warp 1
+输出行 16～31    warp 2          warp 3
+```
+
+线性 `tid=ty*16+tx`，`warp=tid/64`、`lane=tid%64`。
+每个 lane 为一次 MMA 提供四个沿 K 连续的 A 值和四个 B 值，分别打包成一个 32 位整数。
+每个包的字节 K 坐标为 `4*(lane/16)+j`，`j=0..3`；A 的行、B 的列均由 `lane%16` 选择，
+再叠加所在 warp 的 16 行/列偏移。B 从现有转置共享 tile 中收集四个字节，不改变全局 `[G,N,K]` 格式。
+64 个 lane 合在一起提供完整的两个 16×16 输入片段，矩阵单元协作计算全部 256 个输出。
+
+结果仍以每 lane 四个 INT32 累加器保留，但其位置与上一课的线程私有 2×2 不同：
+
+```text
+输出行 = warp_m*16 + 4*(lane/16) + component
+输出列 = warp_n*16 + lane%16
+component = 0、1、2、3
+```
+
+例如 warp 0 的 lane 0 得到 `(0,0)、(1,0)、(2,0)、(3,0)`；lane 16 得到第 4～7 行、第 0 列。
+输入由各 lane 提交后在矩阵单元内部协作，不能按“某个 lane 只用自己的输入计算自己的输出”理解。
+本阶段先用独立探针检验该映射，再接入 grouped kernel。
+`MmaAccumulator` 是四元素编译器向量类型，代表分布在当前 lane 的四个累加结果。
+
+### 尾部、对齐与同步
+
+每段 K=32 分两次 K=16 的 MMA。沿用原来合作加载时的 M/N/K 有效性判断，无效位置在共享内存中补零。
+比如 K=259，最后一个 K tile 只有 3 个真实元素，其他共享位置为零，仍可执行完整 MMA。
+M、N 不满 16/32 时每个结果独立判断后写回，未使用的 masked 容量保持原值；不要求调用者扩大显存矩阵。
+
+`Vectorized` 现在只区分全局输入的四字节/逐字节加载。
+K 不能被 4 整除或 A/B 地址未对齐时，使用逐字节加载，再通过共享内存送入 MMA，**计算不回退到标量乘法**。
+A 的共享内存显式按 4 字节对齐，保证片段打包读取合法；全局 A/B 的接口对齐要求没有增加。
+
+每段加载完成后仍做一次 block 同步，所有计算读取结束后再同步一次。
+部分输出越界的线程仍参与 warp MMA 和 block 同步，不能提前逐线程退出。
+四个 warp 总共覆盖 1024 个输出，不重叠；输出缩放仍为 `float(sum)*a_scale[row]*b_scale[col]`。
+K≤32768 时原始全范围 INT8 点积绝对值不超过 536870912，仍在 INT32 内；使用普通非饱和 MMA。
+contiguous/masked 入口、64 专家拆批、stream 语义、网格上界和 2080 字节源码共享内存布局保持一致。
+本阶段没有加入异步流水线、persistent 调度或按 shape 切换配置。
+
+### MMA 阶段证据与性能
+
+- [独立指令探针及编译器证据](reports/mma_instruction_check_2026-10-20.json)：20 组、5,120 个 INT32 输出与 CPU 精确一致。
+  覆盖随机/非对称输入、INT8 极值、零和非零初始累加值；四个生产 kernel 特化均出现
+  `llvm.mxc.mma.i32.16x16x16i8`。这是目标 intrinsic 加实际执行证据，没有声称取得反汇编 ISA 或 profiler 矩阵指令计数。
+- [完整正确性报告](reports/mma_correctness_2026-10-20.json)：67 组全量 CPU INT64/FP64 参考、20 项接口检查、8 项极值/元数据复用全部通过。
+  包括空专家、跨 64/128 边界、G=384、M=65536、N/K 尾部及 K=32768。
+- [地址偏移报告](reports/mma_alignment_checks_2026-10-20.json)：12 项全量 CPU 检查通过，仅执行当前 MMA 库。
+  两种布局下均覆盖未对齐 A/B，验证矩阵计算不依赖外部填充。
+- [实际库资源属性](reports/mma_resources_2026-10-20.json)：四字节加载特化 `numRegs=34`、逐字节加载特化 `numRegs=44`，
+  共享内存 2080 字节，`localSizeBytes=0`；上一阶段的寄存器属性 107/113 直接引用归档报告，没有重新运行旧库。
+  资源属性不等于实际 occupancy，也没有测量动态缓存冲突或 spill 计数。
+
+这次仅测试新版本。每个 case 的输入分配一次，复用同一套指针连续运行两批；
+每批 warmup=3、iterations=2、rounds=7，汇总 14 个样本。
+公共测试程序的数值参考和原生 event 计时逻辑保持不变，驱动仅将 14 个输出样本分成两次原生七轮调用，并修正 32×32 对应的报告网格统计。
+各批之间没有重新分配输入，也没有穿插旧版本测量。
+
+下表上一版使用固定的 `register_comparison_2026-10-20.json` 中 `summary.register`，
+朴素版使用固定的 `naive_results_2026-10-20.json`；所有倍数均按中位耗时直接计算，是跨轮次固定结果对照。
+
+| Case | 固定寄存器版 ms | MMA 版 ms | 相对上一版 | 相对固定朴素版 |
+|---|---:|---:|---:|---:|
+| FLAME T=16<br>contiguous | 0.424384 | 0.157568 | 2.693× | 18.292× |
+| FLAME T=16<br>masked | 0.419264 | 0.145216 | 2.887× | 19.891× |
+| FLAME T=4096<br>contiguous | 17.019584 | 8.241472 | 2.065× | 78.212× |
+| FLAME T=4096<br>masked | 14.215232 | 4.037056 | 3.521× | 159.578× |
+| 上游大 M<br>contiguous | 126.898560 | 37.393921 | 3.394× | 158.941× |
+| 合成 G=129<br>contiguous | 0.291840 | 0.192448 | 1.516× | 4.753× |
+| 合成 G=129<br>masked | 0.225792 | 0.128960 | 1.751× | 6.314× |
+
+完整平均耗时、有效 TOPS 和波动率见[根 README 的四阶段表](../README.md#四阶段优化效果汇总)。
+本次结果固定后用于后续优化，不在下一阶段重测本版本作为“上一版”。
+性能是当前 16 GB、25% 计算配额的实例结果，不外推为整卡峰值，也没有 A100 或 fused MoE 同口径对标。
+量化后算术验证继续使用 `atol=1e-6, rtol=1e-5`，未评估浮点原模型的量化质量。
+
+### MMA 阶段复现
+
+构建方式与库名保持一致：
+
+```bash
+bash 02_optimized_gemm/build.sh
+```
+
+只重放新版本检查/测量。以下提取已归档的实际脚本并改输出文件名，避免覆盖固定结果：
+
+```bash
+python - <<'PY'
+import json
+from pathlib import Path
+items = [('correctness', 'mma_correctness_2026-10-20'),
+         ('alignment', 'mma_alignment_checks_2026-10-20'),
+         ('resources', 'mma_resources_2026-10-20'),
+         ('benchmark', 'mma_results_2026-10-20')]
+for kind, name in items:
+    d = json.loads((Path('02_optimized_gemm/reports') / (name + '.json')).read_text())
+    script = d['reproduction_script'].replace(name + '.json', name + '_rerun.json')
+    Path('/tmp/moe_mma_' + kind + '_rerun.py').write_text(script)
+PY
+python /tmp/moe_mma_correctness_rerun.py
+python /tmp/moe_mma_alignment_rerun.py
+python /tmp/moe_mma_resources_rerun.py
+python /tmp/moe_mma_benchmark_rerun.py
+```
+
+复现脚本沿用本实例绝对路径；性能脚本读取固定历史 JSON 作哈希登记，但不会加载旧库或执行旧 kernel。
+指令探针的完整 C++ 源码和编译命令也保存在指令报告中；独立探针不改变 grouped GEMM 的接口。
+阅读源码时先看 `warp/lane` 和两个片段的输入位置，再看 builtin 调用，最后看四个结果的写回位置。
+与 `b1f0623` 比较即可查看本阶段核心源码增量。

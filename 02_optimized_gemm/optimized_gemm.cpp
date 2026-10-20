@@ -28,10 +28,16 @@ constexpr int max_nk = 32768;
 constexpr int max_groups = 4096; // Bounded API contract, not a hardware limit.
 constexpr int groups_per_launch = 64;
 constexpr int THREAD_M = 16, THREAD_N = 16;
-constexpr int REG_M = 2, REG_N = 2;
-constexpr int BLOCK_M = THREAD_M * REG_M, BLOCK_N = THREAD_N * REG_N, BLOCK_K = 32;
+constexpr int MMA_M = 16, MMA_N = 16, MMA_K = 16, MMA_WARP = 64;
+constexpr int BLOCK_M = 32, BLOCK_N = 32, BLOCK_K = 32;
 constexpr int BLOCK_THREADS = THREAD_M * THREAD_N;
 static_assert(BLOCK_K % 4 == 0, "packed loader needs complete four-byte words");
+static_assert(BLOCK_M % MMA_M == 0 && BLOCK_N % MMA_N == 0 && BLOCK_K % MMA_K == 0 &&
+              BLOCK_THREADS == (BLOCK_M / MMA_M) * (BLOCK_N / MMA_N) * MMA_WARP,
+              "each 64-thread warp must cover one 16x16 output tile");
+#if defined(__MACA_ARCH__)
+static_assert(__MACA_ARCH__ == 1000, "this INT8 MMA lesson targets C500 / xcore1000");
+#endif
 static_assert(int64_t(max_groups) * max_expert_rows <= std::numeric_limits<int32_t>::max(),
               "contiguous offsets must fit INT32");
 static_assert(sizeof(size_t) >= 8, "large buffers require 64-bit indexing");
@@ -53,6 +59,7 @@ __device__ __forceinline__ uint32_t load_int8x4(const int8_t* input) {
 }
 static_assert(__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__,
               "packed INT8 extraction requires little-endian byte order");
+using MmaAccumulator = int32_t __attribute__((ext_vector_type(4)));
 
 // Separate compile-time paths retain the original loader for arbitrary INT8 addresses/K.
 template <bool Masked, bool Vectorized>
@@ -78,14 +85,17 @@ __global__ void shared_int8_gemm(GemmView data, int groups, int rows, int n, int
     // Only BLOCK-uniform conditions may return before a barrier.
     if (m0 >= valid_m || n0 >= n) return;
 
-    __shared__ int8_t tile_a[BLOCK_M][BLOCK_K];
+    __shared__ __align__(4) int8_t tile_a[BLOCK_M][BLOCK_K];
     // B is [G,N,K] globally; transpose the tile so output-column threads read
     // consecutive shared addresses. The extra column changes the bank mapping.
     __shared__ int8_t tile_b[BLOCK_K][BLOCK_N + 1];
     const int tx = threadIdx.x, ty = threadIdx.y;
     const int tid = ty * THREAD_N + tx;
-    // Each thread owns rows ty/ty+16 and columns tx/tx+16 of the output tile.
-    int32_t sum[REG_M][REG_N] = {};
+    // C500 has 64-thread warps. Four warps cover the same 32x32 block output.
+    const int warp = tid / MMA_WARP, lane = tid % MMA_WARP;
+    const int warp_m = warp / (BLOCK_N / MMA_N), warp_n = warp % (BLOCK_N / MMA_N);
+    const int input_mn = lane % 16, input_k = (lane / 16) * 4;
+    MmaAccumulator sum = {0, 0, 0, 0};
 
     for (int k0 = 0; k0 < k; k0 += BLOCK_K) {
         if constexpr (Vectorized) {
@@ -130,19 +140,17 @@ __global__ void shared_int8_gemm(GemmView data, int groups, int rows, int n, int
         __syncthreads(); // All tile writes must finish before any reader uses them.
 
         #pragma unroll
-        for (int kk = 0; kk < BLOCK_K; ++kk) {
-            int32_t a_frag[REG_M], b_frag[REG_N];
+        for (int kk = 0; kk < BLOCK_K; kk += MMA_K) {
+            // Each lane supplies four K-adjacent INT8 values from A and B.
+            // The warp collectively computes a full 16x16x16 product.
+            const uint32_t a_frag = load_int8x4(
+                &tile_a[warp_m * MMA_M + input_mn][kk + input_k]);
+            uint32_t b_frag = 0;
             #pragma unroll
-            for (int i = 0; i < REG_M; ++i)
-                a_frag[i] = static_cast<int32_t>(tile_a[ty + i * THREAD_M][kk]);
-            #pragma unroll
-            for (int j = 0; j < REG_N; ++j)
-                b_frag[j] = static_cast<int32_t>(tile_b[kk][tx + j * THREAD_N]);
-            #pragma unroll
-            for (int i = 0; i < REG_M; ++i)
-                #pragma unroll
-                for (int j = 0; j < REG_N; ++j)
-                    sum[i][j] += a_frag[i] * b_frag[j];
+            for (int j = 0; j < 4; ++j)
+                b_frag |= uint32_t(uint8_t(tile_b[kk + input_k + j][warp_n * MMA_N + input_mn])) << (8 * j);
+            sum = __builtin_mxc_mma_16x16x16i8(
+                static_cast<int32_t>(a_frag), static_cast<int32_t>(b_frag), sum);
         }
 
         __syncthreads(); // All readers must finish before the next tile overwrites it.
@@ -150,16 +158,14 @@ __global__ void shared_int8_gemm(GemmView data, int groups, int rows, int n, int
     // Partial-row/column threads still participated in every barrier.
     // Write valid outputs only; masked padding must retain its original value.
     #pragma unroll
-    for (int i = 0; i < REG_M; ++i) {
-        const int row = m0 + ty + i * THREAD_M;
-        #pragma unroll
-        for (int j = 0; j < REG_N; ++j) {
-            const int col = n0 + tx + j * THREAD_N;
-            if (row < valid_m && col < n) {
-                const size_t physical_row = expert_row_base + row;
-                data.c[physical_row * n + col] = static_cast<float>(sum[i][j]) *
-                    data.a_scale[physical_row] * data.b_scale[size_t(group) * n + col];
-            }
+    for (int j = 0; j < 4; ++j) {
+        // MMA results use a different lane layout from the scalar 2x2 lesson.
+        const int row = m0 + warp_m * MMA_M + (lane / 16) * 4 + j;
+        const int col = n0 + warp_n * MMA_N + lane % 16;
+        if (row < valid_m && col < n) {
+            const size_t physical_row = expert_row_base + row;
+            data.c[physical_row * n + col] = static_cast<float>(sum[j]) *
+                data.a_scale[physical_row] * data.b_scale[size_t(group) * n + col];
         }
     }
 }

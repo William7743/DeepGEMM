@@ -1,0 +1,89 @@
+{
+  "scope": "mcFuncGetAttributes on host kernel stub pointers exported from the exact measured libraries; resource metadata, not measured occupancy or profiler spill counters",
+  "struct_bytes": 56,
+  "header_sha256": "d5939dab1bf9fe0bacef1d8412de6e743b74de1026f17642d67ab09c352a91cd",
+  "results": [
+    {
+      "version": "mma",
+      "masked": false,
+      "vectorized": false,
+      "library_sha256": "07a184aa9da90c4d11db1b8338b8cf5809e3d0d1fd2305aa7a047032e022016e",
+      "source_sha256": "4a2172ad3bb9b9050f09801ee37050bd947b2e69a2df38fbdffa5b605d466135",
+      "symbol": "_Z31__device_stub__shared_int8_gemmILb0ELb0EEv8GemmViewiiiii",
+      "attributes": {
+        "binaryVersion": 10,
+        "cacheModeCA": 0,
+        "constSizeBytes": 0,
+        "localSizeBytes": 0,
+        "maxDynamicSharedSizeBytes": 63456,
+        "maxThreadsPerBlock": 512,
+        "numRegs": 44,
+        "preferredShmemCarveout": 50,
+        "ptxVersion": 10,
+        "sharedSizeBytes": 2080
+      }
+    },
+    {
+      "version": "mma",
+      "masked": false,
+      "vectorized": true,
+      "library_sha256": "07a184aa9da90c4d11db1b8338b8cf5809e3d0d1fd2305aa7a047032e022016e",
+      "source_sha256": "4a2172ad3bb9b9050f09801ee37050bd947b2e69a2df38fbdffa5b605d466135",
+      "symbol": "_Z31__device_stub__shared_int8_gemmILb0ELb1EEv8GemmViewiiiii",
+      "attributes": {
+        "binaryVersion": 10,
+        "cacheModeCA": 0,
+        "constSizeBytes": 0,
+        "localSizeBytes": 0,
+        "maxDynamicSharedSizeBytes": 63456,
+        "maxThreadsPerBlock": 512,
+        "numRegs": 34,
+        "preferredShmemCarveout": 50,
+        "ptxVersion": 10,
+        "sharedSizeBytes": 2080
+      }
+    },
+    {
+      "version": "mma",
+      "masked": true,
+      "vectorized": false,
+      "library_sha256": "07a184aa9da90c4d11db1b8338b8cf5809e3d0d1fd2305aa7a047032e022016e",
+      "source_sha256": "4a2172ad3bb9b9050f09801ee37050bd947b2e69a2df38fbdffa5b605d466135",
+      "symbol": "_Z31__device_stub__shared_int8_gemmILb1ELb0EEv8GemmViewiiiii",
+      "attributes": {
+        "binaryVersion": 10,
+        "cacheModeCA": 0,
+        "constSizeBytes": 0,
+        "localSizeBytes": 0,
+        "maxDynamicSharedSizeBytes": 63456,
+        "maxThreadsPerBlock": 512,
+        "numRegs": 44,
+        "preferredShmemCarveout": 50,
+        "ptxVersion": 10,
+        "sharedSizeBytes": 2080
+      }
+    },
+    {
+      "version": "mma",
+      "masked": true,
+      "vectorized": true,
+      "library_sha256": "07a184aa9da90c4d11db1b8338b8cf5809e3d0d1fd2305aa7a047032e022016e",
+      "source_sha256": "4a2172ad3bb9b9050f09801ee37050bd947b2e69a2df38fbdffa5b605d466135",
+      "symbol": "_Z31__device_stub__shared_int8_gemmILb1ELb1EEv8GemmViewiiiii",
+      "attributes": {
+        "binaryVersion": 10,
+        "cacheModeCA": 0,
+        "constSizeBytes": 0,
+        "localSizeBytes": 0,
+        "maxDynamicSharedSizeBytes": 63456,
+        "maxThreadsPerBlock": 512,
+        "numRegs": 34,
+        "preferredShmemCarveout": 50,
+        "ptxVersion": 10,
+        "sharedSizeBytes": 2080
+      }
+    }
+  ],
+  "status": "PASS",
+  "reproduction_script": "from pathlib import Path\nimport ctypes,hashlib,json,subprocess\nROOT=Path('/root/MOE/C500_int8_02All')\nclass Attr(ctypes.Structure):\n _fields_=[('binaryVersion',ctypes.c_int),('cacheModeCA',ctypes.c_int),('constSizeBytes',ctypes.c_size_t),('localSizeBytes',ctypes.c_size_t),('maxDynamicSharedSizeBytes',ctypes.c_int),('maxThreadsPerBlock',ctypes.c_int),('numRegs',ctypes.c_int),('preferredShmemCarveout',ctypes.c_int),('ptxVersion',ctypes.c_int),('sharedSizeBytes',ctypes.c_size_t)]\nruntime=ctypes.CDLL('/opt/maca/lib/libmcruntime.so')\nassert runtime.mcSetDevice(0)==0\nfn=runtime.mcFuncGetAttributes;fn.argtypes=[ctypes.POINTER(Attr),ctypes.c_void_p];fn.restype=ctypes.c_int\nreport=dict(scope='mcFuncGetAttributes on host kernel stub pointers exported from the exact measured libraries; resource metadata, not measured occupancy or profiler spill counters',struct_bytes=ctypes.sizeof(Attr),header_sha256=hashlib.sha256(Path('/opt/maca/include/mcr/mc_runtime_types.h').read_bytes()).hexdigest(),results=[],status='PASS')\nfor version,folder in [('mma',ROOT/'02_optimized_gemm')]:\n path=folder/'libmoe_int8_shared.so';lib=ctypes.CDLL(str(path))\n for masked in (0,1):\n  for vectorized in (0,1):\n   symbol=f'_Z31__device_stub__shared_int8_gemmILb{masked}ELb{vectorized}EEv8GemmViewiiiii'\n   addr=ctypes.cast(getattr(lib,symbol),ctypes.c_void_p);attr=Attr();rc=fn(ctypes.byref(attr),addr);assert rc==0,(symbol,rc)\n   data={k:getattr(attr,k) for k,_ in Attr._fields_}\n   report['results'].append(dict(version=version,masked=bool(masked),vectorized=bool(vectorized),library_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),source_sha256=hashlib.sha256((folder/'optimized_gemm.cpp').read_bytes()).hexdigest(),symbol=symbol,attributes=data))\n   print(version,masked,vectorized,data,flush=True)\nreport['reproduction_script']=Path(__file__).read_text()\n(ROOT/'02_optimized_gemm/reports/mma_resources_2026-10-20.json').write_text(json.dumps(report,indent=2)+'\\n')\n"
+}

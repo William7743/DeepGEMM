@@ -1,0 +1,130 @@
+{
+  "scope": "Full CPU reference for aligned/unaligned inputs; only the current MMA library is executed",
+  "source_sha256": "4a2172ad3bb9b9050f09801ee37050bd947b2e69a2df38fbdffa5b605d466135",
+  "library_sha256": "07a184aa9da90c4d11db1b8338b8cf5809e3d0d1fd2305aa7a047032e022016e",
+  "checks": [
+    {
+      "layout": "contiguous",
+      "a_offset": 0,
+      "b_offset": 0,
+      "packed_path": true,
+      "checked_elements": 399,
+      "padding_checked": 0,
+      "max_abs_error": 5.025105153322329e-06,
+      "status": "PASS"
+    },
+    {
+      "layout": "contiguous",
+      "a_offset": 1,
+      "b_offset": 0,
+      "packed_path": false,
+      "checked_elements": 399,
+      "padding_checked": 0,
+      "max_abs_error": 3.6332362114421812e-06,
+      "status": "PASS"
+    },
+    {
+      "layout": "contiguous",
+      "a_offset": 0,
+      "b_offset": 1,
+      "packed_path": false,
+      "checked_elements": 399,
+      "padding_checked": 0,
+      "max_abs_error": 5.287632092176864e-06,
+      "status": "PASS"
+    },
+    {
+      "layout": "contiguous",
+      "a_offset": 1,
+      "b_offset": 1,
+      "packed_path": false,
+      "checked_elements": 399,
+      "padding_checked": 0,
+      "max_abs_error": 3.951435957105787e-06,
+      "status": "PASS"
+    },
+    {
+      "layout": "contiguous",
+      "a_offset": 2,
+      "b_offset": 3,
+      "packed_path": false,
+      "checked_elements": 399,
+      "padding_checked": 0,
+      "max_abs_error": 4.206756983649029e-06,
+      "status": "PASS"
+    },
+    {
+      "layout": "contiguous",
+      "a_offset": 3,
+      "b_offset": 2,
+      "packed_path": false,
+      "checked_elements": 399,
+      "padding_checked": 0,
+      "max_abs_error": 3.106914334694011e-06,
+      "status": "PASS"
+    },
+    {
+      "layout": "masked",
+      "a_offset": 0,
+      "b_offset": 0,
+      "packed_path": true,
+      "checked_elements": 399,
+      "padding_checked": 1045,
+      "max_abs_error": 5.025105153322329e-06,
+      "status": "PASS"
+    },
+    {
+      "layout": "masked",
+      "a_offset": 1,
+      "b_offset": 0,
+      "packed_path": false,
+      "checked_elements": 399,
+      "padding_checked": 1045,
+      "max_abs_error": 5.245916085527824e-06,
+      "status": "PASS"
+    },
+    {
+      "layout": "masked",
+      "a_offset": 0,
+      "b_offset": 1,
+      "packed_path": false,
+      "checked_elements": 399,
+      "padding_checked": 1045,
+      "max_abs_error": 4.566841028008639e-06,
+      "status": "PASS"
+    },
+    {
+      "layout": "masked",
+      "a_offset": 1,
+      "b_offset": 1,
+      "packed_path": false,
+      "checked_elements": 399,
+      "padding_checked": 1045,
+      "max_abs_error": 4.790434132928567e-06,
+      "status": "PASS"
+    },
+    {
+      "layout": "masked",
+      "a_offset": 2,
+      "b_offset": 3,
+      "packed_path": false,
+      "checked_elements": 399,
+      "padding_checked": 1045,
+      "max_abs_error": 4.237137474660813e-06,
+      "status": "PASS"
+    },
+    {
+      "layout": "masked",
+      "a_offset": 3,
+      "b_offset": 2,
+      "packed_path": false,
+      "checked_elements": 399,
+      "padding_checked": 1045,
+      "max_abs_error": 4.420567705665235e-06,
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS",
+  "reproduction_script": "from pathlib import Path\nimport ctypes,hashlib,json,numpy as np,torch\nr=Path('/root/MOE/C500_int8_02All')\npaths=[r/'02_optimized_gemm/libmoe_int8_shared.so']\nlibs=[ctypes.CDLL(str(p)) for p in paths]\nfor lib in libs:\n for layout in ('contiguous','masked'):\n  fn=getattr(lib,'moe_int8_'+layout);fn.argtypes=[ctypes.c_void_p]*6+[ctypes.c_int]*4+[ctypes.c_void_p];fn.restype=ctypes.c_int\nreport=dict(scope='Full CPU reference for aligned/unaligned inputs; only the current MMA library is executed',source_sha256=hashlib.sha256((r/'02_optimized_gemm/optimized_gemm.cpp').read_bytes()).hexdigest(),library_sha256=hashlib.sha256(paths[0].read_bytes()).hexdigest(),checks=[])\ncounts=[1,0,3,17];g=4;n=19;k=64;cap=19\nfor layout in ('contiguous','masked'):\n for ao,bo in ((0,0),(1,0),(0,1),(1,1),(2,3),(3,2)):\n  stream=torch.cuda.Stream()\n  with torch.cuda.stream(stream):\n   torch.manual_seed(20261020+ao*10+bo)\n   rows=cap if layout=='masked' else sum(counts);physical=g*rows if layout=='masked' else rows\n   ast=torch.randint(-128,128,(physical*k+ao,),device='cuda',dtype=torch.int8)\n   bst=torch.randint(-128,128,(g*n*k+bo,),device='cuda',dtype=torch.int8)\n   a=ast[ao:].view(physical,k);b=bst[bo:].view(g,n,k)\n   assert a.data_ptr()%4==ao and b.data_ptr()%4==bo\n   sa=torch.rand(physical,device='cuda')*.03+.005;sb=torch.rand(g,n,device='cuda')*.03+.005\n   offsets=np.cumsum([0]+counts,dtype=np.int32)\n   meta=torch.tensor(counts if layout=='masked' else offsets.tolist(),dtype=torch.int32,device='cuda')\n   outs=[torch.full((physical,n),-123456.75,device='cuda') for _ in libs]\n   for e,m in enumerate(counts):\n    start=e*cap if layout=='masked' else int(offsets[e])\n    for out in outs:out[start:start+m].fill_(float('nan'))\n   for lib,out in zip(libs,outs):\n    rc=getattr(lib,'moe_int8_'+layout)(*(v.data_ptr() for v in (a,b,sa,sb,meta,out)),g,rows,n,k,stream.cuda_stream)\n    assert rc==0,rc\n  stream.synchronize()\n  aa=a.cpu().numpy().astype(np.int64);bb=b.cpu().numpy().astype(np.int64)\n  sa_cpu=sa.cpu().numpy().astype(np.float64);sb_cpu=sb.cpu().numpy().astype(np.float64)\n  vals=[out.cpu().numpy() for out in outs]\n  assert len(vals)==1\n  checked=padding=0;max_abs=0.\n  for e,m in enumerate(counts):\n   start=e*cap if layout=='masked' else int(offsets[e])\n   expected=(aa[start:start+m]@bb[e].T).astype(np.float64)*sa_cpu[start:start+m,None]*sb_cpu[e,None,:]\n   got=vals[0][start:start+m].astype(np.float64)\n   assert np.isfinite(got).all() and np.all(np.abs(got-expected)<=1e-6+1e-5*np.abs(expected))\n   if m:max_abs=max(max_abs,float(np.max(np.abs(got-expected))))\n   checked+=m*n\n   if layout=='masked':\n    assert (vals[0][start+m:start+cap]==-123456.75).all();padding+=(cap-m)*n\n  report['checks'].append(dict(layout=layout,a_offset=ao,b_offset=bo,packed_path=ao==bo==0,checked_elements=checked,padding_checked=padding,max_abs_error=max_abs,status='PASS'))\n  print(layout,ao,bo,'PASS',flush=True)\nreport['status']='PASS'\n(r/'02_optimized_gemm/reports/mma_alignment_checks_2026-10-20.json').write_text(json.dumps(report,indent=2)+'\\n')\nprint('ALIGNMENT_ALL_PASS',len(report['checks']),flush=True)\n",
+  "driver_sha256": "40ca2a50ad7587e7ad003ecda9ef514b2f34a060197a5f8da1fe470fa3ab3a28"
+}
