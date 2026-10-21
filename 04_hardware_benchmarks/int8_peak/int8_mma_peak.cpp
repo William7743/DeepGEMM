@@ -23,7 +23,9 @@
 #endif
 static_assert(MMA_PEAK_UNROLL == 1 || MMA_PEAK_UNROLL == 2 ||
               MMA_PEAK_UNROLL == 4 || MMA_PEAK_UNROLL == 8 ||
-              MMA_PEAK_UNROLL == 16, "Unsupported MMA loop unroll factor");
+              MMA_PEAK_UNROLL == 16 || MMA_PEAK_UNROLL == 32 ||
+              MMA_PEAK_UNROLL == 64 || MMA_PEAK_UNROLL == 128 ||
+              MMA_PEAK_UNROLL == 256, "Unsupported MMA loop unroll factor");
 
 // 每个配置预热 1 次，正式测量 3 次。
 constexpr int kWarmupRuns = 1;

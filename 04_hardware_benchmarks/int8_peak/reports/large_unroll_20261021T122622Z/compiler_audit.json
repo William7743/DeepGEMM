@@ -1,0 +1,200 @@
+[
+  {
+    "unroll": 1,
+    "applied_in_IR": true,
+    "kernel_IR_text_bytes": 33913,
+    "whole_device_IR_sha256": "646b88f26ee9fe7e70743865a69b37a796f187fb817a3d3f890b3d2c8deeba85",
+    "mma_blocks": [
+      {
+        "block": "for.cond30.preheader",
+        "mma_calls": 16,
+        "loads": 0,
+        "stores": 0
+      }
+    ],
+    "tail_checks": [
+      {
+        "iterations": 17,
+        "returncode": 0
+      },
+      {
+        "iterations": 257,
+        "returncode": 0
+      },
+      {
+        "iterations": 4097,
+        "returncode": 0
+      }
+    ]
+  },
+  {
+    "unroll": 16,
+    "applied_in_IR": true,
+    "kernel_IR_text_bytes": 72192,
+    "whole_device_IR_sha256": "85cfdde6c5c094abcd705cb29a1ff321c8f9e504aca48c66bfc5d917bcaa52f6",
+    "mma_blocks": [
+      {
+        "block": "for.cond30.preheader",
+        "mma_calls": 256,
+        "loads": 0,
+        "stores": 0
+      },
+      {
+        "block": "for.cond30.preheader.epil",
+        "mma_calls": 16,
+        "loads": 0,
+        "stores": 0
+      }
+    ],
+    "tail_checks": [
+      {
+        "iterations": 17,
+        "returncode": 0
+      },
+      {
+        "iterations": 257,
+        "returncode": 0
+      },
+      {
+        "iterations": 4097,
+        "returncode": 0
+      }
+    ]
+  },
+  {
+    "unroll": 32,
+    "applied_in_IR": true,
+    "kernel_IR_text_bytes": 101344,
+    "whole_device_IR_sha256": "8d6a393361c331746616eb8bce47eb10f146c710b8f715a7f303f2a8e34f4c91",
+    "mma_blocks": [
+      {
+        "block": "for.cond30.preheader",
+        "mma_calls": 512,
+        "loads": 0,
+        "stores": 0
+      },
+      {
+        "block": "for.cond30.preheader.epil",
+        "mma_calls": 16,
+        "loads": 0,
+        "stores": 0
+      }
+    ],
+    "tail_checks": [
+      {
+        "iterations": 17,
+        "returncode": 0
+      },
+      {
+        "iterations": 257,
+        "returncode": 0
+      },
+      {
+        "iterations": 4097,
+        "returncode": 0
+      }
+    ]
+  },
+  {
+    "unroll": 64,
+    "applied_in_IR": true,
+    "kernel_IR_text_bytes": 160016,
+    "whole_device_IR_sha256": "eae8a6be4aeb983908554d716f9ef85700677533db54fd862454bd3f46086096",
+    "mma_blocks": [
+      {
+        "block": "for.cond30.preheader",
+        "mma_calls": 1024,
+        "loads": 0,
+        "stores": 0
+      },
+      {
+        "block": "for.cond30.preheader.epil",
+        "mma_calls": 16,
+        "loads": 0,
+        "stores": 0
+      }
+    ],
+    "tail_checks": [
+      {
+        "iterations": 17,
+        "returncode": 0
+      },
+      {
+        "iterations": 257,
+        "returncode": 0
+      },
+      {
+        "iterations": 4097,
+        "returncode": 0
+      }
+    ]
+  },
+  {
+    "unroll": 128,
+    "applied_in_IR": true,
+    "kernel_IR_text_bytes": 278680,
+    "whole_device_IR_sha256": "34b08100bc0e261f715e899ec2ee0a56b777a099e0d33d1b838b4b3dd039a153",
+    "mma_blocks": [
+      {
+        "block": "for.cond30.preheader",
+        "mma_calls": 2048,
+        "loads": 0,
+        "stores": 0
+      },
+      {
+        "block": "for.cond30.preheader.epil",
+        "mma_calls": 16,
+        "loads": 0,
+        "stores": 0
+      }
+    ],
+    "tail_checks": [
+      {
+        "iterations": 17,
+        "returncode": 0
+      },
+      {
+        "iterations": 257,
+        "returncode": 0
+      },
+      {
+        "iterations": 4097,
+        "returncode": 0
+      }
+    ]
+  },
+  {
+    "unroll": 256,
+    "applied_in_IR": true,
+    "kernel_IR_text_bytes": 515992,
+    "whole_device_IR_sha256": "75ee1a5a150688ed88c355b870f3c86583ce273e51d2a8e3e82f8dddbc62e4f5",
+    "mma_blocks": [
+      {
+        "block": "for.cond30.preheader",
+        "mma_calls": 4096,
+        "loads": 0,
+        "stores": 0
+      },
+      {
+        "block": "for.cond30.preheader.epil",
+        "mma_calls": 16,
+        "loads": 0,
+        "stores": 0
+      }
+    ],
+    "tail_checks": [
+      {
+        "iterations": 17,
+        "returncode": 0
+      },
+      {
+        "iterations": 257,
+        "returncode": 0
+      },
+      {
+        "iterations": 4097,
+        "returncode": 0
+      }
+    ]
+  }
+]

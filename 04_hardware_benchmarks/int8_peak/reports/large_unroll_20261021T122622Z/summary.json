@@ -1,0 +1,169 @@
+{
+  "protocol": {
+    "blocks": 6656,
+    "threads": 512,
+    "accumulators": 16,
+    "iterations": 4096,
+    "batch": 4,
+    "samples": 5,
+    "rounds": 3,
+    "unroll_factors": [
+      1,
+      16,
+      32,
+      64,
+      128,
+      256
+    ],
+    "order": [
+      "r1_u16",
+      "r1_u64",
+      "r1_u1",
+      "r1_u128",
+      "r1_u32",
+      "r1_u256",
+      "r2_u1",
+      "r2_u64",
+      "r2_u128",
+      "r2_u16",
+      "r2_u256",
+      "r2_u32",
+      "r3_u32",
+      "r3_u64",
+      "r3_u256",
+      "r3_u1",
+      "r3_u16",
+      "r3_u128"
+    ],
+    "source_sha256": "eadc2b8029e85739a55096090f4750ec0f671cbcf50d3db384ae33cc3fbfae48"
+  },
+  "samples": 90,
+  "results": [
+    {
+      "unroll": 1,
+      "event_ms_per_kernel": 59.990254974365236,
+      "event_tops": 476.5324357162975,
+      "wall_tops": 476.4495652238586,
+      "registers": 100,
+      "local_bytes": 0,
+      "round_tops": [
+        476.5360598675921,
+        476.54369015896543,
+        476.5175578802075
+      ],
+      "sample_range_over_median": 0.00023896696577386414,
+      "gain_vs_u16_pct": -0.11682670034761644,
+      "binary_bytes": 803120,
+      "outer_groups_for_4096": 4096,
+      "gain_vs_u1_pct": 0.0
+    },
+    {
+      "unroll": 16,
+      "event_ms_per_kernel": 59.920170338948566,
+      "event_tops": 477.0898039919963,
+      "wall_tops": 477.00019732595507,
+      "registers": 100,
+      "local_bytes": 0,
+      "round_tops": [
+        477.09126594847197,
+        477.08810108723173,
+        477.0900449509649
+      ],
+      "sample_range_over_median": 0.0002830573375738879,
+      "gain_vs_u16_pct": 0.0,
+      "binary_bytes": 1003824,
+      "outer_groups_for_4096": 256,
+      "gain_vs_u1_pct": 0.11696334476392067
+    },
+    {
+      "unroll": 32,
+      "event_ms_per_kernel": 59.928323872884114,
+      "event_tops": 477.0248936515134,
+      "wall_tops": 476.94109003020134,
+      "registers": 100,
+      "local_bytes": 0,
+      "round_tops": [
+        477.0269625086917,
+        477.0362361486958,
+        477.01148295284446
+      ],
+      "sample_range_over_median": 0.00022852321044683352,
+      "gain_vs_u16_pct": -0.01360547635680387,
+      "binary_bytes": 1188144,
+      "outer_groups_for_4096": 128,
+      "gain_vs_u1_pct": 0.1033419549868908
+    },
+    {
+      "unroll": 64,
+      "event_ms_per_kernel": 60.01989949544271,
+      "event_tops": 476.29707084642195,
+      "wall_tops": 476.2135976152531,
+      "registers": 100,
+      "local_bytes": 0,
+      "round_tops": [
+        476.3059750501581,
+        476.3050607999412,
+        476.28017758884437
+      ],
+      "sample_range_over_median": 0.00028041767488112915,
+      "gain_vs_u16_pct": -0.16616015243696713,
+      "binary_bytes": 1573168,
+      "outer_groups_for_4096": 64,
+      "gain_vs_u1_pct": -0.0493911541450065
+    },
+    {
+      "unroll": 128,
+      "event_ms_per_kernel": 60.336857604980466,
+      "event_tops": 473.7950144724852,
+      "wall_tops": 473.7159917843919,
+      "registers": 100,
+      "local_bytes": 0,
+      "round_tops": [
+        473.5558136173596,
+        473.90670667340004,
+        473.92270467895185
+      ],
+      "sample_range_over_median": 0.011158480128063933,
+      "gain_vs_u16_pct": -0.6906015370570229,
+      "binary_bytes": 2359600,
+      "outer_groups_for_4096": 32,
+      "gain_vs_u1_pct": -0.5744459429498416
+    },
+    {
+      "unroll": 256,
+      "event_ms_per_kernel": 60.765759531656904,
+      "event_tops": 470.4508351826489,
+      "wall_tops": 470.3671088324374,
+      "registers": 100,
+      "local_bytes": 0,
+      "round_tops": [
+        470.3421493345331,
+        470.35998002269764,
+        470.6505035624665
+      ],
+      "sample_range_over_median": 0.01443680661598275,
+      "gain_vs_u16_pct": -1.3915553746478238,
+      "binary_bytes": 3936560,
+      "outer_groups_for_4096": 16,
+      "gain_vs_u1_pct": -1.2762196395943337
+    }
+  ],
+  "best": {
+    "unroll": 16,
+    "event_ms_per_kernel": 59.920170338948566,
+    "event_tops": 477.0898039919963,
+    "wall_tops": 477.00019732595507,
+    "registers": 100,
+    "local_bytes": 0,
+    "round_tops": [
+      477.09126594847197,
+      477.08810108723173,
+      477.0900449509649
+    ],
+    "sample_range_over_median": 0.0002830573375738879,
+    "gain_vs_u16_pct": 0.0,
+    "binary_bytes": 1003824,
+    "outer_groups_for_4096": 256,
+    "gain_vs_u1_pct": 0.11696334476392067
+  }
+}
