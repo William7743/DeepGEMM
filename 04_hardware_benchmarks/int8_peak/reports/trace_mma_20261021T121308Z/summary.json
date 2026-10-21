@@ -1,0 +1,25 @@
+{
+  "device": "16GB /25% sGPU instance; not full-card test",
+  "trace_file": "mma_u1-1778095.json",
+  "trace_sha256": "709adf1727e24ab84ff90cdfb03f89b5d5b727f9bc4a3a32bfb318ec46673b6b",
+  "trace_duration_unit": "ns; same version trace timestamp scale and independent Event ms sanity check",
+  "kernel_count": 4,
+  "warmup_kernel_count": 1,
+  "measured_kernel_durations_ms": [
+    60.168704,
+    60.075008,
+    60.145664
+  ],
+  "mean_trace_kernel_ms": 60.129791999999995,
+  "logical_wave_mma_per_kernel": 3489660928,
+  "ops_per_kernel": 28587302322176,
+  "logical_wave_mma_G_per_s": 58.035473131189285,
+  "derived_int8_tops": 475.42659589070263,
+  "event_interval_ms_under_tracer": [
+    60.265983582,
+    73.078781128,
+    60.244735718
+  ],
+  "scope": "MMA count derived from validated source/IR, not collected instruction hardware counters. Kernel-wide duration, not instruction-only latency.",
+  "binary_sha256": "8a8bf381e891493dc605c62d5ea146bf78355e93120baf9edfa8e22f6b604958"
+}

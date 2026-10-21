@@ -1,0 +1,186 @@
+[
+  {
+    "args": {
+      "block": {
+        "x": 512,
+        "y": 1,
+        "z": 1
+      },
+      "co_id": 33878597,
+      "complete_ts": 1792584792717832277,
+      "device_id": 0,
+      "dispatch_id": 0,
+      "grid": {
+        "x": 6656,
+        "y": 1,
+        "z": 1
+      },
+      "hw_queue_id": [
+        3087013200
+      ],
+      "is_dynamic_parallel": false,
+      "is_recompiled": false,
+      "launch_type": 0,
+      "link": true,
+      "max_block_size": 512,
+      "mem": {
+        "dynamic_shared": 0,
+        "private_per_thread": 0,
+        "private_total": 0,
+        "registers_per_thread": 100,
+        "static_shared": 0
+      },
+      "mtreg_occupancy(%)": 19,
+      "name": "_Z13mmaPeakKernelILi16EEvPKaS1_Pii",
+      "queue_id": 2,
+      "queue_ts": 1792584792391017758,
+      "shared_memeory_occupancy(%)": 0,
+      "submit_ts": 1792584792391033860
+    },
+    "ph": "X",
+    "ts": 1792584792657695744,
+    "dur": 60086784,
+    "name": "void mmaPeakKernel<16>(signed char const*, signed char const*, int*, int)",
+    "pid": 2,
+    "cat": "2",
+    "tid": 1024
+  },
+  {
+    "args": {
+      "block": {
+        "x": 512,
+        "y": 1,
+        "z": 1
+      },
+      "co_id": 33878602,
+      "complete_ts": 1792584792778884463,
+      "device_id": 0,
+      "dispatch_id": 0,
+      "grid": {
+        "x": 6656,
+        "y": 1,
+        "z": 1
+      },
+      "hw_queue_id": [
+        3087013200
+      ],
+      "is_dynamic_parallel": false,
+      "is_recompiled": false,
+      "launch_type": 0,
+      "link": true,
+      "max_block_size": 512,
+      "mem": {
+        "dynamic_shared": 0,
+        "private_per_thread": 0,
+        "private_total": 0,
+        "registers_per_thread": 100,
+        "static_shared": 0
+      },
+      "mtreg_occupancy(%)": 19,
+      "name": "_Z13mmaPeakKernelILi16EEvPKaS1_Pii",
+      "queue_id": 2,
+      "queue_ts": 1792584792717944734,
+      "shared_memeory_occupancy(%)": 0,
+      "submit_ts": 1792584792718616270
+    },
+    "ph": "X",
+    "ts": 1792584792718636288,
+    "dur": 60168704,
+    "name": "void mmaPeakKernel<16>(signed char const*, signed char const*, int*, int)",
+    "pid": 2,
+    "cat": "2",
+    "tid": 1024
+  },
+  {
+    "args": {
+      "block": {
+        "x": 512,
+        "y": 1,
+        "z": 1
+      },
+      "co_id": 33878609,
+      "complete_ts": 1792584792852835117,
+      "device_id": 0,
+      "dispatch_id": 0,
+      "grid": {
+        "x": 6656,
+        "y": 1,
+        "z": 1
+      },
+      "hw_queue_id": [
+        3087013200
+      ],
+      "is_dynamic_parallel": false,
+      "is_recompiled": false,
+      "launch_type": 0,
+      "link": true,
+      "max_block_size": 512,
+      "mem": {
+        "dynamic_shared": 0,
+        "private_per_thread": 0,
+        "private_total": 0,
+        "registers_per_thread": 100,
+        "static_shared": 0
+      },
+      "mtreg_occupancy(%)": 19,
+      "name": "_Z13mmaPeakKernelILi16EEvPKaS1_Pii",
+      "queue_id": 2,
+      "queue_ts": 1792584792778990497,
+      "shared_memeory_occupancy(%)": 0,
+      "submit_ts": 1792584792779756528
+    },
+    "ph": "X",
+    "ts": 1792584792779774464,
+    "dur": 60075008,
+    "name": "void mmaPeakKernel<16>(signed char const*, signed char const*, int*, int)",
+    "pid": 2,
+    "cat": "2",
+    "tid": 1024
+  },
+  {
+    "args": {
+      "block": {
+        "x": 512,
+        "y": 1,
+        "z": 1
+      },
+      "co_id": 33878616,
+      "complete_ts": 1792584792913838366,
+      "device_id": 0,
+      "dispatch_id": 0,
+      "grid": {
+        "x": 6656,
+        "y": 1,
+        "z": 1
+      },
+      "hw_queue_id": [
+        3087013200
+      ],
+      "is_dynamic_parallel": false,
+      "is_recompiled": false,
+      "launch_type": 0,
+      "link": true,
+      "max_block_size": 512,
+      "mem": {
+        "dynamic_shared": 0,
+        "private_per_thread": 0,
+        "private_total": 0,
+        "registers_per_thread": 100,
+        "static_shared": 0
+      },
+      "mtreg_occupancy(%)": 19,
+      "name": "_Z13mmaPeakKernelILi16EEvPKaS1_Pii",
+      "queue_id": 2,
+      "queue_ts": 1792584792852934876,
+      "shared_memeory_occupancy(%)": 0,
+      "submit_ts": 1792584792853572566
+    },
+    "ph": "X",
+    "ts": 1792584792853598976,
+    "dur": 60145664,
+    "name": "void mmaPeakKernel<16>(signed char const*, signed char const*, int*, int)",
+    "pid": 2,
+    "cat": "2",
+    "tid": 1024
+  }
+]

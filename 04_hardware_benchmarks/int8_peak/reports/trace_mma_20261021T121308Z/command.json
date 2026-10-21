@@ -1,0 +1,12 @@
+[
+  "/opt/maca-3.7.1/bin/mcTracer",
+  "--odname",
+  "reports/trace_mma_20261021T121308Z",
+  "--name",
+  "mma_u1",
+  "/root/MOE/C500_int8_02All/04_hardware_benchmarks/int8_peak/build/int8_mma_peak_long_u1",
+  "6656",
+  "512",
+  "16",
+  "4096"
+]
