@@ -1,0 +1,23 @@
+Device 0: MetaX C500
+Runtime-reported architecture: xcore1000
+Wave size: 64
+Max threads per block: 1024
+Max block dimension X: 1024
+Max grid dimension X: 2147483647
+Visible global memory: 65120 MiB
+Runtime-reported AP count: 104
+Runtime-reported core clock: 1600 MHz (not a measured clock)
+Checked elements: 436207616, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Sustained warmup: at least 2 seconds, 24 launches; samples=3, kernels/sample=256
+Checked elements: 436207616, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Sustained sample 1: Event=30680 ms, wall=30680.3 ms, Event TOPS=477.077, wall TOPS=477.071
+Checked elements: 436207616, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Sustained sample 2: Event=30682.8 ms, wall=30683.3 ms, Event TOPS=477.033, wall TOPS=477.025
+Checked elements: 436207616, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Sustained sample 3: Event=30682.9 ms, wall=30683.5 ms, Event TOPS=477.032, wall TOPS=477.022
+Sustained mean Event TOPS: 477.047168; mean wall TOPS: 477.03941
+Wall scope includes Event submission, kernel submissions, and final wait; allocation/copies/validation/printing are outside both intervals.

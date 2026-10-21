@@ -1,0 +1,10 @@
+Device 0: MetaX C500
+Runtime-reported architecture: xcore1000
+Wave size: 64
+Max threads per block: 1024
+Max block dimension X: 1024
+Max grid dimension X: 2147483647
+Visible global memory: 65120 MiB
+Runtime-reported AP count: 104
+Runtime-reported core clock: 1600 MHz (not a measured clock)
+Error: threads_per_block exceeds this kernel's thread limit

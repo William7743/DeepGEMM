@@ -1,0 +1,6 @@
+Usage: /root/MOE/C500_int8_02All/04_hardware_benchmarks/int8_peak/build/int8_mma_peak [blocks threads_per_block accumulators iterations]
+       /root/MOE/C500_int8_02All/04_hardware_benchmarks/int8_peak/build/int8_mma_peak --scan [iterations [report.csv]]
+       /root/MOE/C500_int8_02All/04_hardware_benchmarks/int8_peak/build/int8_mma_peak --scan-wide [iterations [report.csv]]
+       /root/MOE/C500_int8_02All/04_hardware_benchmarks/int8_peak/build/int8_mma_peak --sustain blocks threads accumulators iterations samples batch report.csv
+Defaults: 1 64 1 4096
+Accumulators: 1, 2, 4, 8, 16; iterations: 1..8191

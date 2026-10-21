@@ -550,11 +550,13 @@ mcFuncAttributes queryKernelAttributes(int accumulators) {
 
 // 扫描配置，不改变 kernel 和单配置计时方法；仅正确性通过的配置参与排名。
 // CSV 是生成的测试报告，逐配置刷新，禁止覆盖已有结果。
-void scanConfigs(const mcDeviceProp_t& device, int iterations, const std::string& csv_path) {
+void scanConfigs(const mcDeviceProp_t& device, int iterations, const std::string& csv_path,
+                 bool wide = false) {
     BenchConfig validation{};
     validation.iterations = iterations;
     validateConfig(validation, device);
-    constexpr std::array<int, 9> block_counts = {1, 8, 16, 32, 64, 104, 208, 416, 832};
+    std::vector<int> block_counts = {1, 8, 16, 32, 64, 104, 208, 416, 832};
+    if (wide) block_counts.insert(block_counts.end(), {1664, 3328, 6656});
     constexpr std::array<int, 4> thread_counts = {64, 128, 256, 512};
     constexpr std::array<int, 5> accumulator_counts = {1, 2, 4, 8, 16};
     std::array<mcFuncAttributes, accumulator_counts.size()> attributes{};
@@ -657,12 +659,147 @@ void scanConfigs(const mcDeviceProp_t& device, int iterations, const std::string
               << "Timing isolation and instance quota must be recorded separately.\n";
 }
 
-// 无参数/四个位置参数保持单配置入口；--scan 扫描固定范围并保存 CSV。
+// 稳态验证：每个样本连续启动多个相同 kernel，同时记录 Event 与 CPU 墙钟。
+// 每个 kernel 的寄存器累加器重新清零；batch 不增加单个 INT32 输出的累加次数。
+template <int NUM_ACC>
+void benchmarkSustainedImpl(const BenchConfig& config, const mcDeviceProp_t& device,
+                            int sample_count, int kernels_per_sample, const std::string& csv_path) {
+    validateConfig(config, device);
+    if (config.accumulators != NUM_ACC || sample_count <= 0 || sample_count > 1000 ||
+        kernels_per_sample <= 0 || kernels_per_sample > 10000) {
+        throw std::invalid_argument("Invalid sustained configuration: samples 1..1000, batch 1..10000");
+    }
+    const auto attributes = queryKernelAttributes(NUM_ACC);
+    if (config.threads_per_block > attributes.maxThreadsPerBlock) {
+        throw std::invalid_argument("threads_per_block exceeds this kernel's thread limit");
+    }
+    std::uint64_t batch_ops = static_cast<std::uint64_t>(config.blocks) *
+        (config.threads_per_block / device.waveSize);
+    const std::array<std::uint64_t, 4> factors = {NUM_ACC,
+        static_cast<std::uint64_t>(config.iterations), kOpsPerMma,
+        static_cast<std::uint64_t>(kernels_per_sample)};
+    for (auto factor : factors) {
+        if (batch_ops > std::numeric_limits<std::uint64_t>::max() / factor) {
+            throw std::overflow_error("Batch operation count exceeds UINT64 range");
+        }
+        batch_ops *= factor;
+    }
+    if (std::filesystem::exists(csv_path)) {
+        throw std::runtime_error("Report already exists; choose a new CSV path: " + csv_path);
+    }
+    std::ofstream csv;
+    csv.exceptions(std::ios::failbit | std::ios::badbit);
+    csv.open(csv_path);
+    csv << std::setprecision(std::numeric_limits<double>::max_digits10)
+        << "sample,blocks,threads_per_block,accumulators,iterations,kernels_per_sample,"
+        << "ops_per_kernel,batch_ops,event_ms,wall_ms,event_tops,wall_tops,correct\n";
+    auto inputs = prepareInputs(config, device);
+    mcStream_t stream{};
+    mcEvent_t start{}, stop{};
+    auto cleanup = [&] {
+        if (start != nullptr) MC_CHECK(mcEventDestroy(start));
+        if (stop != nullptr) MC_CHECK(mcEventDestroy(stop));
+        if (stream != nullptr) MC_CHECK(mcStreamDestroy(stream));
+        MC_CHECK(mcFree(inputs.device_a));
+        MC_CHECK(mcFree(inputs.device_b));
+        MC_CHECK(mcFree(inputs.device_c));
+    };
+    try {
+        MC_CHECK(mcStreamCreateWithFlags(&stream, mcStreamNonBlocking));
+        MC_CHECK(mcEventCreate(&start));
+        MC_CHECK(mcEventCreate(&stop));
+        // 在所有计时前完成带检查启动、数值预检与至少 2 秒设备预热。
+        launchPeakKernelImpl<NUM_ACC>(config, inputs, device, stream);
+        MC_CHECK(mcGetLastError());
+        if (!checkResults(config, inputs, device, stream)) {
+            throw std::runtime_error("Sustained preflight correctness failed");
+        }
+        const auto warmup_start = std::chrono::steady_clock::now();
+        std::uint64_t warmup_launches = 0;
+        do {
+            for (int launch = 0; launch < 8; ++launch) {
+                mmaPeakKernel<NUM_ACC><<<config.blocks, config.threads_per_block, 0, stream>>>(
+                    inputs.device_a, inputs.device_b, inputs.device_c, config.iterations);
+                ++warmup_launches;
+            }
+            MC_CHECK(mcGetLastError());
+            MC_CHECK(mcStreamSynchronize(stream));
+        } while (std::chrono::steady_clock::now() - warmup_start < std::chrono::seconds(2));
+        std::cout << "Sustained warmup: at least 2 seconds, " << warmup_launches
+                  << " launches; samples=" << sample_count << ", kernels/sample="
+                  << kernels_per_sample << std::endl;
+        double event_sum = 0.0, wall_sum = 0.0;
+        for (int sample = 0; sample < sample_count; ++sample) {
+            MC_CHECK(mcMemsetAsync(inputs.device_c, 0xCD,
+                                  inputs.output_elements * sizeof(std::int32_t), stream));
+            MC_CHECK(mcStreamSynchronize(stream));
+            const auto wall_start = std::chrono::steady_clock::now();
+            MC_CHECK(mcEventRecord(start, stream));
+            for (int launch = 0; launch < kernels_per_sample; ++launch) {
+                mmaPeakKernel<NUM_ACC><<<config.blocks, config.threads_per_block, 0, stream>>>(
+                    inputs.device_a, inputs.device_b, inputs.device_c, config.iterations);
+            }
+            MC_CHECK(mcEventRecord(stop, stream));
+            MC_CHECK(mcGetLastError());
+            MC_CHECK(mcEventSynchronize(stop));
+            const auto wall_stop = std::chrono::steady_clock::now();
+            float event_ms = 0.0f;
+            MC_CHECK(mcEventElapsedTime(&event_ms, start, stop));
+            const double wall_ms = std::chrono::duration<double, std::milli>(wall_stop - wall_start).count();
+            if (!(event_ms > 0.0f) || !std::isfinite(event_ms) ||
+                !(wall_ms > 0.0) || !std::isfinite(wall_ms)) {
+                throw std::runtime_error("Sustained timing must be positive and finite");
+            }
+            // 每个样本都检查最后一个 kernel 的全部输出；不是只检查最后一个样本。
+            // batch 内各 kernel 使用相同输入并覆盖同一 C，不声称逐个保留中间输出。
+            const bool correct = checkResults(config, inputs, device, stream);
+            const double event_tops = correct ? batch_ops / (event_ms * 1.0e9) : 0.0;
+            const double wall_tops = correct ? batch_ops / (wall_ms * 1.0e9) : 0.0;
+            csv << sample + 1 << ',' << config.blocks << ',' << config.threads_per_block << ','
+                << NUM_ACC << ',' << config.iterations << ',' << kernels_per_sample << ','
+                << batch_ops / kernels_per_sample << ',' << batch_ops << ',' << event_ms << ','
+                << wall_ms << ',' << event_tops << ',' << wall_tops << ',' << (correct ? 1 : 0)
+                << std::endl;
+            if (!correct) throw std::runtime_error("Sustained sample correctness failed");
+            event_sum += event_ms;
+            wall_sum += wall_ms;
+            std::cout << "Sustained sample " << sample + 1 << ": Event=" << event_ms
+                      << " ms, wall=" << wall_ms << " ms, Event TOPS=" << event_tops
+                      << ", wall TOPS=" << wall_tops << std::endl;
+        }
+        csv.close();
+        std::cout << std::setprecision(9) << "Sustained mean Event TOPS: "
+                  << batch_ops / ((event_sum / sample_count) * 1.0e9)
+                  << "; mean wall TOPS: " << batch_ops / ((wall_sum / sample_count) * 1.0e9)
+                  << "\nWall scope includes Event submission, kernel submissions, and final wait; "
+                  << "allocation/copies/validation/printing are outside both intervals.\n";
+    } catch (...) {
+        cleanup();
+        throw;
+    }
+    cleanup();
+}
+
+void benchmarkSustained(const BenchConfig& config, const mcDeviceProp_t& device,
+                        int samples, int batch, const std::string& csv_path) {
+    switch (config.accumulators) {
+        case 1: return benchmarkSustainedImpl<1>(config, device, samples, batch, csv_path);
+        case 2: return benchmarkSustainedImpl<2>(config, device, samples, batch, csv_path);
+        case 4: return benchmarkSustainedImpl<4>(config, device, samples, batch, csv_path);
+        case 8: return benchmarkSustainedImpl<8>(config, device, samples, batch, csv_path);
+        case 16: return benchmarkSustainedImpl<16>(config, device, samples, batch, csv_path);
+        default: throw std::invalid_argument("Unsupported accumulator count");
+    }
+}
+
+// 原单配置/扫描入口保留；新增扩大扫描及稳态验证入口。
 int main(int argc, char* argv[]) {
     auto print_usage = [&] {
         std::cout << "Usage: " << argv[0]
                   << " [blocks threads_per_block accumulators iterations]\n"
                   << "       " << argv[0] << " --scan [iterations [report.csv]]\n"
+                  << "       " << argv[0] << " --scan-wide [iterations [report.csv]]\n"
+                  << "       " << argv[0] << " --sustain blocks threads accumulators iterations samples batch report.csv\n"
                   << "Defaults: 1 64 1 4096\n"
                   << "Accumulators: 1, 2, 4, 8, 16; iterations: 1..8191\n";
     };
@@ -670,8 +807,11 @@ int main(int argc, char* argv[]) {
         print_usage();
         return EXIT_SUCCESS;
     }
-    const bool scan = argc >= 2 && std::string(argv[1]) == "--scan";
-    if ((scan && argc > 4) || (!scan && argc != 1 && argc != 5)) {
+    const bool wide = argc >= 2 && std::string(argv[1]) == "--scan-wide";
+    const bool scan = argc >= 2 && (std::string(argv[1]) == "--scan" || wide);
+    const bool sustain = argc >= 2 && std::string(argv[1]) == "--sustain";
+    if ((scan && argc > 4) || (sustain && argc != 9) ||
+        (!scan && !sustain && argc != 1 && argc != 5)) {
         print_usage();
         std::cerr << "Error: invalid argument count; see usage\n";
         return EXIT_FAILURE;
@@ -696,15 +836,25 @@ int main(int argc, char* argv[]) {
             config.threads_per_block = parse_positive_int(argv[2], "threads_per_block");
             config.accumulators = parse_positive_int(argv[3], "accumulators");
             config.iterations = parse_positive_int(argv[4], "iterations");
+        } else if (sustain) {
+            config.blocks = parse_positive_int(argv[2], "blocks");
+            config.threads_per_block = parse_positive_int(argv[3], "threads_per_block");
+            config.accumulators = parse_positive_int(argv[4], "accumulators");
+            config.iterations = parse_positive_int(argv[5], "iterations");
         }
 
         const mcDeviceProp_t device = queryDevice();
+        if (sustain) {
+            benchmarkSustained(config, device, parse_positive_int(argv[6], "samples"),
+                               parse_positive_int(argv[7], "batch"), argv[8]);
+            return EXIT_SUCCESS;
+        }
         if (scan) {
             const auto timestamp_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                 std::chrono::system_clock::now().time_since_epoch()).count();
             const std::string csv_path = argc == 4 ? argv[3] :
                 "reports/int8_scan_" + std::to_string(timestamp_ms) + ".csv";
-            scanConfigs(device, config.iterations, csv_path);
+            scanConfigs(device, config.iterations, csv_path, wide);
             return EXIT_SUCCESS;
         }
         const BenchResult result = benchmarkOneConfig(config, device);

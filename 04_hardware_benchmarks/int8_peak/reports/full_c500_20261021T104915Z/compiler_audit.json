@@ -1,0 +1,63 @@
+{
+  "command": [
+    "/opt/maca/mxgpu_llvm/bin/mxcc",
+    "-O3",
+    "-std=c++17",
+    "-x",
+    "maca",
+    "-offload-arch=xcore1000",
+    "-I/opt/maca/include",
+    "-I/opt/maca/include/mcr",
+    "-maca-device-only",
+    "-S",
+    "-emit-llvm",
+    "/root/MOE/C500_int8_02All/04_hardware_benchmarks/int8_peak/int8_mma_peak.cpp",
+    "-o",
+    "/root/MOE/C500_int8_02All/04_hardware_benchmarks/int8_peak/reports/full_c500_20261021T104915Z/compiler_device.ll"
+  ],
+  "source_sha256": "5f9cd7c6b233ef43315357e3235fd064597e86f5977c1dfcf55c9498d0887c79",
+  "ir_sha256": "27f4117196ffc04795d731d68ca4e4fcdb9d5cc22e26676c11e8c9e27dd9d870",
+  "checks": [
+    {
+      "accumulators": 1,
+      "mma_calls_in_hot_loop": 1,
+      "loads_in_hot_loop": 0,
+      "stores_in_hot_loop": 0,
+      "independent_vector_accumulator_phis": 1,
+      "hot_loop_label": "for.body33"
+    },
+    {
+      "accumulators": 2,
+      "mma_calls_in_hot_loop": 2,
+      "loads_in_hot_loop": 0,
+      "stores_in_hot_loop": 0,
+      "independent_vector_accumulator_phis": 2,
+      "hot_loop_label": "for.cond30.preheader"
+    },
+    {
+      "accumulators": 4,
+      "mma_calls_in_hot_loop": 4,
+      "loads_in_hot_loop": 0,
+      "stores_in_hot_loop": 0,
+      "independent_vector_accumulator_phis": 4,
+      "hot_loop_label": "for.cond30.preheader"
+    },
+    {
+      "accumulators": 8,
+      "mma_calls_in_hot_loop": 8,
+      "loads_in_hot_loop": 0,
+      "stores_in_hot_loop": 0,
+      "independent_vector_accumulator_phis": 8,
+      "hot_loop_label": "for.cond30.preheader"
+    },
+    {
+      "accumulators": 16,
+      "mma_calls_in_hot_loop": 16,
+      "loads_in_hot_loop": 0,
+      "stores_in_hot_loop": 0,
+      "independent_vector_accumulator_phis": 16,
+      "hot_loop_label": "for.cond30.preheader"
+    }
+  ],
+  "scope": "Optimized device LLVM IR; native ISA not disassembled; runtime kernel local bytes recorded as zero in scan CSV."
+}

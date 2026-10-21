@@ -1,0 +1,25 @@
+mx-smi  version: 2.3.1
+
+=================== MetaX System Management Interface Log ===================
+Timestamp                                         : Wed Oct 21 10:49:15 2026
+
+Attached GPUs                                     : 1
+GPU#0  MXC500  0000:12:00.0
+    DPM performance levels
+        levels              0       1       2       3       4       5       6       7       8       9       
+        clock(MHz) xcore    429     600     686     750     800     900     960     1000    1067    1125    
+        clock(MHz) mc       400     666     1600    1800    
+        clock(MHz) soc      514     720     1200    
+        clock(MHz) dnoc     525     1200    1400    
+        clock(MHz) vpue     536     833     1071    
+        clock(MHz) vpud     525     840     1050    
+        clock(MHz) ccx      536     833     1250    
+        voltage(mV) xcore   720     720     720     720     720     720     720     720     720     720     
+        voltage(mV) mc      700     700     700     700     
+        voltage(mV) soc     738     738     738     
+        voltage(mV) dnoc    738     738     745     
+        voltage(mV) vpue    738     738     738     
+        voltage(mV) vpud    738     738     738     
+        voltage(mV) ccx     738     738     738     
+
+End of Log

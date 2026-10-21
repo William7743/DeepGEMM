@@ -1,0 +1,44 @@
+Device 0: MetaX C500
+Runtime-reported architecture: xcore1000
+Wave size: 64
+Max threads per block: 1024
+Max block dimension X: 1024
+Max grid dimension X: 2147483647
+Visible global memory: 65120 MiB
+Runtime-reported AP count: 104
+Runtime-reported core clock: 1600 MHz (not a measured clock)
+Checked elements: 109051904, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Sustained warmup: at least 2 seconds, 136 launches; samples=10, kernels/sample=8
+Checked elements: 109051904, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Sustained sample 1: Event=120.68 ms, wall=120.728 ms, Event TOPS=473.769, wall TOPS=473.582
+Checked elements: 109051904, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Sustained sample 2: Event=120.665 ms, wall=120.704 ms, Event TOPS=473.828, wall TOPS=473.676
+Checked elements: 109051904, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Sustained sample 3: Event=121.122 ms, wall=121.162 ms, Event TOPS=472.041, wall TOPS=471.886
+Checked elements: 109051904, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Sustained sample 4: Event=120.669 ms, wall=120.707 ms, Event TOPS=473.812, wall TOPS=473.663
+Checked elements: 109051904, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Sustained sample 5: Event=121.127 ms, wall=121.167 ms, Event TOPS=472.022, wall TOPS=471.867
+Checked elements: 109051904, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Sustained sample 6: Event=120.439 ms, wall=120.478 ms, Event TOPS=474.72, wall TOPS=474.565
+Checked elements: 109051904, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Sustained sample 7: Event=120.895 ms, wall=120.931 ms, Event TOPS=472.929, wall TOPS=472.787
+Checked elements: 109051904, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Sustained sample 8: Event=120.893 ms, wall=120.94 ms, Event TOPS=472.936, wall TOPS=472.751
+Checked elements: 109051904, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Sustained sample 9: Event=120.435 ms, wall=120.474 ms, Event TOPS=474.735, wall TOPS=474.58
+Checked elements: 109051904, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Sustained sample 10: Event=120.89 ms, wall=120.93 ms, Event TOPS=472.948, wall TOPS=472.79
+Sustained mean Event TOPS: 473.372234; mean wall TOPS: 473.21294
+Wall scope includes Event submission, kernel submissions, and final wait; allocation/copies/validation/printing are outside both intervals.

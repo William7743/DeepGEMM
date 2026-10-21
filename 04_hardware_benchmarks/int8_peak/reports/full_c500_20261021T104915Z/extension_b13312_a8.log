@@ -1,0 +1,26 @@
+Device 0: MetaX C500
+Runtime-reported architecture: xcore1000
+Wave size: 64
+Max threads per block: 1024
+Max block dimension X: 1024
+Max grid dimension X: 2147483647
+Visible global memory: 65120 MiB
+Runtime-reported AP count: 104
+Runtime-reported core clock: 1600 MHz (not a measured clock)
+Checked elements: 218103808, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+
+INT8 MMA benchmark result
+blocks=13312, threads_per_block=512, accumulators=8, iterations=4096
+Total waves: 106496
+MMA shape: 16x16x16; OPS per wave-level MMA: 8192
+OPS per measured kernel: 28587302322176
+Warmup runs: 1; measured runs: 3
+Timing: same-stream GPU Events around the full kernel
+Sample 1: 59.945728302 ms, 476.886395944 TOPS
+Sample 2: 59.942401886 ms, 476.912860058 TOPS
+Sample 3: 60.399871826 ms, 473.300711704 TOPS
+Mean time: 60.096000671 ms
+Correctness: PASS
+TOPS from mean time: 475.693923103 = total_ops / (mean_ms * 1e9)
+Measured configuration throughput; not a theoretical hardware peak.
