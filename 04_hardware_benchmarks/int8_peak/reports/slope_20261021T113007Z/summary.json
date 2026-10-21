@@ -1,0 +1,149 @@
+{
+  "protocol": {
+    "blocks": 26624,
+    "threads": 512,
+    "accumulators": 8,
+    "batch": 2,
+    "samples": 5,
+    "iterations": [
+      1000,
+      2000,
+      4000,
+      6000,
+      8000
+    ],
+    "rounds": 3,
+    "source_sha256": "5f9cd7c6b233ef43315357e3235fd064597e86f5977c1dfcf55c9498d0887c79",
+    "order": [
+      "r1_i2000",
+      "r1_i6000",
+      "r1_i1000",
+      "r1_i8000",
+      "r1_i4000",
+      "r2_i6000",
+      "r2_i2000",
+      "r2_i1000",
+      "r2_i8000",
+      "r2_i4000",
+      "r3_i6000",
+      "r3_i1000",
+      "r3_i4000",
+      "r3_i2000",
+      "r3_i8000"
+    ]
+  },
+  "sample_count": 75,
+  "timing_scope": "Per-kernel durations = raw two-kernel batch durations / 2. Loops and scheduling remain in slope.",
+  "means": [
+    {
+      "iterations": 1000,
+      "event_ms": 29.54059944152832,
+      "wall_ms": 29.558516833333332,
+      "event_tops": 472.524050828057,
+      "wall_tops": 472.23762243235245
+    },
+    {
+      "iterations": 2000,
+      "event_ms": 58.712652587890624,
+      "wall_ms": 58.73539086666667,
+      "event_tops": 475.49014042942235,
+      "wall_tops": 475.3060635516011
+    },
+    {
+      "iterations": 4000,
+      "event_ms": 117.0693369547526,
+      "wall_ms": 117.09157443333334,
+      "event_tops": 476.93594497404655,
+      "wall_tops": 476.84536755280965
+    },
+    {
+      "iterations": 6000,
+      "event_ms": 175.37439473470053,
+      "wall_ms": 175.3959369,
+      "event_tops": 477.5603781766233,
+      "wall_tops": 477.5017241120595
+    },
+    {
+      "iterations": 8000,
+      "event_ms": 233.7998240152995,
+      "wall_ms": 233.82105933333332,
+      "event_tops": 477.62717600973275,
+      "wall_tops": 477.58379854402
+    }
+  ],
+  "fits": {
+    "event": {
+      "intercept_ms": 0.35647111908205886,
+      "slope_ms_per_iteration": 0.029176878673274346,
+      "r_squared": 0.9999999008543953,
+      "max_abs_residual_ms": 0.04334842402758454,
+      "slope_tops": 478.414564776113,
+      "per_round": [
+        {
+          "intercept_ms": 0.32296071866663567,
+          "slope_ms_per_iteration": 0.02918389836753287,
+          "r_squared": 0.9999990557432775,
+          "max_abs_residual_ms": 0.11978048929350393,
+          "slope_tops": 478.29949022605604
+        },
+        {
+          "intercept_ms": 0.35214508800972055,
+          "slope_ms_per_iteration": 0.029187143251372547,
+          "r_squared": 0.9999993946529746,
+          "max_abs_residual_ms": 0.09990388823720764,
+          "slope_tops": 478.24631522797574
+        },
+        {
+          "intercept_ms": 0.394307550569863,
+          "slope_ms_per_iteration": 0.029159594400917612,
+          "r_squared": 0.9999995544823223,
+          "max_abs_residual_ms": 0.0896391054479011,
+          "slope_tops": 478.69814374238143
+        }
+      ],
+      "adjacent_tops": [
+        478.4937022418875,
+        478.39056873925,
+        478.814162732915,
+        477.82768167473876
+      ]
+    },
+    "wall": {
+      "intercept_ms": 0.37662404065041244,
+      "slope_ms_per_iteration": 0.029177112293495934,
+      "r_squared": 0.9999999024379722,
+      "max_abs_residual_ms": 0.043360901625987935,
+      "slope_tops": 478.4107341257214,
+      "per_round": [
+        {
+          "intercept_ms": 0.34189269024389546,
+          "slope_ms_per_iteration": 0.02918416279756098,
+          "r_squared": 0.9999990907200829,
+          "max_abs_residual_ms": 0.1169273756097482,
+          "slope_tops": 478.29515648009516
+        },
+        {
+          "intercept_ms": 0.3712270951219381,
+          "slope_ms_per_iteration": 0.02918738554878049,
+          "r_squared": 0.9999993616605437,
+          "max_abs_residual_ms": 0.10261078780484922,
+          "slope_tops": 478.24234509360576
+        },
+        {
+          "intercept_ms": 0.41675233658536115,
+          "slope_ms_per_iteration": 0.02915978853414634,
+          "r_squared": 0.9999995416012976,
+          "max_abs_residual_ms": 0.08945545853660519,
+          "slope_tops": 478.6949567776981
+        }
+      ],
+      "adjacent_tops": [
+        478.41464085744224,
+        478.3946741840481,
+        478.81987286904405,
+        477.83019121364026
+      ]
+    }
+  },
+  "pair_4000_8000_tops": 478.3204135783241
+}
