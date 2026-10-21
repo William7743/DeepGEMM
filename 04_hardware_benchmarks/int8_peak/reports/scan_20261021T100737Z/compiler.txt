@@ -1,0 +1,4 @@
+mxcc version 1.0.0 (d9102a1572)
+Target: x86_64-unknown-linux-gnu
+Thread model: posix
+InstalledDir: /opt/maca-3.7.1/mxgpu_llvm/bin

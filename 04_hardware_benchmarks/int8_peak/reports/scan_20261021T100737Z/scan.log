@@ -1,0 +1,762 @@
+Device 0: MetaX C500
+Runtime-reported architecture: xcore1000
+Wave size: 64
+Max threads per block: 1024
+Max block dimension X: 1024
+Max grid dimension X: 2147483647
+Visible global memory: 15584 MiB
+Runtime-reported AP count: 104
+Runtime-reported core clock: 1600 MHz (not a measured clock)
+Kernel accumulators=1: registers=14, local_bytes=0, shared_bytes=0, max_threads=512
+Kernel accumulators=2: registers=24, local_bytes=0, shared_bytes=0, max_threads=512
+Kernel accumulators=4: registers=48, local_bytes=0, shared_bytes=0, max_threads=512
+Kernel accumulators=8: registers=66, local_bytes=0, shared_bytes=0, max_threads=512
+Kernel accumulators=16: registers=100, local_bytes=0, shared_bytes=0, max_threads=512
+Scan configurations: 180; skipped by limits: 0; fixed iterations: 4096; shuffle seed: 20261021
+CSV report: /root/MOE/C500_int8_02All/04_hardware_benchmarks/int8_peak/reports/scan_20261021T100737Z/results.csv
+[1/180] blocks=16, threads=64, accumulators=1
+Checked elements: 4096, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.146688 ms; TOPS from mean time: 3.65995
+[2/180] blocks=64, threads=256, accumulators=1
+Checked elements: 65536, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.150869 ms; TOPS from mean time: 56.9363
+[3/180] blocks=416, threads=128, accumulators=8
+Checked elements: 1703936, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.589312 ms; TOPS from mean time: 378.981
+[4/180] blocks=104, threads=256, accumulators=4
+Checked elements: 425984, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.240043 ms; TOPS from mean time: 232.603
+[5/180] blocks=104, threads=128, accumulators=4
+Checked elements: 212992, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.237739 ms; TOPS from mean time: 117.428
+[6/180] blocks=104, threads=512, accumulators=16
+Checked elements: 3407872, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 1.08066 ms; TOPS from mean time: 413.336
+[7/180] blocks=8, threads=256, accumulators=16
+Checked elements: 131072, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.592981 ms; TOPS from mean time: 28.972
+[8/180] blocks=64, threads=256, accumulators=4
+Checked elements: 262144, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.236544 ms; TOPS from mean time: 145.257
+[9/180] blocks=104, threads=128, accumulators=2
+Checked elements: 106496, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.178005 ms; TOPS from mean time: 78.417
+[10/180] blocks=16, threads=512, accumulators=4
+Checked elements: 131072, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.336299 ms; TOPS from mean time: 51.0852
+[11/180] blocks=32, threads=512, accumulators=2
+Checked elements: 131072, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.176299 ms; TOPS from mean time: 97.4475
+[12/180] blocks=1, threads=512, accumulators=1
+Checked elements: 2048, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.148907 ms; TOPS from mean time: 1.80271
+[13/180] blocks=416, threads=64, accumulators=16
+Checked elements: 1703936, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.604843 ms; TOPS from mean time: 369.25
+[14/180] blocks=208, threads=128, accumulators=1
+Checked elements: 106496, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.150443 ms; TOPS from mean time: 92.7838
+[15/180] blocks=64, threads=128, accumulators=4
+Checked elements: 131072, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.237312 ms; TOPS from mean time: 72.3936
+[16/180] blocks=104, threads=64, accumulators=8
+Checked elements: 212992, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.361899 ms; TOPS from mean time: 77.1412
+[17/180] blocks=416, threads=128, accumulators=4
+Checked elements: 851968, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.463019 ms; TOPS from mean time: 241.176
+[18/180] blocks=64, threads=128, accumulators=16
+Checked elements: 524288, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.605696 ms; TOPS from mean time: 113.455
+[19/180] blocks=208, threads=256, accumulators=1
+Checked elements: 212992, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.154368 ms; TOPS from mean time: 180.849
+[20/180] blocks=416, threads=512, accumulators=16
+Checked elements: 13631488, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 3.90869 ms; TOPS from mean time: 457.111
+[21/180] blocks=16, threads=128, accumulators=2
+Checked elements: 16384, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.176299 ms; TOPS from mean time: 12.1809
+[22/180] blocks=104, threads=64, accumulators=2
+Checked elements: 53248, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.190379 ms; TOPS from mean time: 36.6602
+[23/180] blocks=1, threads=64, accumulators=2
+Checked elements: 512, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.173739 ms; TOPS from mean time: 0.386263
+[24/180] blocks=8, threads=512, accumulators=4
+Checked elements: 65536, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.357291 ms; TOPS from mean time: 24.0419
+[25/180] blocks=1, threads=128, accumulators=1
+Checked elements: 512, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.151893 ms; TOPS from mean time: 0.441816
+[26/180] blocks=832, threads=128, accumulators=2
+Checked elements: 851968, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.43648 ms; TOPS from mean time: 255.84
+[27/180] blocks=208, threads=512, accumulators=2
+Checked elements: 851968, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.386645 ms; TOPS from mean time: 288.815
+[28/180] blocks=208, threads=64, accumulators=16
+Checked elements: 851968, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.609877 ms; TOPS from mean time: 183.101
+[29/180] blocks=8, threads=128, accumulators=4
+Checked elements: 16384, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.247381 ms; TOPS from mean time: 8.68086
+[30/180] blocks=8, threads=256, accumulators=1
+Checked elements: 8192, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.160768 ms; TOPS from mean time: 6.67883
+[31/180] blocks=1, threads=128, accumulators=8
+Checked elements: 4096, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.358229 ms; TOPS from mean time: 1.49868
+[32/180] blocks=104, threads=64, accumulators=1
+Checked elements: 26624, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.155392 ms; TOPS from mean time: 22.4571
+[33/180] blocks=832, threads=512, accumulators=2
+Checked elements: 3407872, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 1.16318 ms; TOPS from mean time: 384.014
+[34/180] blocks=416, threads=64, accumulators=1
+Checked elements: 106496, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.151979 ms; TOPS from mean time: 91.8461
+[35/180] blocks=416, threads=512, accumulators=4
+Checked elements: 3407872, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 1.20858 ms; TOPS from mean time: 369.589
+[36/180] blocks=208, threads=256, accumulators=16
+Checked elements: 3407872, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 1.39375 ms; TOPS from mean time: 320.486
+[37/180] blocks=416, threads=128, accumulators=16
+Checked elements: 3407872, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 1.24399 ms; TOPS from mean time: 359.068
+[38/180] blocks=32, threads=256, accumulators=8
+Checked elements: 262144, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.360192 ms; TOPS from mean time: 95.3928
+[39/180] blocks=416, threads=256, accumulators=8
+Checked elements: 3407872, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 1.3021 ms; TOPS from mean time: 343.043
+[40/180] blocks=16, threads=256, accumulators=2
+Checked elements: 32768, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.174336 ms; TOPS from mean time: 24.6361
+[41/180] blocks=208, threads=512, accumulators=1
+Checked elements: 425984, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.1728 ms; TOPS from mean time: 323.117
+[42/180] blocks=104, threads=512, accumulators=8
+Checked elements: 1703936, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.916395 ms; TOPS from mean time: 243.714
+[43/180] blocks=104, threads=64, accumulators=4
+Checked elements: 106496, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.244565 ms; TOPS from mean time: 57.0753
+[44/180] blocks=32, threads=128, accumulators=16
+Checked elements: 262144, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.606891 ms; TOPS from mean time: 56.616
+[45/180] blocks=832, threads=512, accumulators=1
+Checked elements: 1703936, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.658347 ms; TOPS from mean time: 339.241
+[46/180] blocks=64, threads=256, accumulators=2
+Checked elements: 131072, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.182699 ms; TOPS from mean time: 94.0339
+[47/180] blocks=832, threads=64, accumulators=8
+Checked elements: 1703936, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.671744 ms; TOPS from mean time: 332.475
+[48/180] blocks=8, threads=256, accumulators=8
+Checked elements: 65536, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.357547 ms; TOPS from mean time: 24.0247
+[49/180] blocks=104, threads=256, accumulators=8
+Checked elements: 851968, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.367957 ms; TOPS from mean time: 303.484
+[50/180] blocks=32, threads=512, accumulators=4
+Checked elements: 262144, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.345515 ms; TOPS from mean time: 99.4451
+[51/180] blocks=416, threads=64, accumulators=8
+Checked elements: 851968, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.371968 ms; TOPS from mean time: 300.212
+[52/180] blocks=8, threads=128, accumulators=16
+Checked elements: 65536, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.603733 ms; TOPS from mean time: 14.228
+[53/180] blocks=832, threads=256, accumulators=8
+Checked elements: 6815744, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 2.40444 ms; TOPS from mean time: 371.544
+[54/180] blocks=16, threads=128, accumulators=4
+Checked elements: 32768, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.236459 ms; TOPS from mean time: 18.1637
+[55/180] blocks=32, threads=256, accumulators=4
+Checked elements: 131072, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.278443 ms; TOPS from mean time: 61.6998
+[56/180] blocks=416, threads=512, accumulators=2
+Checked elements: 1703936, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.607829 ms; TOPS from mean time: 367.436
+[57/180] blocks=208, threads=512, accumulators=8
+Checked elements: 3407872, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 1.07639 ms; TOPS from mean time: 414.975
+[58/180] blocks=32, threads=128, accumulators=1
+Checked elements: 16384, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.150528 ms; TOPS from mean time: 14.2663
+[59/180] blocks=832, threads=512, accumulators=16
+Checked elements: 27262976, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 7.68094 ms; TOPS from mean time: 465.231
+[60/180] blocks=832, threads=64, accumulators=2
+Checked elements: 425984, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.194645 ms; TOPS from mean time: 286.853
+[61/180] blocks=1, threads=512, accumulators=16
+Checked elements: 32768, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 1.06129 ms; TOPS from mean time: 4.04693
+[62/180] blocks=104, threads=512, accumulators=2
+Checked elements: 425984, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.187307 ms; TOPS from mean time: 298.092
+[63/180] blocks=32, threads=64, accumulators=8
+Checked elements: 65536, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.365227 ms; TOPS from mean time: 23.5195
+[64/180] blocks=104, threads=256, accumulators=1
+Checked elements: 106496, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.151979 ms; TOPS from mean time: 91.8461
+[65/180] blocks=64, threads=512, accumulators=4
+Checked elements: 524288, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.350379 ms; TOPS from mean time: 196.129
+[66/180] blocks=16, threads=256, accumulators=1
+Checked elements: 16384, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.160341 ms; TOPS from mean time: 13.3932
+[67/180] blocks=64, threads=256, accumulators=8
+Checked elements: 524288, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.362752 ms; TOPS from mean time: 189.439
+[68/180] blocks=32, threads=128, accumulators=2
+Checked elements: 32768, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.177835 ms; TOPS from mean time: 24.1515
+[69/180] blocks=416, threads=256, accumulators=16
+Checked elements: 6815744, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 2.03503 ms; TOPS from mean time: 438.988
+[70/180] blocks=16, threads=64, accumulators=8
+Checked elements: 32768, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.358741 ms; TOPS from mean time: 11.9723
+[71/180] blocks=832, threads=64, accumulators=16
+Checked elements: 3407872, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 1.24177 ms; TOPS from mean time: 359.709
+[72/180] blocks=16, threads=256, accumulators=4
+Checked elements: 65536, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.234325 ms; TOPS from mean time: 36.6582
+[73/180] blocks=64, threads=64, accumulators=8
+Checked elements: 131072, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.363691 ms; TOPS from mean time: 47.2376
+[74/180] blocks=832, threads=128, accumulators=8
+Checked elements: 3407872, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 1.29476 ms; TOPS from mean time: 344.987
+[75/180] blocks=208, threads=512, accumulators=16
+Checked elements: 6815744, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 2.04322 ms; TOPS from mean time: 437.228
+[76/180] blocks=832, threads=512, accumulators=8
+Checked elements: 13631488, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 4.03328 ms; TOPS from mean time: 442.991
+[77/180] blocks=1, threads=512, accumulators=2
+Checked elements: 4096, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.176725 ms; TOPS from mean time: 3.03788
+[78/180] blocks=8, threads=256, accumulators=4
+Checked elements: 32768, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.246187 ms; TOPS from mean time: 17.446
+[79/180] blocks=8, threads=64, accumulators=1
+Checked elements: 2048, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.149504 ms; TOPS from mean time: 1.79551
+[80/180] blocks=104, threads=256, accumulators=2
+Checked elements: 212992, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.192427 ms; TOPS from mean time: 145.08
+[81/180] blocks=16, threads=128, accumulators=1
+Checked elements: 8192, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.153088 ms; TOPS from mean time: 7.01389
+[82/180] blocks=416, threads=512, accumulators=8
+Checked elements: 6815744, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 2.31689 ms; TOPS from mean time: 385.584
+[83/180] blocks=104, threads=64, accumulators=16
+Checked elements: 425984, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.612523 ms; TOPS from mean time: 91.1551
+[84/180] blocks=16, threads=128, accumulators=8
+Checked elements: 65536, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.369835 ms; TOPS from mean time: 23.2264
+[85/180] blocks=832, threads=64, accumulators=1
+Checked elements: 212992, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.154283 ms; TOPS from mean time: 180.949
+[86/180] blocks=104, threads=512, accumulators=4
+Checked elements: 851968, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.363349 ms; TOPS from mean time: 307.333
+[87/180] blocks=416, threads=512, accumulators=1
+Checked elements: 851968, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.379392 ms; TOPS from mean time: 294.337
+[88/180] blocks=32, threads=64, accumulators=4
+Checked elements: 32768, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.246016 ms; TOPS from mean time: 17.4581
+[89/180] blocks=1, threads=256, accumulators=16
+Checked elements: 16384, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.606293 ms; TOPS from mean time: 3.54199
+[90/180] blocks=208, threads=64, accumulators=2
+Checked elements: 106496, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.187392 ms; TOPS from mean time: 74.489
+[91/180] blocks=1, threads=256, accumulators=4
+Checked elements: 4096, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.248576 ms; TOPS from mean time: 2.15979
+[92/180] blocks=1, threads=64, accumulators=4
+Checked elements: 1024, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.237653 ms; TOPS from mean time: 0.564763
+[93/180] blocks=208, threads=64, accumulators=4
+Checked elements: 212992, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.247893 ms; TOPS from mean time: 112.618
+[94/180] blocks=832, threads=512, accumulators=4
+Checked elements: 6815744, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 2.21926 ms; TOPS from mean time: 402.545
+[95/180] blocks=64, threads=64, accumulators=16
+Checked elements: 262144, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.610304 ms; TOPS from mean time: 56.2994
+[96/180] blocks=64, threads=512, accumulators=16
+Checked elements: 2097152, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 1.08689 ms; TOPS from mean time: 252.903
+[97/180] blocks=1, threads=128, accumulators=4
+Checked elements: 2048, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.236032 ms; TOPS from mean time: 1.13728
+[98/180] blocks=104, threads=128, accumulators=8
+Checked elements: 425984, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.361472 ms; TOPS from mean time: 154.464
+[99/180] blocks=64, threads=128, accumulators=1
+Checked elements: 32768, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.153515 ms; TOPS from mean time: 27.9776
+[100/180] blocks=208, threads=64, accumulators=1
+Checked elements: 53248, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.158379 ms; TOPS from mean time: 44.0673
+[101/180] blocks=416, threads=128, accumulators=1
+Checked elements: 212992, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.166571 ms; TOPS from mean time: 167.6
+[102/180] blocks=16, threads=256, accumulators=16
+Checked elements: 262144, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.599381 ms; TOPS from mean time: 57.3253
+[103/180] blocks=16, threads=512, accumulators=16
+Checked elements: 524288, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 1.06633 ms; TOPS from mean time: 64.4451
+[104/180] blocks=64, threads=128, accumulators=2
+Checked elements: 65536, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.211968 ms; TOPS from mean time: 40.5247
+[105/180] blocks=8, threads=128, accumulators=1
+Checked elements: 4096, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.152832 ms; TOPS from mean time: 3.51282
+[106/180] blocks=1, threads=64, accumulators=8
+Checked elements: 2048, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.359595 ms; TOPS from mean time: 0.746495
+[107/180] blocks=16, threads=256, accumulators=8
+Checked elements: 131072, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.357376 ms; TOPS from mean time: 48.0723
+[108/180] blocks=416, threads=256, accumulators=1
+Checked elements: 425984, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.216832 ms; TOPS from mean time: 257.502
+[109/180] blocks=32, threads=256, accumulators=1
+Checked elements: 32768, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.146261 ms; TOPS from mean time: 29.365
+[110/180] blocks=208, threads=256, accumulators=4
+Checked elements: 851968, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.347392 ms; TOPS from mean time: 321.45
+[111/180] blocks=8, threads=64, accumulators=2
+Checked elements: 4096, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.176555 ms; TOPS from mean time: 3.04082
+[112/180] blocks=8, threads=512, accumulators=1
+Checked elements: 16384, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.153259 ms; TOPS from mean time: 14.0122
+[113/180] blocks=416, threads=64, accumulators=2
+Checked elements: 212992, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.176384 ms; TOPS from mean time: 158.276
+[114/180] blocks=208, threads=128, accumulators=2
+Checked elements: 212992, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.194048 ms; TOPS from mean time: 143.868
+[115/180] blocks=1, threads=64, accumulators=16
+Checked elements: 4096, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.601771 ms; TOPS from mean time: 0.892152
+[116/180] blocks=416, threads=128, accumulators=2
+Checked elements: 425984, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.193877 ms; TOPS from mean time: 287.989
+[117/180] blocks=208, threads=512, accumulators=4
+Checked elements: 1703936, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.587776 ms; TOPS from mean time: 379.972
+[118/180] blocks=832, threads=256, accumulators=4
+Checked elements: 3407872, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 1.20747 ms; TOPS from mean time: 369.929
+[119/180] blocks=32, threads=128, accumulators=8
+Checked elements: 131072, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.363008 ms; TOPS from mean time: 47.3264
+[120/180] blocks=32, threads=128, accumulators=4
+Checked elements: 65536, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.233728 ms; TOPS from mean time: 36.7518
+[121/180] blocks=64, threads=64, accumulators=1
+Checked elements: 16384, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.148651 ms; TOPS from mean time: 14.4465
+[122/180] blocks=32, threads=64, accumulators=1
+Checked elements: 8192, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.148224 ms; TOPS from mean time: 7.24405
+[123/180] blocks=64, threads=512, accumulators=2
+Checked elements: 262144, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.184235 ms; TOPS from mean time: 186.5
+[124/180] blocks=1, threads=256, accumulators=8
+Checked elements: 8192, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.357632 ms; TOPS from mean time: 3.00237
+[125/180] blocks=32, threads=256, accumulators=16
+Checked elements: 524288, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.597931 ms; TOPS from mean time: 114.929
+[126/180] blocks=1, threads=512, accumulators=8
+Checked elements: 16384, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.571733 ms; TOPS from mean time: 3.75609
+[127/180] blocks=416, threads=256, accumulators=2
+Checked elements: 851968, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.369749 ms; TOPS from mean time: 302.013
+[128/180] blocks=1, threads=128, accumulators=2
+Checked elements: 1024, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.186539 ms; TOPS from mean time: 0.719517
+[129/180] blocks=416, threads=256, accumulators=4
+Checked elements: 1703936, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.598869 ms; TOPS from mean time: 372.933
+[130/180] blocks=1, threads=256, accumulators=2
+Checked elements: 2048, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.178688 ms; TOPS from mean time: 1.50226
+[131/180] blocks=208, threads=64, accumulators=8
+Checked elements: 425984, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.353621 ms; TOPS from mean time: 157.894
+[132/180] blocks=416, threads=64, accumulators=4
+Checked elements: 425984, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.242176 ms; TOPS from mean time: 230.554
+[133/180] blocks=1, threads=512, accumulators=4
+Checked elements: 8192, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.346539 ms; TOPS from mean time: 3.09848
+[134/180] blocks=104, threads=256, accumulators=16
+Checked elements: 1703936, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.773717 ms; TOPS from mean time: 288.656
+[135/180] blocks=32, threads=512, accumulators=16
+Checked elements: 1048576, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 1.06701 ms; TOPS from mean time: 128.808
+[136/180] blocks=1, threads=64, accumulators=1
+Checked elements: 256, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.155136 ms; TOPS from mean time: 0.21629
+[137/180] blocks=32, threads=512, accumulators=8
+Checked elements: 524288, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.564139 ms; TOPS from mean time: 121.813
+[138/180] blocks=832, threads=128, accumulators=1
+Checked elements: 425984, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.182357 ms; TOPS from mean time: 306.182
+[139/180] blocks=64, threads=256, accumulators=16
+Checked elements: 1048576, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.603563 ms; TOPS from mean time: 227.713
+[140/180] blocks=16, threads=64, accumulators=2
+Checked elements: 8192, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.180651 ms; TOPS from mean time: 5.94375
+[141/180] blocks=832, threads=64, accumulators=4
+Checked elements: 851968, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.352427 ms; TOPS from mean time: 316.858
+[142/180] blocks=104, threads=512, accumulators=1
+Checked elements: 212992, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.154197 ms; TOPS from mean time: 181.049
+[143/180] blocks=1, threads=128, accumulators=16
+Checked elements: 8192, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.601771 ms; TOPS from mean time: 1.7843
+[144/180] blocks=8, threads=128, accumulators=2
+Checked elements: 8192, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.187392 ms; TOPS from mean time: 5.72992
+[145/180] blocks=32, threads=64, accumulators=2
+Checked elements: 16384, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.181589 ms; TOPS from mean time: 11.826
+[146/180] blocks=832, threads=256, accumulators=1
+Checked elements: 851968, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.350976 ms; TOPS from mean time: 318.167
+[147/180] blocks=16, threads=64, accumulators=4
+Checked elements: 16384, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.232875 ms; TOPS from mean time: 9.22163
+[148/180] blocks=832, threads=128, accumulators=16
+Checked elements: 6815744, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 2.02624 ms; TOPS from mean time: 440.892
+[149/180] blocks=8, threads=512, accumulators=16
+Checked elements: 262144, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 1.07435 ms; TOPS from mean time: 31.982
+[150/180] blocks=64, threads=512, accumulators=8
+Checked elements: 1048576, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.581205 ms; TOPS from mean time: 236.472
+[151/180] blocks=208, threads=128, accumulators=8
+Checked elements: 851968, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.368725 ms; TOPS from mean time: 302.852
+[152/180] blocks=104, threads=128, accumulators=1
+Checked elements: 53248, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.152917 ms; TOPS from mean time: 45.6411
+[153/180] blocks=16, threads=512, accumulators=1
+Checked elements: 32768, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.150357 ms; TOPS from mean time: 28.5651
+[154/180] blocks=208, threads=256, accumulators=2
+Checked elements: 425984, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.181589 ms; TOPS from mean time: 307.477
+[155/180] blocks=16, threads=512, accumulators=8
+Checked elements: 262144, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.573781 ms; TOPS from mean time: 59.883
+[156/180] blocks=32, threads=512, accumulators=1
+Checked elements: 65536, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.162645 ms; TOPS from mean time: 52.8139
+[157/180] blocks=8, threads=64, accumulators=4
+Checked elements: 8192, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.231083 ms; TOPS from mean time: 4.64657
+[158/180] blocks=8, threads=512, accumulators=2
+Checked elements: 32768, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.178432 ms; TOPS from mean time: 24.0706
+[159/180] blocks=8, threads=256, accumulators=2
+Checked elements: 16384, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.173141 ms; TOPS from mean time: 12.4031
+[160/180] blocks=832, threads=256, accumulators=2
+Checked elements: 1703936, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.596821 ms; TOPS from mean time: 374.213
+[161/180] blocks=8, threads=64, accumulators=16
+Checked elements: 32768, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.594091 ms; TOPS from mean time: 7.22948
+[162/180] blocks=208, threads=128, accumulators=16
+Checked elements: 1703936, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.613376 ms; TOPS from mean time: 364.113
+[163/180] blocks=32, threads=64, accumulators=16
+Checked elements: 131072, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.617728 ms; TOPS from mean time: 27.8114
+[164/180] blocks=16, threads=64, accumulators=16
+Checked elements: 65536, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.604501 ms; TOPS from mean time: 14.21
+[165/180] blocks=8, threads=64, accumulators=8
+Checked elements: 16384, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.364117 ms; TOPS from mean time: 5.89778
+[166/180] blocks=832, threads=256, accumulators=16
+Checked elements: 13631488, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 4.19772 ms; TOPS from mean time: 425.638
+[167/180] blocks=832, threads=128, accumulators=4
+Checked elements: 1703936, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.599211 ms; TOPS from mean time: 372.721
+[168/180] blocks=32, threads=256, accumulators=2
+Checked elements: 65536, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.178944 ms; TOPS from mean time: 48.0035
+[169/180] blocks=208, threads=128, accumulators=4
+Checked elements: 425984, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.243883 ms; TOPS from mean time: 228.94
+[170/180] blocks=208, threads=256, accumulators=8
+Checked elements: 1703936, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.616021 ms; TOPS from mean time: 362.55
+[171/180] blocks=16, threads=512, accumulators=2
+Checked elements: 65536, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.175872 ms; TOPS from mean time: 48.842
+[172/180] blocks=104, threads=128, accumulators=16
+Checked elements: 851968, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.611072 ms; TOPS from mean time: 182.743
+[173/180] blocks=8, threads=128, accumulators=8
+Checked elements: 32768, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.356693 ms; TOPS from mean time: 12.0411
+[174/180] blocks=8, threads=512, accumulators=8
+Checked elements: 131072, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.6016 ms; TOPS from mean time: 28.557
+[175/180] blocks=64, threads=64, accumulators=2
+Checked elements: 32768, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.184405 ms; TOPS from mean time: 23.2909
+[176/180] blocks=64, threads=64, accumulators=4
+Checked elements: 65536, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.242432 ms; TOPS from mean time: 35.4323
+[177/180] blocks=1, threads=256, accumulators=1
+Checked elements: 1024, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.151296 ms; TOPS from mean time: 0.88712
+[178/180] blocks=64, threads=512, accumulators=1
+Checked elements: 131072, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.154283 ms; TOPS from mean time: 111.353
+[179/180] blocks=64, threads=128, accumulators=8
+Checked elements: 262144, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.368128 ms; TOPS from mean time: 93.3364
+[180/180] blocks=16, threads=128, accumulators=16
+Checked elements: 131072, mismatches: 0, max_abs_error: 0
+PASS: all wave/accumulator outputs checked
+Mean time: 0.609707 ms; TOPS from mean time: 28.1773
+
+Top configurations by TOPS from mean time
+rank,blocks,threads,accumulators,mean_ms,tops_from_mean_ms
+1,832,512,16,7.68093872,465.231259
+2,416,512,16,3.90869331,457.11092
+3,832,512,8,4.03328005,442.990908
+4,832,128,16,2.02623995,440.892105
+5,416,256,16,2.03502933,438.987873
+Best configuration within the tested range (ranked by mean-time TOPS):
+
+INT8 MMA benchmark result
+blocks=832, threads_per_block=512, accumulators=16, iterations=4096
+Total waves: 6656
+MMA shape: 16x16x16; OPS per wave-level MMA: 8192
+OPS per measured kernel: 3573412790272
+Warmup runs: 1; measured runs: 3
+Timing: same-stream GPU Events around the full kernel
+Sample 1: 7.702784061 ms, 463.911848206 TOPS
+Sample 2: 7.640575886 ms, 467.688933883 TOPS
+Sample 3: 7.699456215 ms, 464.112359436 TOPS
+Mean time: 7.680938721 ms
+Correctness: PASS
+TOPS from mean time: 465.231258862 = total_ops / (mean_ms * 1e9)
+Measured configuration throughput; not a theoretical hardware peak.
+All 180 tested configurations passed correctness.
+Timing isolation and instance quota must be recorded separately.

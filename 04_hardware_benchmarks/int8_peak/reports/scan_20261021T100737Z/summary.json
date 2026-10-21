@@ -1,0 +1,431 @@
+{
+  "scan_started_utc": "2026-10-21T10:07:37.670238+00:00",
+  "scan_finished_utc": "2026-10-21T10:07:39.436569+00:00",
+  "command": [
+    "/root/MOE/C500_int8_02All/04_hardware_benchmarks/int8_peak/build/int8_mma_peak",
+    "--scan",
+    "4096",
+    "/root/MOE/C500_int8_02All/04_hardware_benchmarks/int8_peak/reports/scan_20261021T100737Z/results.csv"
+  ],
+  "source_sha256": "8ea13b9b7f7f9dc55483cf3f33b8c9aedf9f6dd49beef2b28622ff6a2b2b4328",
+  "binary_sha256": "dd0b4337e0bdca421cf95b374e69b9d426e92718d7feb12e31d9ee39caf2b54b",
+  "build_script_sha256": "2cd36c1f50c32e1e28ac92f9a41fd05563976a1c8c7cbfe58667d0f37a6e41b9",
+  "build_flags": "-O3 -std=c++17 -x maca -offload-arch=xcore1000; see build.sh",
+  "quiet_window": {
+    "confirmation": "human user confirmed other GPU jobs and background synchronization are paused",
+    "opus_ack_received": false,
+    "shared_lock": true,
+    "source_uploads_during_scan": false,
+    "profiler_during_scan": false
+  },
+  "candidate_count": 180,
+  "tested_count": 180,
+  "correctness_all_passed": true,
+  "blocks": [
+    1,
+    8,
+    16,
+    32,
+    64,
+    104,
+    208,
+    416,
+    832
+  ],
+  "threads_per_block": [
+    64,
+    128,
+    256,
+    512
+  ],
+  "accumulators": [
+    1,
+    2,
+    4,
+    8,
+    16
+  ],
+  "iterations": 4096,
+  "warmup_runs": 1,
+  "measured_runs": 3,
+  "order_seed": 20261021,
+  "ranking_metric": "total_ops / (arithmetic mean elapsed_ms * 1e9)",
+  "timing_scope": "Full kernel via same-stream GPU Events; no empty-kernel subtraction",
+  "best": {
+    "order": "59",
+    "blocks": "832",
+    "threads_per_block": "512",
+    "accumulators": "16",
+    "iterations": "4096",
+    "waves": "6656",
+    "total_ops": "3573412790272",
+    "elapsed_ms_1": "7.7027840614318848",
+    "elapsed_ms_2": "7.6405758857727051",
+    "elapsed_ms_3": "7.6994562149047852",
+    "sample_tops_1": "463.91184820618372",
+    "sample_tops_2": "467.68893388336716",
+    "sample_tops_3": "464.11235943578782",
+    "mean_ms": "7.680938720703125",
+    "tops_from_mean_ms": "465.23125886166218",
+    "range_over_median": "0.008079554441618314",
+    "correct": "1",
+    "num_regs": "100",
+    "local_bytes": "0",
+    "shared_bytes": "0",
+    "kernel_max_threads": "512"
+  },
+  "top5": [
+    {
+      "order": "59",
+      "blocks": "832",
+      "threads_per_block": "512",
+      "accumulators": "16",
+      "iterations": "4096",
+      "waves": "6656",
+      "total_ops": "3573412790272",
+      "elapsed_ms_1": "7.7027840614318848",
+      "elapsed_ms_2": "7.6405758857727051",
+      "elapsed_ms_3": "7.6994562149047852",
+      "sample_tops_1": "463.91184820618372",
+      "sample_tops_2": "467.68893388336716",
+      "sample_tops_3": "464.11235943578782",
+      "mean_ms": "7.680938720703125",
+      "tops_from_mean_ms": "465.23125886166218",
+      "range_over_median": "0.008079554441618314",
+      "correct": "1",
+      "num_regs": "100",
+      "local_bytes": "0",
+      "shared_bytes": "0",
+      "kernel_max_threads": "512"
+    },
+    {
+      "order": "20",
+      "blocks": "416",
+      "threads_per_block": "512",
+      "accumulators": "16",
+      "iterations": "4096",
+      "waves": "3328",
+      "total_ops": "1786706395136",
+      "elapsed_ms_1": "3.9034879207611084",
+      "elapsed_ms_2": "3.9093759059906006",
+      "elapsed_ms_3": "3.9132161140441895",
+      "sample_tops_1": "457.72048778048355",
+      "sample_tops_2": "457.03110626893391",
+      "sample_tops_3": "456.58260189711154",
+      "mean_ms": "3.9086933135986328",
+      "tops_from_mean_ms": "457.11091963135516",
+      "range_over_median": "0.002488426162389216",
+      "correct": "1",
+      "num_regs": "100",
+      "local_bytes": "0",
+      "shared_bytes": "0",
+      "kernel_max_threads": "512"
+    },
+    {
+      "order": "76",
+      "blocks": "832",
+      "threads_per_block": "512",
+      "accumulators": "8",
+      "iterations": "4096",
+      "waves": "6656",
+      "total_ops": "1786706395136",
+      "elapsed_ms_1": "3.891200065612793",
+      "elapsed_ms_2": "4.3438081741333008",
+      "elapsed_ms_3": "3.8648319244384766",
+      "sample_tops_1": "459.16590383656523",
+      "sample_tops_2": "411.32258228518413",
+      "sample_tops_3": "462.29860187143623",
+      "mean_ms": "4.0332800547281904",
+      "tops_from_mean_ms": "442.99090836537738",
+      "range_over_median": "0.12309216735670316",
+      "correct": "1",
+      "num_regs": "66",
+      "local_bytes": "0",
+      "shared_bytes": "0",
+      "kernel_max_threads": "512"
+    },
+    {
+      "order": "148",
+      "blocks": "832",
+      "threads_per_block": "128",
+      "accumulators": "16",
+      "iterations": "4096",
+      "waves": "1664",
+      "total_ops": "893353197568",
+      "elapsed_ms_1": "2.0328960418701172",
+      "elapsed_ms_2": "2.0313599109649658",
+      "elapsed_ms_3": "2.0144639015197754",
+      "sample_tops_1": "439.44853999822823",
+      "sample_tops_2": "439.78085456241308",
+      "sample_tops_3": "443.4694495612585",
+      "mean_ms": "2.0262399514516196",
+      "tops_from_mean_ms": "440.89210506780915",
+      "range_over_median": "0.0090737934970794489",
+      "correct": "1",
+      "num_regs": "100",
+      "local_bytes": "0",
+      "shared_bytes": "0",
+      "kernel_max_threads": "512"
+    },
+    {
+      "order": "69",
+      "blocks": "416",
+      "threads_per_block": "256",
+      "accumulators": "16",
+      "iterations": "4096",
+      "waves": "1664",
+      "total_ops": "893353197568",
+      "elapsed_ms_1": "2.0290560722351074",
+      "elapsed_ms_2": "2.0387840270996094",
+      "elapsed_ms_3": "2.037247896194458",
+      "sample_tops_1": "440.28019224916068",
+      "sample_tops_2": "438.17941758102324",
+      "sample_tops_3": "438.5098147538979",
+      "mean_ms": "2.0350293318430581",
+      "tops_from_mean_ms": "438.9878728474738",
+      "range_over_median": "0.0047750472010174095",
+      "correct": "1",
+      "num_regs": "100",
+      "local_bytes": "0",
+      "shared_bytes": "0",
+      "kernel_max_threads": "512"
+    }
+  ],
+  "environment": [
+    {
+      "command": [
+        "mx-smi"
+      ],
+      "returncode": 0,
+      "file": "mx_smi_before.txt"
+    },
+    {
+      "command": [
+        "mx-smi",
+        "--show-hwinfo"
+      ],
+      "returncode": 0,
+      "file": "hardware.txt"
+    },
+    {
+      "command": [
+        "mx-smi",
+        "--show-memory"
+      ],
+      "returncode": 0,
+      "file": "memory.txt"
+    },
+    {
+      "command": [
+        "mx-smi",
+        "--show-dpm",
+        "all"
+      ],
+      "returncode": 0,
+      "file": "dpm_before.txt"
+    },
+    {
+      "command": [
+        "mx-smi",
+        "--show-clocks",
+        "xcore,mc"
+      ],
+      "returncode": 1,
+      "file": "clocks_before.txt"
+    },
+    {
+      "command": [
+        "mx-smi",
+        "--show-process"
+      ],
+      "returncode": 0,
+      "file": "gpu_processes_before.txt"
+    },
+    {
+      "command": [
+        "ps",
+        "-eo",
+        "pid,ppid,comm"
+      ],
+      "returncode": 0,
+      "file": "processes_before.txt"
+    },
+    {
+      "command": [
+        "/opt/maca/mxgpu_llvm/bin/mxcc",
+        "--version"
+      ],
+      "returncode": 0,
+      "file": "compiler.txt"
+    },
+    {
+      "command": [
+        "mx-smi"
+      ],
+      "returncode": 0,
+      "file": "mx_smi_after.txt"
+    },
+    {
+      "command": [
+        "mx-smi",
+        "--show-clocks",
+        "xcore,mc"
+      ],
+      "returncode": 1,
+      "file": "clocks_after.txt"
+    },
+    {
+      "command": [
+        "mx-smi",
+        "--show-clock"
+      ],
+      "returncode": 0,
+      "file": "clock_post_scan.txt",
+      "timing": "after scan; not during timed kernels"
+    }
+  ],
+  "limitations": [
+    "Best only within the tested configuration range on this instance.",
+    "Three samples per configuration in one scan; no independent repeat scan.",
+    "Runtime AP count and clock attributes are not measured allocation or sustained frequency.",
+    "No extrapolation from instance quota to full-chip throughput.",
+    "Pre-scan physical GPU utilization snapshot was 11%, instance utilization 0%, no visible GPU process; container cannot certify physical-board-wide tenant isolation.",
+    "Best block/thread/accumulator values are at the upper boundary of the scan; no global peak or plateau established.",
+    "One scan with three samples per configuration; best observed mean-time TOPS is not a repeatability guarantee."
+  ],
+  "environment_warnings": [
+    "Before/after --show-clocks xcore,mc printed an invalid MC argument error. Failed outputs retained. No sustained in-kernel clock measurement was made."
+  ],
+  "instance": {
+    "physical_model": "MetaX C500",
+    "physical_hbm": "HBM2e 64GB",
+    "sgpu_compute_quota_percent": 25,
+    "sgpu_vram_quota_mib": 16000,
+    "runtime_visible_memory_mib": 15584,
+    "runtime_arch": "xcore1000",
+    "runtime_reported_aps": 104,
+    "runtime_reported_core_clock_mhz": 1600,
+    "dpm_max_xcore_clock_mhz": 1125,
+    "allocation_source": "mx_smi_before.txt; runtime fields in scan.log"
+  },
+  "max_sample_range_over_median": 0.8655589390835705,
+  "total_output_elements_checked": 200106240,
+  "best_by_accumulators": [
+    {
+      "order": "45",
+      "blocks": "832",
+      "threads_per_block": "512",
+      "accumulators": "1",
+      "iterations": "4096",
+      "waves": "6656",
+      "total_ops": "223338299392",
+      "elapsed_ms_1": "0.65203201770782471",
+      "elapsed_ms_2": "0.65971201658248901",
+      "elapsed_ms_3": "0.66329598426818848",
+      "sample_tops_1": "342.52658355203317",
+      "sample_tops_2": "338.53908035351702",
+      "sample_tops_3": "336.70986209634327",
+      "mean_ms": "0.6583466728528341",
+      "tops_from_mean_ms": "339.24117581425787",
+      "range_over_median": "0.01707406607312472",
+      "correct": "1",
+      "num_regs": "14",
+      "local_bytes": "0",
+      "shared_bytes": "0",
+      "kernel_max_threads": "512"
+    },
+    {
+      "order": "33",
+      "blocks": "832",
+      "threads_per_block": "512",
+      "accumulators": "2",
+      "iterations": "4096",
+      "waves": "6656",
+      "total_ops": "446676598784",
+      "elapsed_ms_1": "1.1760640144348145",
+      "elapsed_ms_2": "1.1653120517730713",
+      "elapsed_ms_3": "1.1481599807739258",
+      "sample_tops_1": "379.8063653862082",
+      "sample_tops_2": "383.31071759222158",
+      "sample_tops_3": "389.03689926809182",
+      "mean_ms": "1.1631786823272705",
+      "tops_from_mean_ms": "384.0137423171272",
+      "range_over_median": "0.023945546275292967",
+      "correct": "1",
+      "num_regs": "24",
+      "local_bytes": "0",
+      "shared_bytes": "0",
+      "kernel_max_threads": "512"
+    },
+    {
+      "order": "94",
+      "blocks": "832",
+      "threads_per_block": "512",
+      "accumulators": "4",
+      "iterations": "4096",
+      "waves": "6656",
+      "total_ops": "893353197568",
+      "elapsed_ms_1": "2.2318079471588135",
+      "elapsed_ms_2": "2.2074880599975586",
+      "elapsed_ms_3": "2.2184960842132568",
+      "sample_tops_1": "400.28229073441406",
+      "sample_tops_2": "404.69219913650994",
+      "sample_tops_3": "402.68414441885704",
+      "mean_ms": "2.219264030456543",
+      "tops_from_mean_ms": "402.54480102767269",
+      "range_over_median": "0.010962330442823126",
+      "correct": "1",
+      "num_regs": "48",
+      "local_bytes": "0",
+      "shared_bytes": "0",
+      "kernel_max_threads": "512"
+    },
+    {
+      "order": "76",
+      "blocks": "832",
+      "threads_per_block": "512",
+      "accumulators": "8",
+      "iterations": "4096",
+      "waves": "6656",
+      "total_ops": "1786706395136",
+      "elapsed_ms_1": "3.891200065612793",
+      "elapsed_ms_2": "4.3438081741333008",
+      "elapsed_ms_3": "3.8648319244384766",
+      "sample_tops_1": "459.16590383656523",
+      "sample_tops_2": "411.32258228518413",
+      "sample_tops_3": "462.29860187143623",
+      "mean_ms": "4.0332800547281904",
+      "tops_from_mean_ms": "442.99090836537738",
+      "range_over_median": "0.12309216735670316",
+      "correct": "1",
+      "num_regs": "66",
+      "local_bytes": "0",
+      "shared_bytes": "0",
+      "kernel_max_threads": "512"
+    },
+    {
+      "order": "59",
+      "blocks": "832",
+      "threads_per_block": "512",
+      "accumulators": "16",
+      "iterations": "4096",
+      "waves": "6656",
+      "total_ops": "3573412790272",
+      "elapsed_ms_1": "7.7027840614318848",
+      "elapsed_ms_2": "7.6405758857727051",
+      "elapsed_ms_3": "7.6994562149047852",
+      "sample_tops_1": "463.91184820618372",
+      "sample_tops_2": "467.68893388336716",
+      "sample_tops_3": "464.11235943578782",
+      "mean_ms": "7.680938720703125",
+      "tops_from_mean_ms": "465.23125886166218",
+      "range_over_median": "0.008079554441618314",
+      "correct": "1",
+      "num_regs": "100",
+      "local_bytes": "0",
+      "shared_bytes": "0",
+      "kernel_max_threads": "512"
+    }
+  ],
+  "coordinator_job_id": "051b0d6529b547c4b6eaa54ebe810887"
+}
