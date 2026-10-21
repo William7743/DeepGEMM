@@ -1,0 +1,17 @@
+#define main benchmark_original_main
+#include "/root/MOE/C500_int8_02All/04_hardware_benchmarks/int8_peak/int8_mma_peak.cpp"
+#undef main
+template<int N> void showResources() {
+    int blocks = -1;
+    auto attr = queryKernelAttributes(N);
+    auto status = mcOccupancyMaxActiveBlocksPerMultiprocessor(
+        &blocks, reinterpret_cast<const void*>(mmaPeakKernel<N>), 512, 0);
+    std::cout << N << "," << attr.numRegs << "," << attr.localSizeBytes
+              << "," << static_cast<int>(status) << "," << blocks << "\n";
+    if constexpr (N < 32) showResources<N+1>();
+}
+int main() {
+    MC_CHECK(mcSetDevice(0));
+    std::cout << "accumulators,registers,local_bytes,occupancy_status,max_active_blocks_per_AP\n";
+    showResources<16>();
+}

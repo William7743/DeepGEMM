@@ -105,8 +105,8 @@ void validateConfig(const BenchConfig& config, const mcDeviceProp_t& device) {
     // 后续 launchPeakKernel 按这些数量选择模板实例。
     if (config.accumulators != 1 && config.accumulators != 2 &&
         config.accumulators != 4 && config.accumulators != 8 &&
-        config.accumulators != 16) {
-        throw std::invalid_argument("accumulators must be one of: 1, 2, 4, 8, 16");
+        (config.accumulators < 16 || config.accumulators > 32)) {
+        throw std::invalid_argument("accumulators must be 1, 2, 4, 8, or any integer in 16..32");
     }
     if (config.iterations <= 0) {
         throw std::invalid_argument("iterations must be positive");
@@ -200,7 +200,7 @@ __global__ void mmaPeakKernel(const std::int8_t* __restrict__ a,
                               const std::int8_t* __restrict__ b,
                               std::int32_t* __restrict__ c, int iterations) {
     static_assert(NUM_ACC == 1 || NUM_ACC == 2 || NUM_ACC == 4 ||
-                  NUM_ACC == 8 || NUM_ACC == 16, "Unsupported accumulator count");
+                  NUM_ACC == 8 || (NUM_ACC >= 16 && NUM_ACC <= 32), "Unsupported accumulator count");
 #if defined(__MACA_ARCH__)
     static_assert(__MACA_ARCH__ == 1000, "This INT8 MMA kernel targets C500 / xcore1000");
 #endif
@@ -297,8 +297,24 @@ void launchPeakKernel(const BenchConfig& config, const PreparedInputs& inputs,
         case 4: return launchPeakKernelImpl<4>(config, inputs, device, stream);
         case 8: return launchPeakKernelImpl<8>(config, inputs, device, stream);
         case 16: return launchPeakKernelImpl<16>(config, inputs, device, stream);
+        case 17: return launchPeakKernelImpl<17>(config, inputs, device, stream);
+        case 18: return launchPeakKernelImpl<18>(config, inputs, device, stream);
+        case 19: return launchPeakKernelImpl<19>(config, inputs, device, stream);
+        case 20: return launchPeakKernelImpl<20>(config, inputs, device, stream);
+        case 21: return launchPeakKernelImpl<21>(config, inputs, device, stream);
+        case 22: return launchPeakKernelImpl<22>(config, inputs, device, stream);
+        case 23: return launchPeakKernelImpl<23>(config, inputs, device, stream);
+        case 24: return launchPeakKernelImpl<24>(config, inputs, device, stream);
+        case 25: return launchPeakKernelImpl<25>(config, inputs, device, stream);
+        case 26: return launchPeakKernelImpl<26>(config, inputs, device, stream);
+        case 27: return launchPeakKernelImpl<27>(config, inputs, device, stream);
+        case 28: return launchPeakKernelImpl<28>(config, inputs, device, stream);
+        case 29: return launchPeakKernelImpl<29>(config, inputs, device, stream);
+        case 30: return launchPeakKernelImpl<30>(config, inputs, device, stream);
+        case 31: return launchPeakKernelImpl<31>(config, inputs, device, stream);
+        case 32: return launchPeakKernelImpl<32>(config, inputs, device, stream);
         default:
-            throw std::invalid_argument("accumulators must be one of: 1, 2, 4, 8, 16");
+            throw std::invalid_argument("accumulators must be 1, 2, 4, 8, or any integer in 16..32");
     }
 }
 
@@ -484,8 +500,24 @@ BenchResult benchmarkOneConfig(const BenchConfig& config, const mcDeviceProp_t& 
         case 4: return benchmarkOneConfigImpl<4>(config, device);
         case 8: return benchmarkOneConfigImpl<8>(config, device);
         case 16: return benchmarkOneConfigImpl<16>(config, device);
+        case 17: return benchmarkOneConfigImpl<17>(config, device);
+        case 18: return benchmarkOneConfigImpl<18>(config, device);
+        case 19: return benchmarkOneConfigImpl<19>(config, device);
+        case 20: return benchmarkOneConfigImpl<20>(config, device);
+        case 21: return benchmarkOneConfigImpl<21>(config, device);
+        case 22: return benchmarkOneConfigImpl<22>(config, device);
+        case 23: return benchmarkOneConfigImpl<23>(config, device);
+        case 24: return benchmarkOneConfigImpl<24>(config, device);
+        case 25: return benchmarkOneConfigImpl<25>(config, device);
+        case 26: return benchmarkOneConfigImpl<26>(config, device);
+        case 27: return benchmarkOneConfigImpl<27>(config, device);
+        case 28: return benchmarkOneConfigImpl<28>(config, device);
+        case 29: return benchmarkOneConfigImpl<29>(config, device);
+        case 30: return benchmarkOneConfigImpl<30>(config, device);
+        case 31: return benchmarkOneConfigImpl<31>(config, device);
+        case 32: return benchmarkOneConfigImpl<32>(config, device);
         default:
-            throw std::invalid_argument("accumulators must be one of: 1, 2, 4, 8, 16");
+            throw std::invalid_argument("accumulators must be 1, 2, 4, 8, or any integer in 16..32");
     }
 }
 
@@ -543,6 +575,38 @@ mcFuncAttributes queryKernelAttributes(int accumulators) {
             reinterpret_cast<const void*>(mmaPeakKernel<8>))); break;
         case 16: MC_CHECK(mcFuncGetAttributes(&attributes,
             reinterpret_cast<const void*>(mmaPeakKernel<16>))); break;
+        case 17: MC_CHECK(mcFuncGetAttributes(&attributes,
+            reinterpret_cast<const void*>(mmaPeakKernel<17>))); break;
+        case 18: MC_CHECK(mcFuncGetAttributes(&attributes,
+            reinterpret_cast<const void*>(mmaPeakKernel<18>))); break;
+        case 19: MC_CHECK(mcFuncGetAttributes(&attributes,
+            reinterpret_cast<const void*>(mmaPeakKernel<19>))); break;
+        case 20: MC_CHECK(mcFuncGetAttributes(&attributes,
+            reinterpret_cast<const void*>(mmaPeakKernel<20>))); break;
+        case 21: MC_CHECK(mcFuncGetAttributes(&attributes,
+            reinterpret_cast<const void*>(mmaPeakKernel<21>))); break;
+        case 22: MC_CHECK(mcFuncGetAttributes(&attributes,
+            reinterpret_cast<const void*>(mmaPeakKernel<22>))); break;
+        case 23: MC_CHECK(mcFuncGetAttributes(&attributes,
+            reinterpret_cast<const void*>(mmaPeakKernel<23>))); break;
+        case 24: MC_CHECK(mcFuncGetAttributes(&attributes,
+            reinterpret_cast<const void*>(mmaPeakKernel<24>))); break;
+        case 25: MC_CHECK(mcFuncGetAttributes(&attributes,
+            reinterpret_cast<const void*>(mmaPeakKernel<25>))); break;
+        case 26: MC_CHECK(mcFuncGetAttributes(&attributes,
+            reinterpret_cast<const void*>(mmaPeakKernel<26>))); break;
+        case 27: MC_CHECK(mcFuncGetAttributes(&attributes,
+            reinterpret_cast<const void*>(mmaPeakKernel<27>))); break;
+        case 28: MC_CHECK(mcFuncGetAttributes(&attributes,
+            reinterpret_cast<const void*>(mmaPeakKernel<28>))); break;
+        case 29: MC_CHECK(mcFuncGetAttributes(&attributes,
+            reinterpret_cast<const void*>(mmaPeakKernel<29>))); break;
+        case 30: MC_CHECK(mcFuncGetAttributes(&attributes,
+            reinterpret_cast<const void*>(mmaPeakKernel<30>))); break;
+        case 31: MC_CHECK(mcFuncGetAttributes(&attributes,
+            reinterpret_cast<const void*>(mmaPeakKernel<31>))); break;
+        case 32: MC_CHECK(mcFuncGetAttributes(&attributes,
+            reinterpret_cast<const void*>(mmaPeakKernel<32>))); break;
         default: throw std::invalid_argument("Unsupported accumulator count");
     }
     return attributes;
@@ -670,6 +734,10 @@ void benchmarkSustainedImpl(const BenchConfig& config, const mcDeviceProp_t& dev
         throw std::invalid_argument("Invalid sustained configuration: samples 1..1000, batch 1..10000");
     }
     const auto attributes = queryKernelAttributes(NUM_ACC);
+    std::cout << "Kernel resources: accumulators=" << NUM_ACC
+              << ", registers=" << attributes.numRegs
+              << ", local_bytes=" << attributes.localSizeBytes
+              << ", max_threads=" << attributes.maxThreadsPerBlock << std::endl;
     if (config.threads_per_block > attributes.maxThreadsPerBlock) {
         throw std::invalid_argument("threads_per_block exceeds this kernel's thread limit");
     }
@@ -788,6 +856,22 @@ void benchmarkSustained(const BenchConfig& config, const mcDeviceProp_t& device,
         case 4: return benchmarkSustainedImpl<4>(config, device, samples, batch, csv_path);
         case 8: return benchmarkSustainedImpl<8>(config, device, samples, batch, csv_path);
         case 16: return benchmarkSustainedImpl<16>(config, device, samples, batch, csv_path);
+        case 17: return benchmarkSustainedImpl<17>(config, device, samples, batch, csv_path);
+        case 18: return benchmarkSustainedImpl<18>(config, device, samples, batch, csv_path);
+        case 19: return benchmarkSustainedImpl<19>(config, device, samples, batch, csv_path);
+        case 20: return benchmarkSustainedImpl<20>(config, device, samples, batch, csv_path);
+        case 21: return benchmarkSustainedImpl<21>(config, device, samples, batch, csv_path);
+        case 22: return benchmarkSustainedImpl<22>(config, device, samples, batch, csv_path);
+        case 23: return benchmarkSustainedImpl<23>(config, device, samples, batch, csv_path);
+        case 24: return benchmarkSustainedImpl<24>(config, device, samples, batch, csv_path);
+        case 25: return benchmarkSustainedImpl<25>(config, device, samples, batch, csv_path);
+        case 26: return benchmarkSustainedImpl<26>(config, device, samples, batch, csv_path);
+        case 27: return benchmarkSustainedImpl<27>(config, device, samples, batch, csv_path);
+        case 28: return benchmarkSustainedImpl<28>(config, device, samples, batch, csv_path);
+        case 29: return benchmarkSustainedImpl<29>(config, device, samples, batch, csv_path);
+        case 30: return benchmarkSustainedImpl<30>(config, device, samples, batch, csv_path);
+        case 31: return benchmarkSustainedImpl<31>(config, device, samples, batch, csv_path);
+        case 32: return benchmarkSustainedImpl<32>(config, device, samples, batch, csv_path);
         default: throw std::invalid_argument("Unsupported accumulator count");
     }
 }
@@ -801,7 +885,7 @@ int main(int argc, char* argv[]) {
                   << "       " << argv[0] << " --scan-wide [iterations [report.csv]]\n"
                   << "       " << argv[0] << " --sustain blocks threads accumulators iterations samples batch report.csv\n"
                   << "Defaults: 1 64 1 4096\n"
-                  << "Accumulators: 1, 2, 4, 8, 16; iterations: 1..8191\n";
+                  << "Accumulators: 1, 2, 4, 8, 16..32; iterations: 1..8191\n";
     };
     if (argc == 2 && std::string(argv[1]) == "--help") {
         print_usage();

@@ -1,0 +1,73 @@
+{
+  "checks": [
+    {
+      "accumulators": 16,
+      "mma_calls_in_kernel_body": 16
+    },
+    {
+      "accumulators": 17,
+      "mma_calls_in_kernel_body": 17
+    },
+    {
+      "accumulators": 18,
+      "mma_calls_in_kernel_body": 18
+    },
+    {
+      "accumulators": 19,
+      "mma_calls_in_kernel_body": 19
+    },
+    {
+      "accumulators": 20,
+      "mma_calls_in_kernel_body": 20
+    },
+    {
+      "accumulators": 21,
+      "mma_calls_in_kernel_body": 21
+    },
+    {
+      "accumulators": 22,
+      "mma_calls_in_kernel_body": 22
+    },
+    {
+      "accumulators": 23,
+      "mma_calls_in_kernel_body": 23
+    },
+    {
+      "accumulators": 24,
+      "mma_calls_in_kernel_body": 24
+    },
+    {
+      "accumulators": 25,
+      "mma_calls_in_kernel_body": 25
+    },
+    {
+      "accumulators": 26,
+      "mma_calls_in_kernel_body": 26
+    },
+    {
+      "accumulators": 27,
+      "mma_calls_in_kernel_body": 27
+    },
+    {
+      "accumulators": 28,
+      "mma_calls_in_kernel_body": 28
+    },
+    {
+      "accumulators": 29,
+      "mma_calls_in_kernel_body": 29
+    },
+    {
+      "accumulators": 30,
+      "mma_calls_in_kernel_body": 30
+    },
+    {
+      "accumulators": 31,
+      "mma_calls_in_kernel_body": 31
+    },
+    {
+      "accumulators": 32,
+      "mma_calls_in_kernel_body": 32
+    }
+  ],
+  "scope": "Optimized device LLVM IR, not native ISA. Occupancy API is theoretical maximum, not measured achieved occupancy."
+}
