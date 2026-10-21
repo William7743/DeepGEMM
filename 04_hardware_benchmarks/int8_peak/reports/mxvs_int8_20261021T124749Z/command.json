@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/opt/maca/bin/mxvs",
+    "ops",
+    "--devices",
+    "0",
+    "--models",
+    "int8",
+    "--detail"
+  ],
+  "env_override": {
+    "APPIMAGE_EXTRACT_AND_RUN": "1"
+  },
+  "executable_sha256": "5a158568e259c321817edfbc79a4a990504ca6c27762abcf8274e384f357335a",
+  "start_utc": "2026-10-21T12:47:49.448010+00:00",
+  "hostname": "e361452c5db3",
+  "returncode": 0,
+  "end_utc": "2026-10-21T12:47:56.668849+00:00",
+  "wrapper_wall_seconds_including_startup": 7.172795212827623
+}

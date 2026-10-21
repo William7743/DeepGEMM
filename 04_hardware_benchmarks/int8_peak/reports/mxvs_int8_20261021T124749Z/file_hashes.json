@@ -1,0 +1,10 @@
+{
+  "command.json": "f7420dcaff3cab684238a0fa14b457f42ceaddeaafff34b4e832b354213c3aea",
+  "environment_before.txt": "2659a37df9cf0611c803a7527fdd02ebf447e1cda78e40dcbe292dd592941b61",
+  "telemetry.jsonl": "ae0fadbfa3b189dbdbef99db148734f4bff227d4ba64bf1ba14958dfc667ee95",
+  "mxvs_ops_int8.log": "baf89f5d3dcd344221941128af6abe9b1dc37ed07d5d53304387464e15393847",
+  "environment_after.txt": "8cd806e0d87771431fd8a926bc4409cc0ae8ed7dea52a49c72fed1c88413ef6f",
+  "runner.py": "ad2801de461beeaee629dadcf630c96843c45a28c7c6fbb68e07df8f03b3de46",
+  "summary.json": "67dc1d021bf4eaf8c841fdc7b044dba79b8ab937ba975848c069674c01828b6a",
+  "report.md": "e7156303d12c65c9f013fa71de9836e06035ced3e8c9b5a61b355db5bec8a9c2"
+}

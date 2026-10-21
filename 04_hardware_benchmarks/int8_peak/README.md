@@ -305,3 +305,17 @@ LLVM IR 确认展开实际生效，主循环中 MMA 调用从 16 增到 4096；1
 
 [完整报告](reports/large_unroll_20261021T122622Z/report.md)、[汇总 CSV](reports/large_unroll_20261021T122622Z/summary.csv)
 和 [原始记录 ZIP](reports/large_unroll_20261021T122622Z/raw_records.zip) 已单独存档。
+
+## 官方 mxvs INT8 对照
+
+在同一台完整 64GB C500 上运行官方命令：
+
+    APPIMAGE_EXTRACT_AND_RUN=1 /opt/maca/bin/mxvs ops --devices 0 --models int8 --detail
+
+退出码 0，官方工具报告 **478.39 TOPS**，比此前自写微基准长测的 477.047168 TOPS 高约 **0.28%**。
+两种工具在本环境的报告值接近，约 477～478 TOPS；这次没有得到 560 TOPS。
+这是一次官方工具调用，未审计其内部计时与计数实现，不能据此证明硬件绝对上限。
+历史长测数据保持不变；外层进程的 7.17 秒含启动和 AppImage 解包，不用于计算 TOPS。
+监控采样看到最高核心频率 1125 MHz，采样并不覆盖每条指令的频率。未安装 FUSE、未手动修改频率或功率设置。
+
+[完整报告](reports/mxvs_int8_20261021T124749Z/report.md) 与 [原始记录 ZIP](reports/mxvs_int8_20261021T124749Z/raw_records.zip) 已保留。

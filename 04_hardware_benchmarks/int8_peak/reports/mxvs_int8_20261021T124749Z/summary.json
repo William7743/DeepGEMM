@@ -1,0 +1,31 @@
+{
+  "mxvs_reported_int8_tops": 478.39,
+  "our_fixed_long_run_event_tops": 477.0471682109507,
+  "our_fixed_long_run_wall_tops": 477.0394101479867,
+  "official_over_our_event_pct": 0.2814882633273452,
+  "command_metadata": {
+    "command": [
+      "/opt/maca/bin/mxvs",
+      "ops",
+      "--devices",
+      "0",
+      "--models",
+      "int8",
+      "--detail"
+    ],
+    "env_override": {
+      "APPIMAGE_EXTRACT_AND_RUN": "1"
+    },
+    "executable_sha256": "5a158568e259c321817edfbc79a4a990504ca6c27762abcf8274e384f357335a",
+    "start_utc": "2026-10-21T12:47:49.448010+00:00",
+    "hostname": "e361452c5db3",
+    "returncode": 0,
+    "end_utc": "2026-10-21T12:47:56.668849+00:00",
+    "wrapper_wall_seconds_including_startup": 7.172795212827623
+  },
+  "telemetry_samples": 7,
+  "core_mhz_min": 428.0,
+  "core_mhz_max": 1125.0,
+  "max_temperature_c": 40.0,
+  "max_board_power_w": 160.662
+}
