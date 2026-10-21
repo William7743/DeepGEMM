@@ -1,0 +1,91 @@
+[
+  {
+    "unroll": 1,
+    "ir_sha256": "646b88f26ee9fe7e70743865a69b37a796f187fb817a3d3f890b3d2c8deeba85",
+    "mma_blocks": [
+      {
+        "block": "for.cond30.preheader",
+        "mma_calls": 16,
+        "loads": 0,
+        "stores": 0
+      }
+    ],
+    "scope": "Optimized LLVM IR, native ISA not disassembled"
+  },
+  {
+    "unroll": 2,
+    "ir_sha256": "a97fabc1c8988fac89fb34a6605a48cc693ea9858b12b51a9df224225858edec",
+    "mma_blocks": [
+      {
+        "block": "for.cond30.preheader",
+        "mma_calls": 32,
+        "loads": 0,
+        "stores": 0
+      },
+      {
+        "block": "for.cond30.preheader.epil",
+        "mma_calls": 16,
+        "loads": 0,
+        "stores": 0
+      }
+    ],
+    "scope": "Optimized LLVM IR, native ISA not disassembled"
+  },
+  {
+    "unroll": 4,
+    "ir_sha256": "f7f2e3e495b82cb98e326cdba7fe1628cb1a4b47bfa5a7e2ccfa2b802c175ffc",
+    "mma_blocks": [
+      {
+        "block": "for.cond30.preheader",
+        "mma_calls": 64,
+        "loads": 0,
+        "stores": 0
+      },
+      {
+        "block": "for.cond30.preheader.epil",
+        "mma_calls": 16,
+        "loads": 0,
+        "stores": 0
+      }
+    ],
+    "scope": "Optimized LLVM IR, native ISA not disassembled"
+  },
+  {
+    "unroll": 8,
+    "ir_sha256": "89d8078a9079cc2c87272dd8a5cf212398a1bc0bf1e7b2112f182c0dff03e37a",
+    "mma_blocks": [
+      {
+        "block": "for.cond30.preheader",
+        "mma_calls": 128,
+        "loads": 0,
+        "stores": 0
+      },
+      {
+        "block": "for.cond30.preheader.epil",
+        "mma_calls": 16,
+        "loads": 0,
+        "stores": 0
+      }
+    ],
+    "scope": "Optimized LLVM IR, native ISA not disassembled"
+  },
+  {
+    "unroll": 16,
+    "ir_sha256": "85cfdde6c5c094abcd705cb29a1ff321c8f9e504aca48c66bfc5d917bcaa52f6",
+    "mma_blocks": [
+      {
+        "block": "for.cond30.preheader",
+        "mma_calls": 256,
+        "loads": 0,
+        "stores": 0
+      },
+      {
+        "block": "for.cond30.preheader.epil",
+        "mma_calls": 16,
+        "loads": 0,
+        "stores": 0
+      }
+    ],
+    "scope": "Optimized LLVM IR, native ISA not disassembled"
+  }
+]

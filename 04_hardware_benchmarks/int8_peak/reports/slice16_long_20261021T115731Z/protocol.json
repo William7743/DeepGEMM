@@ -1,0 +1,14 @@
+{
+  "blocks": 26624,
+  "threads": 512,
+  "accumulators": 8,
+  "iterations": 4096,
+  "unroll": 1,
+  "samples": 3,
+  "batch": 256,
+  "user_confirmed_quiet": true,
+  "physical_other_slice_activity_observed_before_build": true,
+  "source_sha256": "c2598cc7511c9c2295bdac63b4594d0d42a3ab1a947ec93424c5a93e3719c9f4",
+  "start_utc": "2026-10-21T11:59:00.846926+00:00",
+  "end_utc": "2026-10-21T12:00:42.514830+00:00"
+}

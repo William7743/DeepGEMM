@@ -17,6 +17,14 @@
 #include <string>
 #include <vector>
 
+// 只改变外层循环的编译期展开因子；iterations 仍表示实际 MMA 轮数。
+#ifndef MMA_PEAK_UNROLL
+#define MMA_PEAK_UNROLL 1
+#endif
+static_assert(MMA_PEAK_UNROLL == 1 || MMA_PEAK_UNROLL == 2 ||
+              MMA_PEAK_UNROLL == 4 || MMA_PEAK_UNROLL == 8 ||
+              MMA_PEAK_UNROLL == 16, "Unsupported MMA loop unroll factor");
+
 // 每个配置预热 1 次，正式测量 3 次。
 constexpr int kWarmupRuns = 1;
 constexpr std::size_t kMeasuredRuns = 3;
@@ -229,8 +237,9 @@ __global__ void mmaPeakKernel(const std::int8_t* __restrict__ a,
     }
 
     // 2. 每轮每个 wave 执行 NUM_ACC 次 MMA；各条累加链没有相互依赖。
-    // 外层不展开，内层按 NUM_ACC 展开，使片段和累加器可保留在寄存器。
-#pragma unroll 1
+    // 外层按编译期因子展开，内层按 NUM_ACC 展开；总 iterations 不变。
+    // 不足整组的轮次由编译器生成尾循环，仍需执行并校验。
+#pragma unroll MMA_PEAK_UNROLL
     for (int iteration = 0; iteration < iterations; ++iteration) {
 #pragma unroll
         for (int acc = 0; acc < NUM_ACC; ++acc) {
@@ -928,6 +937,7 @@ int main(int argc, char* argv[]) {
         }
 
         const mcDeviceProp_t device = queryDevice();
+        std::cout << "Compiled MMA loop unroll factor: " << MMA_PEAK_UNROLL << '\n';
         if (sustain) {
             benchmarkSustained(config, device, parse_positive_int(argv[6], "samples"),
                                parse_positive_int(argv[7], "batch"), argv[8]);

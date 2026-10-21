@@ -21,12 +21,19 @@ if [[ ! -x "$compiler" ]]; then
 fi
 
 mkdir -p build
+unroll="${MMA_PEAK_UNROLL:-1}"
+case "$unroll" in
+    1|2|4|8|16) ;;
+    *) echo "MMA_PEAK_UNROLL must be 1, 2, 4, 8, or 16" >&2; exit 1 ;;
+esac
 "$compiler" \
     -O3 -std=c++17 -x maca -offload-arch=xcore1000 \
+    -DMMA_PEAK_UNROLL="$unroll" \
     -I"$MACA_PATH/include" -I"$MACA_PATH/include/mcr" \
     int8_mma_peak.cpp -L"$MACA_PATH/lib" -lmcruntime \
     -Wl,-rpath,"$MACA_PATH/lib:/opt/mxdriver/lib" \
     -o build/int8_mma_peak
 
 echo "Built: $PWD/build/int8_mma_peak"
+echo "MMA loop unroll factor: $unroll"
 echo "Run: ./build/int8_mma_peak"

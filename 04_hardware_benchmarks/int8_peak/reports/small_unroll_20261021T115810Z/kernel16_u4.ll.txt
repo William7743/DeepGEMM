@@ -1,0 +1,650 @@
+define protected metaxgpu_kernel void @_Z13mmaPeakKernelILi16EEvPKaS1_Pii(ptr addrspace(1) noalias nocapture noundef readonly %a.coerce, ptr addrspace(1) noalias nocapture noundef readonly %b.coerce, ptr addrspace(1) noalias noundef writeonly %c.coerce, i32 noundef %iterations) local_unnamed_addr #3 comdat {
+entry:
+  %0 = tail call noundef range(i32 0, 1024) i32 @llvm.mxc.thread.id.x(), !range !25
+  %1 = tail call align 4 dereferenceable(64) ptr addrspace(4) @llvm.mxc.dispatch.ptr()
+  %2 = getelementptr inbounds i8, ptr addrspace(4) %1, i64 4
+  %3 = load i16, ptr addrspace(4) %2, align 4, !range !26, !invariant.load !14
+  %rem11 = and i32 %0, 15
+  %4 = lshr i32 %0, 2
+  %mul13 = and i32 %4, 12
+  %mul15 = shl nuw nsw i32 %rem11, 4
+  %5 = zext nneg i32 %mul15 to i64
+  %6 = zext nneg i32 %mul13 to i64
+  %7 = or disjoint i64 %5, %6
+  %add.ptr = getelementptr inbounds i8, ptr addrspace(1) %a.coerce, i64 %7
+  %8 = load i32, ptr addrspace(1) %add.ptr, align 1
+  %add.ptr21 = getelementptr inbounds i8, ptr addrspace(1) %b.coerce, i64 %7
+  %9 = load i32, ptr addrspace(1) %add.ptr21, align 1
+  %10 = or disjoint i64 %5, %6
+  %11 = or disjoint i64 %10, 256
+  %add.ptr.1 = getelementptr inbounds i8, ptr addrspace(1) %a.coerce, i64 %11
+  %12 = load i32, ptr addrspace(1) %add.ptr.1, align 1
+  %add.ptr21.1 = getelementptr inbounds i8, ptr addrspace(1) %b.coerce, i64 %11
+  %13 = load i32, ptr addrspace(1) %add.ptr21.1, align 1
+  %14 = or disjoint i64 %5, %6
+  %15 = or disjoint i64 %14, 512
+  %add.ptr.2 = getelementptr inbounds i8, ptr addrspace(1) %a.coerce, i64 %15
+  %16 = load i32, ptr addrspace(1) %add.ptr.2, align 1
+  %add.ptr21.2 = getelementptr inbounds i8, ptr addrspace(1) %b.coerce, i64 %15
+  %17 = load i32, ptr addrspace(1) %add.ptr21.2, align 1
+  %18 = or disjoint i64 %5, %6
+  %19 = or disjoint i64 %18, 768
+  %add.ptr.3 = getelementptr inbounds i8, ptr addrspace(1) %a.coerce, i64 %19
+  %20 = load i32, ptr addrspace(1) %add.ptr.3, align 1
+  %add.ptr21.3 = getelementptr inbounds i8, ptr addrspace(1) %b.coerce, i64 %19
+  %21 = load i32, ptr addrspace(1) %add.ptr21.3, align 1
+  %22 = or disjoint i64 %5, %6
+  %23 = or disjoint i64 %22, 1024
+  %add.ptr.4 = getelementptr inbounds i8, ptr addrspace(1) %a.coerce, i64 %23
+  %24 = load i32, ptr addrspace(1) %add.ptr.4, align 1
+  %add.ptr21.4 = getelementptr inbounds i8, ptr addrspace(1) %b.coerce, i64 %23
+  %25 = load i32, ptr addrspace(1) %add.ptr21.4, align 1
+  %26 = or disjoint i64 %5, %6
+  %27 = or disjoint i64 %26, 1280
+  %add.ptr.5 = getelementptr inbounds i8, ptr addrspace(1) %a.coerce, i64 %27
+  %28 = load i32, ptr addrspace(1) %add.ptr.5, align 1
+  %add.ptr21.5 = getelementptr inbounds i8, ptr addrspace(1) %b.coerce, i64 %27
+  %29 = load i32, ptr addrspace(1) %add.ptr21.5, align 1
+  %30 = or disjoint i64 %5, %6
+  %31 = or disjoint i64 %30, 1536
+  %add.ptr.6 = getelementptr inbounds i8, ptr addrspace(1) %a.coerce, i64 %31
+  %32 = load i32, ptr addrspace(1) %add.ptr.6, align 1
+  %add.ptr21.6 = getelementptr inbounds i8, ptr addrspace(1) %b.coerce, i64 %31
+  %33 = load i32, ptr addrspace(1) %add.ptr21.6, align 1
+  %34 = or disjoint i64 %5, %6
+  %35 = or disjoint i64 %34, 1792
+  %add.ptr.7 = getelementptr inbounds i8, ptr addrspace(1) %a.coerce, i64 %35
+  %36 = load i32, ptr addrspace(1) %add.ptr.7, align 1
+  %add.ptr21.7 = getelementptr inbounds i8, ptr addrspace(1) %b.coerce, i64 %35
+  %37 = load i32, ptr addrspace(1) %add.ptr21.7, align 1
+  %38 = or disjoint i64 %5, %6
+  %39 = or disjoint i64 %38, 2048
+  %add.ptr.8 = getelementptr inbounds i8, ptr addrspace(1) %a.coerce, i64 %39
+  %40 = load i32, ptr addrspace(1) %add.ptr.8, align 1
+  %add.ptr21.8 = getelementptr inbounds i8, ptr addrspace(1) %b.coerce, i64 %39
+  %41 = load i32, ptr addrspace(1) %add.ptr21.8, align 1
+  %42 = or disjoint i64 %5, %6
+  %43 = or disjoint i64 %42, 2304
+  %add.ptr.9 = getelementptr inbounds i8, ptr addrspace(1) %a.coerce, i64 %43
+  %44 = load i32, ptr addrspace(1) %add.ptr.9, align 1
+  %add.ptr21.9 = getelementptr inbounds i8, ptr addrspace(1) %b.coerce, i64 %43
+  %45 = load i32, ptr addrspace(1) %add.ptr21.9, align 1
+  %46 = or disjoint i64 %5, %6
+  %47 = or disjoint i64 %46, 2560
+  %add.ptr.10 = getelementptr inbounds i8, ptr addrspace(1) %a.coerce, i64 %47
+  %48 = load i32, ptr addrspace(1) %add.ptr.10, align 1
+  %add.ptr21.10 = getelementptr inbounds i8, ptr addrspace(1) %b.coerce, i64 %47
+  %49 = load i32, ptr addrspace(1) %add.ptr21.10, align 1
+  %50 = or disjoint i64 %5, %6
+  %51 = or disjoint i64 %50, 2816
+  %add.ptr.11 = getelementptr inbounds i8, ptr addrspace(1) %a.coerce, i64 %51
+  %52 = load i32, ptr addrspace(1) %add.ptr.11, align 1
+  %add.ptr21.11 = getelementptr inbounds i8, ptr addrspace(1) %b.coerce, i64 %51
+  %53 = load i32, ptr addrspace(1) %add.ptr21.11, align 1
+  %54 = or disjoint i64 %5, %6
+  %55 = or disjoint i64 %54, 3072
+  %add.ptr.12 = getelementptr inbounds i8, ptr addrspace(1) %a.coerce, i64 %55
+  %56 = load i32, ptr addrspace(1) %add.ptr.12, align 1
+  %add.ptr21.12 = getelementptr inbounds i8, ptr addrspace(1) %b.coerce, i64 %55
+  %57 = load i32, ptr addrspace(1) %add.ptr21.12, align 1
+  %58 = or disjoint i64 %5, %6
+  %59 = or disjoint i64 %58, 3328
+  %add.ptr.13 = getelementptr inbounds i8, ptr addrspace(1) %a.coerce, i64 %59
+  %60 = load i32, ptr addrspace(1) %add.ptr.13, align 1
+  %add.ptr21.13 = getelementptr inbounds i8, ptr addrspace(1) %b.coerce, i64 %59
+  %61 = load i32, ptr addrspace(1) %add.ptr21.13, align 1
+  %62 = or disjoint i64 %5, %6
+  %63 = or disjoint i64 %62, 3584
+  %add.ptr.14 = getelementptr inbounds i8, ptr addrspace(1) %a.coerce, i64 %63
+  %64 = load i32, ptr addrspace(1) %add.ptr.14, align 1
+  %add.ptr21.14 = getelementptr inbounds i8, ptr addrspace(1) %b.coerce, i64 %63
+  %65 = load i32, ptr addrspace(1) %add.ptr21.14, align 1
+  %66 = or disjoint i64 %5, %6
+  %67 = or disjoint i64 %66, 3840
+  %add.ptr.15 = getelementptr inbounds i8, ptr addrspace(1) %a.coerce, i64 %67
+  %68 = load i32, ptr addrspace(1) %add.ptr.15, align 1
+  %add.ptr21.15 = getelementptr inbounds i8, ptr addrspace(1) %b.coerce, i64 %67
+  %69 = load i32, ptr addrspace(1) %add.ptr21.15, align 1
+  %cmp25104 = icmp sgt i32 %iterations, 0
+  br i1 %cmp25104, label %for.cond30.preheader.preheader, label %for.cond49.preheader
+
+for.cond30.preheader.preheader:                   ; preds = %entry
+  %xtraiter = and i32 %iterations, 3
+  %70 = icmp ult i32 %iterations, 4
+  br i1 %70, label %for.cond49.preheader.loopexit.unr-lcssa, label %for.cond30.preheader.preheader.new
+
+for.cond30.preheader.preheader.new:               ; preds = %for.cond30.preheader.preheader
+  %unroll_iter = and i32 %iterations, 2147483644
+  br label %for.cond30.preheader
+
+for.cond30.preheader:                             ; preds = %for.cond30.preheader, %for.cond30.preheader.preheader.new
+  %sums.sroa.62.0 = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader.new ], [ %134, %for.cond30.preheader ]
+  %sums.sroa.58.0 = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader.new ], [ %133, %for.cond30.preheader ]
+  %sums.sroa.54.0 = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader.new ], [ %132, %for.cond30.preheader ]
+  %sums.sroa.50.0 = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader.new ], [ %131, %for.cond30.preheader ]
+  %sums.sroa.46.0 = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader.new ], [ %130, %for.cond30.preheader ]
+  %sums.sroa.42.0 = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader.new ], [ %129, %for.cond30.preheader ]
+  %sums.sroa.38.0 = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader.new ], [ %128, %for.cond30.preheader ]
+  %sums.sroa.34.0 = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader.new ], [ %127, %for.cond30.preheader ]
+  %sums.sroa.30.0 = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader.new ], [ %126, %for.cond30.preheader ]
+  %sums.sroa.26.0 = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader.new ], [ %125, %for.cond30.preheader ]
+  %sums.sroa.22.0 = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader.new ], [ %124, %for.cond30.preheader ]
+  %sums.sroa.18.0 = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader.new ], [ %123, %for.cond30.preheader ]
+  %sums.sroa.14.0 = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader.new ], [ %122, %for.cond30.preheader ]
+  %sums.sroa.10.0 = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader.new ], [ %121, %for.cond30.preheader ]
+  %sums.sroa.6.0 = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader.new ], [ %120, %for.cond30.preheader ]
+  %sums.sroa.0.0 = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader.new ], [ %119, %for.cond30.preheader ]
+  %niter = phi i32 [ 0, %for.cond30.preheader.preheader.new ], [ %niter.next.3, %for.cond30.preheader ]
+  %71 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %8, i32 %9, <4 x i32> %sums.sroa.0.0), !call_argsrelate !27
+  %72 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %12, i32 %13, <4 x i32> %sums.sroa.6.0), !call_argsrelate !27
+  %73 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %16, i32 %17, <4 x i32> %sums.sroa.10.0), !call_argsrelate !27
+  %74 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %20, i32 %21, <4 x i32> %sums.sroa.14.0), !call_argsrelate !27
+  %75 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %24, i32 %25, <4 x i32> %sums.sroa.18.0), !call_argsrelate !27
+  %76 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %28, i32 %29, <4 x i32> %sums.sroa.22.0), !call_argsrelate !27
+  %77 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %32, i32 %33, <4 x i32> %sums.sroa.26.0), !call_argsrelate !27
+  %78 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %36, i32 %37, <4 x i32> %sums.sroa.30.0), !call_argsrelate !27
+  %79 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %40, i32 %41, <4 x i32> %sums.sroa.34.0), !call_argsrelate !27
+  %80 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %44, i32 %45, <4 x i32> %sums.sroa.38.0), !call_argsrelate !27
+  %81 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %48, i32 %49, <4 x i32> %sums.sroa.42.0), !call_argsrelate !27
+  %82 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %52, i32 %53, <4 x i32> %sums.sroa.46.0), !call_argsrelate !27
+  %83 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %56, i32 %57, <4 x i32> %sums.sroa.50.0), !call_argsrelate !27
+  %84 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %60, i32 %61, <4 x i32> %sums.sroa.54.0), !call_argsrelate !27
+  %85 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %64, i32 %65, <4 x i32> %sums.sroa.58.0), !call_argsrelate !27
+  %86 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %68, i32 %69, <4 x i32> %sums.sroa.62.0), !call_argsrelate !27
+  %87 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %8, i32 %9, <4 x i32> %71), !call_argsrelate !27
+  %88 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %12, i32 %13, <4 x i32> %72), !call_argsrelate !27
+  %89 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %16, i32 %17, <4 x i32> %73), !call_argsrelate !27
+  %90 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %20, i32 %21, <4 x i32> %74), !call_argsrelate !27
+  %91 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %24, i32 %25, <4 x i32> %75), !call_argsrelate !27
+  %92 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %28, i32 %29, <4 x i32> %76), !call_argsrelate !27
+  %93 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %32, i32 %33, <4 x i32> %77), !call_argsrelate !27
+  %94 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %36, i32 %37, <4 x i32> %78), !call_argsrelate !27
+  %95 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %40, i32 %41, <4 x i32> %79), !call_argsrelate !27
+  %96 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %44, i32 %45, <4 x i32> %80), !call_argsrelate !27
+  %97 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %48, i32 %49, <4 x i32> %81), !call_argsrelate !27
+  %98 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %52, i32 %53, <4 x i32> %82), !call_argsrelate !27
+  %99 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %56, i32 %57, <4 x i32> %83), !call_argsrelate !27
+  %100 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %60, i32 %61, <4 x i32> %84), !call_argsrelate !27
+  %101 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %64, i32 %65, <4 x i32> %85), !call_argsrelate !27
+  %102 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %68, i32 %69, <4 x i32> %86), !call_argsrelate !27
+  %103 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %8, i32 %9, <4 x i32> %87), !call_argsrelate !27
+  %104 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %12, i32 %13, <4 x i32> %88), !call_argsrelate !27
+  %105 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %16, i32 %17, <4 x i32> %89), !call_argsrelate !27
+  %106 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %20, i32 %21, <4 x i32> %90), !call_argsrelate !27
+  %107 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %24, i32 %25, <4 x i32> %91), !call_argsrelate !27
+  %108 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %28, i32 %29, <4 x i32> %92), !call_argsrelate !27
+  %109 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %32, i32 %33, <4 x i32> %93), !call_argsrelate !27
+  %110 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %36, i32 %37, <4 x i32> %94), !call_argsrelate !27
+  %111 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %40, i32 %41, <4 x i32> %95), !call_argsrelate !27
+  %112 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %44, i32 %45, <4 x i32> %96), !call_argsrelate !27
+  %113 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %48, i32 %49, <4 x i32> %97), !call_argsrelate !27
+  %114 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %52, i32 %53, <4 x i32> %98), !call_argsrelate !27
+  %115 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %56, i32 %57, <4 x i32> %99), !call_argsrelate !27
+  %116 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %60, i32 %61, <4 x i32> %100), !call_argsrelate !27
+  %117 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %64, i32 %65, <4 x i32> %101), !call_argsrelate !27
+  %118 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %68, i32 %69, <4 x i32> %102), !call_argsrelate !27
+  %119 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %8, i32 %9, <4 x i32> %103), !call_argsrelate !27
+  %120 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %12, i32 %13, <4 x i32> %104), !call_argsrelate !27
+  %121 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %16, i32 %17, <4 x i32> %105), !call_argsrelate !27
+  %122 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %20, i32 %21, <4 x i32> %106), !call_argsrelate !27
+  %123 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %24, i32 %25, <4 x i32> %107), !call_argsrelate !27
+  %124 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %28, i32 %29, <4 x i32> %108), !call_argsrelate !27
+  %125 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %32, i32 %33, <4 x i32> %109), !call_argsrelate !27
+  %126 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %36, i32 %37, <4 x i32> %110), !call_argsrelate !27
+  %127 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %40, i32 %41, <4 x i32> %111), !call_argsrelate !27
+  %128 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %44, i32 %45, <4 x i32> %112), !call_argsrelate !27
+  %129 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %48, i32 %49, <4 x i32> %113), !call_argsrelate !27
+  %130 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %52, i32 %53, <4 x i32> %114), !call_argsrelate !27
+  %131 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %56, i32 %57, <4 x i32> %115), !call_argsrelate !27
+  %132 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %60, i32 %61, <4 x i32> %116), !call_argsrelate !27
+  %133 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %64, i32 %65, <4 x i32> %117), !call_argsrelate !27
+  %134 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %68, i32 %69, <4 x i32> %118), !call_argsrelate !27
+  %niter.next.3 = add i32 %niter, 4
+  %niter.ncmp.3 = icmp eq i32 %niter.next.3, %unroll_iter
+  br i1 %niter.ncmp.3, label %for.cond49.preheader.loopexit.unr-lcssa, label %for.cond30.preheader, !llvm.loop !37
+
+for.cond49.preheader.loopexit.unr-lcssa:          ; preds = %for.cond30.preheader, %for.cond30.preheader.preheader
+  %.lcssa190.ph = phi <4 x i32> [ poison, %for.cond30.preheader.preheader ], [ %119, %for.cond30.preheader ]
+  %.lcssa189.ph = phi <4 x i32> [ poison, %for.cond30.preheader.preheader ], [ %120, %for.cond30.preheader ]
+  %.lcssa188.ph = phi <4 x i32> [ poison, %for.cond30.preheader.preheader ], [ %121, %for.cond30.preheader ]
+  %.lcssa187.ph = phi <4 x i32> [ poison, %for.cond30.preheader.preheader ], [ %122, %for.cond30.preheader ]
+  %.lcssa186.ph = phi <4 x i32> [ poison, %for.cond30.preheader.preheader ], [ %123, %for.cond30.preheader ]
+  %.lcssa185.ph = phi <4 x i32> [ poison, %for.cond30.preheader.preheader ], [ %124, %for.cond30.preheader ]
+  %.lcssa184.ph = phi <4 x i32> [ poison, %for.cond30.preheader.preheader ], [ %125, %for.cond30.preheader ]
+  %.lcssa183.ph = phi <4 x i32> [ poison, %for.cond30.preheader.preheader ], [ %126, %for.cond30.preheader ]
+  %.lcssa182.ph = phi <4 x i32> [ poison, %for.cond30.preheader.preheader ], [ %127, %for.cond30.preheader ]
+  %.lcssa181.ph = phi <4 x i32> [ poison, %for.cond30.preheader.preheader ], [ %128, %for.cond30.preheader ]
+  %.lcssa180.ph = phi <4 x i32> [ poison, %for.cond30.preheader.preheader ], [ %129, %for.cond30.preheader ]
+  %.lcssa179.ph = phi <4 x i32> [ poison, %for.cond30.preheader.preheader ], [ %130, %for.cond30.preheader ]
+  %.lcssa178.ph = phi <4 x i32> [ poison, %for.cond30.preheader.preheader ], [ %131, %for.cond30.preheader ]
+  %.lcssa177.ph = phi <4 x i32> [ poison, %for.cond30.preheader.preheader ], [ %132, %for.cond30.preheader ]
+  %.lcssa176.ph = phi <4 x i32> [ poison, %for.cond30.preheader.preheader ], [ %133, %for.cond30.preheader ]
+  %.lcssa.ph = phi <4 x i32> [ poison, %for.cond30.preheader.preheader ], [ %134, %for.cond30.preheader ]
+  %sums.sroa.62.0.unr = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader ], [ %134, %for.cond30.preheader ]
+  %sums.sroa.58.0.unr = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader ], [ %133, %for.cond30.preheader ]
+  %sums.sroa.54.0.unr = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader ], [ %132, %for.cond30.preheader ]
+  %sums.sroa.50.0.unr = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader ], [ %131, %for.cond30.preheader ]
+  %sums.sroa.46.0.unr = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader ], [ %130, %for.cond30.preheader ]
+  %sums.sroa.42.0.unr = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader ], [ %129, %for.cond30.preheader ]
+  %sums.sroa.38.0.unr = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader ], [ %128, %for.cond30.preheader ]
+  %sums.sroa.34.0.unr = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader ], [ %127, %for.cond30.preheader ]
+  %sums.sroa.30.0.unr = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader ], [ %126, %for.cond30.preheader ]
+  %sums.sroa.26.0.unr = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader ], [ %125, %for.cond30.preheader ]
+  %sums.sroa.22.0.unr = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader ], [ %124, %for.cond30.preheader ]
+  %sums.sroa.18.0.unr = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader ], [ %123, %for.cond30.preheader ]
+  %sums.sroa.14.0.unr = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader ], [ %122, %for.cond30.preheader ]
+  %sums.sroa.10.0.unr = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader ], [ %121, %for.cond30.preheader ]
+  %sums.sroa.6.0.unr = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader ], [ %120, %for.cond30.preheader ]
+  %sums.sroa.0.0.unr = phi <4 x i32> [ zeroinitializer, %for.cond30.preheader.preheader ], [ %119, %for.cond30.preheader ]
+  %lcmp.mod.not = icmp eq i32 %xtraiter, 0
+  br i1 %lcmp.mod.not, label %for.cond49.preheader, label %for.cond30.preheader.epil
+
+for.cond30.preheader.epil:                        ; preds = %for.cond49.preheader.loopexit.unr-lcssa, %for.cond30.preheader.epil
+  %sums.sroa.62.0.epil = phi <4 x i32> [ %150, %for.cond30.preheader.epil ], [ %sums.sroa.62.0.unr, %for.cond49.preheader.loopexit.unr-lcssa ]
+  %sums.sroa.58.0.epil = phi <4 x i32> [ %149, %for.cond30.preheader.epil ], [ %sums.sroa.58.0.unr, %for.cond49.preheader.loopexit.unr-lcssa ]
+  %sums.sroa.54.0.epil = phi <4 x i32> [ %148, %for.cond30.preheader.epil ], [ %sums.sroa.54.0.unr, %for.cond49.preheader.loopexit.unr-lcssa ]
+  %sums.sroa.50.0.epil = phi <4 x i32> [ %147, %for.cond30.preheader.epil ], [ %sums.sroa.50.0.unr, %for.cond49.preheader.loopexit.unr-lcssa ]
+  %sums.sroa.46.0.epil = phi <4 x i32> [ %146, %for.cond30.preheader.epil ], [ %sums.sroa.46.0.unr, %for.cond49.preheader.loopexit.unr-lcssa ]
+  %sums.sroa.42.0.epil = phi <4 x i32> [ %145, %for.cond30.preheader.epil ], [ %sums.sroa.42.0.unr, %for.cond49.preheader.loopexit.unr-lcssa ]
+  %sums.sroa.38.0.epil = phi <4 x i32> [ %144, %for.cond30.preheader.epil ], [ %sums.sroa.38.0.unr, %for.cond49.preheader.loopexit.unr-lcssa ]
+  %sums.sroa.34.0.epil = phi <4 x i32> [ %143, %for.cond30.preheader.epil ], [ %sums.sroa.34.0.unr, %for.cond49.preheader.loopexit.unr-lcssa ]
+  %sums.sroa.30.0.epil = phi <4 x i32> [ %142, %for.cond30.preheader.epil ], [ %sums.sroa.30.0.unr, %for.cond49.preheader.loopexit.unr-lcssa ]
+  %sums.sroa.26.0.epil = phi <4 x i32> [ %141, %for.cond30.preheader.epil ], [ %sums.sroa.26.0.unr, %for.cond49.preheader.loopexit.unr-lcssa ]
+  %sums.sroa.22.0.epil = phi <4 x i32> [ %140, %for.cond30.preheader.epil ], [ %sums.sroa.22.0.unr, %for.cond49.preheader.loopexit.unr-lcssa ]
+  %sums.sroa.18.0.epil = phi <4 x i32> [ %139, %for.cond30.preheader.epil ], [ %sums.sroa.18.0.unr, %for.cond49.preheader.loopexit.unr-lcssa ]
+  %sums.sroa.14.0.epil = phi <4 x i32> [ %138, %for.cond30.preheader.epil ], [ %sums.sroa.14.0.unr, %for.cond49.preheader.loopexit.unr-lcssa ]
+  %sums.sroa.10.0.epil = phi <4 x i32> [ %137, %for.cond30.preheader.epil ], [ %sums.sroa.10.0.unr, %for.cond49.preheader.loopexit.unr-lcssa ]
+  %sums.sroa.6.0.epil = phi <4 x i32> [ %136, %for.cond30.preheader.epil ], [ %sums.sroa.6.0.unr, %for.cond49.preheader.loopexit.unr-lcssa ]
+  %sums.sroa.0.0.epil = phi <4 x i32> [ %135, %for.cond30.preheader.epil ], [ %sums.sroa.0.0.unr, %for.cond49.preheader.loopexit.unr-lcssa ]
+  %epil.iter = phi i32 [ %epil.iter.next, %for.cond30.preheader.epil ], [ 0, %for.cond49.preheader.loopexit.unr-lcssa ]
+  %135 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %8, i32 %9, <4 x i32> %sums.sroa.0.0.epil), !call_argsrelate !27
+  %136 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %12, i32 %13, <4 x i32> %sums.sroa.6.0.epil), !call_argsrelate !27
+  %137 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %16, i32 %17, <4 x i32> %sums.sroa.10.0.epil), !call_argsrelate !27
+  %138 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %20, i32 %21, <4 x i32> %sums.sroa.14.0.epil), !call_argsrelate !27
+  %139 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %24, i32 %25, <4 x i32> %sums.sroa.18.0.epil), !call_argsrelate !27
+  %140 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %28, i32 %29, <4 x i32> %sums.sroa.22.0.epil), !call_argsrelate !27
+  %141 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %32, i32 %33, <4 x i32> %sums.sroa.26.0.epil), !call_argsrelate !27
+  %142 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %36, i32 %37, <4 x i32> %sums.sroa.30.0.epil), !call_argsrelate !27
+  %143 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %40, i32 %41, <4 x i32> %sums.sroa.34.0.epil), !call_argsrelate !27
+  %144 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %44, i32 %45, <4 x i32> %sums.sroa.38.0.epil), !call_argsrelate !27
+  %145 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %48, i32 %49, <4 x i32> %sums.sroa.42.0.epil), !call_argsrelate !27
+  %146 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %52, i32 %53, <4 x i32> %sums.sroa.46.0.epil), !call_argsrelate !27
+  %147 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %56, i32 %57, <4 x i32> %sums.sroa.50.0.epil), !call_argsrelate !27
+  %148 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %60, i32 %61, <4 x i32> %sums.sroa.54.0.epil), !call_argsrelate !27
+  %149 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %64, i32 %65, <4 x i32> %sums.sroa.58.0.epil), !call_argsrelate !27
+  %150 = tail call <4 x i32> @llvm.mxc.mma.i32.16x16x16i8(i32 %68, i32 %69, <4 x i32> %sums.sroa.62.0.epil), !call_argsrelate !27
+  %epil.iter.next = add i32 %epil.iter, 1
+  %epil.iter.cmp.not = icmp eq i32 %epil.iter.next, %xtraiter
+  br i1 %epil.iter.cmp.not, label %for.cond49.preheader, label %for.cond30.preheader.epil, !llvm.loop !38
+
+for.cond49.preheader:                             ; preds = %for.cond49.preheader.loopexit.unr-lcssa, %for.cond30.preheader.epil, %entry
+  %sums.sroa.62.1 = phi <4 x i32> [ zeroinitializer, %entry ], [ %.lcssa.ph, %for.cond49.preheader.loopexit.unr-lcssa ], [ %150, %for.cond30.preheader.epil ]
+  %sums.sroa.58.1 = phi <4 x i32> [ zeroinitializer, %entry ], [ %.lcssa176.ph, %for.cond49.preheader.loopexit.unr-lcssa ], [ %149, %for.cond30.preheader.epil ]
+  %sums.sroa.54.1 = phi <4 x i32> [ zeroinitializer, %entry ], [ %.lcssa177.ph, %for.cond49.preheader.loopexit.unr-lcssa ], [ %148, %for.cond30.preheader.epil ]
+  %sums.sroa.50.1 = phi <4 x i32> [ zeroinitializer, %entry ], [ %.lcssa178.ph, %for.cond49.preheader.loopexit.unr-lcssa ], [ %147, %for.cond30.preheader.epil ]
+  %sums.sroa.46.1 = phi <4 x i32> [ zeroinitializer, %entry ], [ %.lcssa179.ph, %for.cond49.preheader.loopexit.unr-lcssa ], [ %146, %for.cond30.preheader.epil ]
+  %sums.sroa.42.1 = phi <4 x i32> [ zeroinitializer, %entry ], [ %.lcssa180.ph, %for.cond49.preheader.loopexit.unr-lcssa ], [ %145, %for.cond30.preheader.epil ]
+  %sums.sroa.38.1 = phi <4 x i32> [ zeroinitializer, %entry ], [ %.lcssa181.ph, %for.cond49.preheader.loopexit.unr-lcssa ], [ %144, %for.cond30.preheader.epil ]
+  %sums.sroa.34.1 = phi <4 x i32> [ zeroinitializer, %entry ], [ %.lcssa182.ph, %for.cond49.preheader.loopexit.unr-lcssa ], [ %143, %for.cond30.preheader.epil ]
+  %sums.sroa.30.1 = phi <4 x i32> [ zeroinitializer, %entry ], [ %.lcssa183.ph, %for.cond49.preheader.loopexit.unr-lcssa ], [ %142, %for.cond30.preheader.epil ]
+  %sums.sroa.26.1 = phi <4 x i32> [ zeroinitializer, %entry ], [ %.lcssa184.ph, %for.cond49.preheader.loopexit.unr-lcssa ], [ %141, %for.cond30.preheader.epil ]
+  %sums.sroa.22.1 = phi <4 x i32> [ zeroinitializer, %entry ], [ %.lcssa185.ph, %for.cond49.preheader.loopexit.unr-lcssa ], [ %140, %for.cond30.preheader.epil ]
+  %sums.sroa.18.1 = phi <4 x i32> [ zeroinitializer, %entry ], [ %.lcssa186.ph, %for.cond49.preheader.loopexit.unr-lcssa ], [ %139, %for.cond30.preheader.epil ]
+  %sums.sroa.14.1 = phi <4 x i32> [ zeroinitializer, %entry ], [ %.lcssa187.ph, %for.cond49.preheader.loopexit.unr-lcssa ], [ %138, %for.cond30.preheader.epil ]
+  %sums.sroa.10.1 = phi <4 x i32> [ zeroinitializer, %entry ], [ %.lcssa188.ph, %for.cond49.preheader.loopexit.unr-lcssa ], [ %137, %for.cond30.preheader.epil ]
+  %sums.sroa.6.1 = phi <4 x i32> [ zeroinitializer, %entry ], [ %.lcssa189.ph, %for.cond49.preheader.loopexit.unr-lcssa ], [ %136, %for.cond30.preheader.epil ]
+  %sums.sroa.0.1 = phi <4 x i32> [ zeroinitializer, %entry ], [ %.lcssa190.ph, %for.cond49.preheader.loopexit.unr-lcssa ], [ %135, %for.cond30.preheader.epil ]
+  %151 = lshr i16 %3, 6
+  %conv7 = zext nneg i16 %151 to i64
+  %152 = tail call noundef range(i32 0, 2147483647) i32 @llvm.mxc.block.id.x(), !range !15
+  %conv = zext nneg i32 %152 to i64
+  %mul = mul nuw nsw i64 %conv7, %conv
+  %div9100 = lshr i32 %0, 6
+  %conv10 = zext nneg i32 %div9100 to i64
+  %add = add nuw nsw i64 %mul, %conv10
+  %153 = shl nuw nsw i64 %add, 12
+  %conv70 = zext nneg i32 %rem11 to i64
+  %vecext = extractelement <4 x i32> %sums.sroa.0.1, i64 0
+  %154 = shl nuw nsw i64 %6, 4
+  %add69 = or disjoint i64 %153, %154
+  %add71 = or disjoint i64 %add69, %conv70
+  %arrayidx72 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71
+  store i32 %vecext, ptr addrspace(1) %arrayidx72, align 4, !tbaa !16
+  %vecext.1 = extractelement <4 x i32> %sums.sroa.0.1, i64 1
+  %155 = shl nuw nsw i64 %6, 4
+  %156 = or disjoint i64 %155, 16
+  %add69.1 = or disjoint i64 %153, %156
+  %add71.1 = or disjoint i64 %add69.1, %conv70
+  %arrayidx72.1 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.1
+  store i32 %vecext.1, ptr addrspace(1) %arrayidx72.1, align 4, !tbaa !16
+  %vecext.2 = extractelement <4 x i32> %sums.sroa.0.1, i64 2
+  %157 = shl nuw nsw i64 %6, 4
+  %158 = or disjoint i64 %157, 32
+  %add69.2 = or disjoint i64 %153, %158
+  %add71.2 = or disjoint i64 %add69.2, %conv70
+  %arrayidx72.2 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.2
+  store i32 %vecext.2, ptr addrspace(1) %arrayidx72.2, align 4, !tbaa !16
+  %vecext.3 = extractelement <4 x i32> %sums.sroa.0.1, i64 3
+  %159 = shl nuw nsw i64 %6, 4
+  %160 = or disjoint i64 %159, 48
+  %add69.3 = or disjoint i64 %153, %160
+  %add71.3 = or disjoint i64 %add69.3, %conv70
+  %arrayidx72.3 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.3
+  store i32 %vecext.3, ptr addrspace(1) %arrayidx72.3, align 4, !tbaa !16
+  %mul56.1 = or disjoint i64 %153, 256
+  %vecext.1118 = extractelement <4 x i32> %sums.sroa.6.1, i64 0
+  %add69.1119 = or disjoint i64 %mul56.1, %154
+  %add71.1120 = or disjoint i64 %add69.1119, %conv70
+  %arrayidx72.1121 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.1120
+  store i32 %vecext.1118, ptr addrspace(1) %arrayidx72.1121, align 4, !tbaa !16
+  %vecext.1.1 = extractelement <4 x i32> %sums.sroa.6.1, i64 1
+  %add69.1.1 = or disjoint i64 %mul56.1, %156
+  %add71.1.1 = or disjoint i64 %add69.1.1, %conv70
+  %arrayidx72.1.1 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.1.1
+  store i32 %vecext.1.1, ptr addrspace(1) %arrayidx72.1.1, align 4, !tbaa !16
+  %vecext.2.1 = extractelement <4 x i32> %sums.sroa.6.1, i64 2
+  %add69.2.1 = or disjoint i64 %mul56.1, %158
+  %add71.2.1 = or disjoint i64 %add69.2.1, %conv70
+  %arrayidx72.2.1 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.2.1
+  store i32 %vecext.2.1, ptr addrspace(1) %arrayidx72.2.1, align 4, !tbaa !16
+  %vecext.3.1 = extractelement <4 x i32> %sums.sroa.6.1, i64 3
+  %add69.3.1 = or disjoint i64 %mul56.1, %160
+  %add71.3.1 = or disjoint i64 %add69.3.1, %conv70
+  %arrayidx72.3.1 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.3.1
+  store i32 %vecext.3.1, ptr addrspace(1) %arrayidx72.3.1, align 4, !tbaa !16
+  %mul56.2 = or disjoint i64 %153, 512
+  %vecext.2122 = extractelement <4 x i32> %sums.sroa.10.1, i64 0
+  %add69.2123 = or disjoint i64 %mul56.2, %154
+  %add71.2124 = or disjoint i64 %add69.2123, %conv70
+  %arrayidx72.2125 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.2124
+  store i32 %vecext.2122, ptr addrspace(1) %arrayidx72.2125, align 4, !tbaa !16
+  %vecext.1.2 = extractelement <4 x i32> %sums.sroa.10.1, i64 1
+  %add69.1.2 = or disjoint i64 %mul56.2, %156
+  %add71.1.2 = or disjoint i64 %add69.1.2, %conv70
+  %arrayidx72.1.2 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.1.2
+  store i32 %vecext.1.2, ptr addrspace(1) %arrayidx72.1.2, align 4, !tbaa !16
+  %vecext.2.2 = extractelement <4 x i32> %sums.sroa.10.1, i64 2
+  %add69.2.2 = or disjoint i64 %mul56.2, %158
+  %add71.2.2 = or disjoint i64 %add69.2.2, %conv70
+  %arrayidx72.2.2 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.2.2
+  store i32 %vecext.2.2, ptr addrspace(1) %arrayidx72.2.2, align 4, !tbaa !16
+  %vecext.3.2 = extractelement <4 x i32> %sums.sroa.10.1, i64 3
+  %add69.3.2 = or disjoint i64 %mul56.2, %160
+  %add71.3.2 = or disjoint i64 %add69.3.2, %conv70
+  %arrayidx72.3.2 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.3.2
+  store i32 %vecext.3.2, ptr addrspace(1) %arrayidx72.3.2, align 4, !tbaa !16
+  %mul56.3 = or disjoint i64 %153, 768
+  %vecext.3126 = extractelement <4 x i32> %sums.sroa.14.1, i64 0
+  %add69.3127 = or disjoint i64 %mul56.3, %154
+  %add71.3128 = or disjoint i64 %add69.3127, %conv70
+  %arrayidx72.3129 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.3128
+  store i32 %vecext.3126, ptr addrspace(1) %arrayidx72.3129, align 4, !tbaa !16
+  %vecext.1.3 = extractelement <4 x i32> %sums.sroa.14.1, i64 1
+  %add69.1.3 = or disjoint i64 %mul56.3, %156
+  %add71.1.3 = or disjoint i64 %add69.1.3, %conv70
+  %arrayidx72.1.3 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.1.3
+  store i32 %vecext.1.3, ptr addrspace(1) %arrayidx72.1.3, align 4, !tbaa !16
+  %vecext.2.3 = extractelement <4 x i32> %sums.sroa.14.1, i64 2
+  %add69.2.3 = or disjoint i64 %mul56.3, %158
+  %add71.2.3 = or disjoint i64 %add69.2.3, %conv70
+  %arrayidx72.2.3 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.2.3
+  store i32 %vecext.2.3, ptr addrspace(1) %arrayidx72.2.3, align 4, !tbaa !16
+  %vecext.3.3 = extractelement <4 x i32> %sums.sroa.14.1, i64 3
+  %add69.3.3 = or disjoint i64 %mul56.3, %160
+  %add71.3.3 = or disjoint i64 %add69.3.3, %conv70
+  %arrayidx72.3.3 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.3.3
+  store i32 %vecext.3.3, ptr addrspace(1) %arrayidx72.3.3, align 4, !tbaa !16
+  %mul56.4 = or disjoint i64 %153, 1024
+  %vecext.4 = extractelement <4 x i32> %sums.sroa.18.1, i64 0
+  %add69.4 = or disjoint i64 %mul56.4, %154
+  %add71.4 = or disjoint i64 %add69.4, %conv70
+  %arrayidx72.4 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.4
+  store i32 %vecext.4, ptr addrspace(1) %arrayidx72.4, align 4, !tbaa !16
+  %vecext.1.4 = extractelement <4 x i32> %sums.sroa.18.1, i64 1
+  %add69.1.4 = or disjoint i64 %mul56.4, %156
+  %add71.1.4 = or disjoint i64 %add69.1.4, %conv70
+  %arrayidx72.1.4 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.1.4
+  store i32 %vecext.1.4, ptr addrspace(1) %arrayidx72.1.4, align 4, !tbaa !16
+  %vecext.2.4 = extractelement <4 x i32> %sums.sroa.18.1, i64 2
+  %add69.2.4 = or disjoint i64 %mul56.4, %158
+  %add71.2.4 = or disjoint i64 %add69.2.4, %conv70
+  %arrayidx72.2.4 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.2.4
+  store i32 %vecext.2.4, ptr addrspace(1) %arrayidx72.2.4, align 4, !tbaa !16
+  %vecext.3.4 = extractelement <4 x i32> %sums.sroa.18.1, i64 3
+  %add69.3.4 = or disjoint i64 %mul56.4, %160
+  %add71.3.4 = or disjoint i64 %add69.3.4, %conv70
+  %arrayidx72.3.4 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.3.4
+  store i32 %vecext.3.4, ptr addrspace(1) %arrayidx72.3.4, align 4, !tbaa !16
+  %mul56.5 = or disjoint i64 %153, 1280
+  %vecext.5 = extractelement <4 x i32> %sums.sroa.22.1, i64 0
+  %add69.5 = or disjoint i64 %mul56.5, %154
+  %add71.5 = or disjoint i64 %add69.5, %conv70
+  %arrayidx72.5 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.5
+  store i32 %vecext.5, ptr addrspace(1) %arrayidx72.5, align 4, !tbaa !16
+  %vecext.1.5 = extractelement <4 x i32> %sums.sroa.22.1, i64 1
+  %add69.1.5 = or disjoint i64 %mul56.5, %156
+  %add71.1.5 = or disjoint i64 %add69.1.5, %conv70
+  %arrayidx72.1.5 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.1.5
+  store i32 %vecext.1.5, ptr addrspace(1) %arrayidx72.1.5, align 4, !tbaa !16
+  %vecext.2.5 = extractelement <4 x i32> %sums.sroa.22.1, i64 2
+  %add69.2.5 = or disjoint i64 %mul56.5, %158
+  %add71.2.5 = or disjoint i64 %add69.2.5, %conv70
+  %arrayidx72.2.5 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.2.5
+  store i32 %vecext.2.5, ptr addrspace(1) %arrayidx72.2.5, align 4, !tbaa !16
+  %vecext.3.5 = extractelement <4 x i32> %sums.sroa.22.1, i64 3
+  %add69.3.5 = or disjoint i64 %mul56.5, %160
+  %add71.3.5 = or disjoint i64 %add69.3.5, %conv70
+  %arrayidx72.3.5 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.3.5
+  store i32 %vecext.3.5, ptr addrspace(1) %arrayidx72.3.5, align 4, !tbaa !16
+  %mul56.6 = or disjoint i64 %153, 1536
+  %vecext.6 = extractelement <4 x i32> %sums.sroa.26.1, i64 0
+  %add69.6 = or disjoint i64 %mul56.6, %154
+  %add71.6 = or disjoint i64 %add69.6, %conv70
+  %arrayidx72.6 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.6
+  store i32 %vecext.6, ptr addrspace(1) %arrayidx72.6, align 4, !tbaa !16
+  %vecext.1.6 = extractelement <4 x i32> %sums.sroa.26.1, i64 1
+  %add69.1.6 = or disjoint i64 %mul56.6, %156
+  %add71.1.6 = or disjoint i64 %add69.1.6, %conv70
+  %arrayidx72.1.6 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.1.6
+  store i32 %vecext.1.6, ptr addrspace(1) %arrayidx72.1.6, align 4, !tbaa !16
+  %vecext.2.6 = extractelement <4 x i32> %sums.sroa.26.1, i64 2
+  %add69.2.6 = or disjoint i64 %mul56.6, %158
+  %add71.2.6 = or disjoint i64 %add69.2.6, %conv70
+  %arrayidx72.2.6 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.2.6
+  store i32 %vecext.2.6, ptr addrspace(1) %arrayidx72.2.6, align 4, !tbaa !16
+  %vecext.3.6 = extractelement <4 x i32> %sums.sroa.26.1, i64 3
+  %add69.3.6 = or disjoint i64 %mul56.6, %160
+  %add71.3.6 = or disjoint i64 %add69.3.6, %conv70
+  %arrayidx72.3.6 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.3.6
+  store i32 %vecext.3.6, ptr addrspace(1) %arrayidx72.3.6, align 4, !tbaa !16
+  %mul56.7 = or disjoint i64 %153, 1792
+  %vecext.7 = extractelement <4 x i32> %sums.sroa.30.1, i64 0
+  %add69.7 = or disjoint i64 %mul56.7, %154
+  %add71.7 = or disjoint i64 %add69.7, %conv70
+  %arrayidx72.7 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.7
+  store i32 %vecext.7, ptr addrspace(1) %arrayidx72.7, align 4, !tbaa !16
+  %vecext.1.7 = extractelement <4 x i32> %sums.sroa.30.1, i64 1
+  %add69.1.7 = or disjoint i64 %mul56.7, %156
+  %add71.1.7 = or disjoint i64 %add69.1.7, %conv70
+  %arrayidx72.1.7 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.1.7
+  store i32 %vecext.1.7, ptr addrspace(1) %arrayidx72.1.7, align 4, !tbaa !16
+  %vecext.2.7 = extractelement <4 x i32> %sums.sroa.30.1, i64 2
+  %add69.2.7 = or disjoint i64 %mul56.7, %158
+  %add71.2.7 = or disjoint i64 %add69.2.7, %conv70
+  %arrayidx72.2.7 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.2.7
+  store i32 %vecext.2.7, ptr addrspace(1) %arrayidx72.2.7, align 4, !tbaa !16
+  %vecext.3.7 = extractelement <4 x i32> %sums.sroa.30.1, i64 3
+  %add69.3.7 = or disjoint i64 %mul56.7, %160
+  %add71.3.7 = or disjoint i64 %add69.3.7, %conv70
+  %arrayidx72.3.7 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.3.7
+  store i32 %vecext.3.7, ptr addrspace(1) %arrayidx72.3.7, align 4, !tbaa !16
+  %mul56.8 = or disjoint i64 %153, 2048
+  %vecext.8 = extractelement <4 x i32> %sums.sroa.34.1, i64 0
+  %add69.8 = or disjoint i64 %mul56.8, %154
+  %add71.8 = or disjoint i64 %add69.8, %conv70
+  %arrayidx72.8 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.8
+  store i32 %vecext.8, ptr addrspace(1) %arrayidx72.8, align 4, !tbaa !16
+  %vecext.1.8 = extractelement <4 x i32> %sums.sroa.34.1, i64 1
+  %add69.1.8 = or disjoint i64 %mul56.8, %156
+  %add71.1.8 = or disjoint i64 %add69.1.8, %conv70
+  %arrayidx72.1.8 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.1.8
+  store i32 %vecext.1.8, ptr addrspace(1) %arrayidx72.1.8, align 4, !tbaa !16
+  %vecext.2.8 = extractelement <4 x i32> %sums.sroa.34.1, i64 2
+  %add69.2.8 = or disjoint i64 %mul56.8, %158
+  %add71.2.8 = or disjoint i64 %add69.2.8, %conv70
+  %arrayidx72.2.8 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.2.8
+  store i32 %vecext.2.8, ptr addrspace(1) %arrayidx72.2.8, align 4, !tbaa !16
+  %vecext.3.8 = extractelement <4 x i32> %sums.sroa.34.1, i64 3
+  %add69.3.8 = or disjoint i64 %mul56.8, %160
+  %add71.3.8 = or disjoint i64 %add69.3.8, %conv70
+  %arrayidx72.3.8 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.3.8
+  store i32 %vecext.3.8, ptr addrspace(1) %arrayidx72.3.8, align 4, !tbaa !16
+  %mul56.9 = or disjoint i64 %153, 2304
+  %vecext.9 = extractelement <4 x i32> %sums.sroa.38.1, i64 0
+  %add69.9 = or disjoint i64 %mul56.9, %154
+  %add71.9 = or disjoint i64 %add69.9, %conv70
+  %arrayidx72.9 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.9
+  store i32 %vecext.9, ptr addrspace(1) %arrayidx72.9, align 4, !tbaa !16
+  %vecext.1.9 = extractelement <4 x i32> %sums.sroa.38.1, i64 1
+  %add69.1.9 = or disjoint i64 %mul56.9, %156
+  %add71.1.9 = or disjoint i64 %add69.1.9, %conv70
+  %arrayidx72.1.9 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.1.9
+  store i32 %vecext.1.9, ptr addrspace(1) %arrayidx72.1.9, align 4, !tbaa !16
+  %vecext.2.9 = extractelement <4 x i32> %sums.sroa.38.1, i64 2
+  %add69.2.9 = or disjoint i64 %mul56.9, %158
+  %add71.2.9 = or disjoint i64 %add69.2.9, %conv70
+  %arrayidx72.2.9 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.2.9
+  store i32 %vecext.2.9, ptr addrspace(1) %arrayidx72.2.9, align 4, !tbaa !16
+  %vecext.3.9 = extractelement <4 x i32> %sums.sroa.38.1, i64 3
+  %add69.3.9 = or disjoint i64 %mul56.9, %160
+  %add71.3.9 = or disjoint i64 %add69.3.9, %conv70
+  %arrayidx72.3.9 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.3.9
+  store i32 %vecext.3.9, ptr addrspace(1) %arrayidx72.3.9, align 4, !tbaa !16
+  %mul56.10 = or disjoint i64 %153, 2560
+  %vecext.10 = extractelement <4 x i32> %sums.sroa.42.1, i64 0
+  %add69.10 = or disjoint i64 %mul56.10, %154
+  %add71.10 = or disjoint i64 %add69.10, %conv70
+  %arrayidx72.10 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.10
+  store i32 %vecext.10, ptr addrspace(1) %arrayidx72.10, align 4, !tbaa !16
+  %vecext.1.10 = extractelement <4 x i32> %sums.sroa.42.1, i64 1
+  %add69.1.10 = or disjoint i64 %mul56.10, %156
+  %add71.1.10 = or disjoint i64 %add69.1.10, %conv70
+  %arrayidx72.1.10 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.1.10
+  store i32 %vecext.1.10, ptr addrspace(1) %arrayidx72.1.10, align 4, !tbaa !16
+  %vecext.2.10 = extractelement <4 x i32> %sums.sroa.42.1, i64 2
+  %add69.2.10 = or disjoint i64 %mul56.10, %158
+  %add71.2.10 = or disjoint i64 %add69.2.10, %conv70
+  %arrayidx72.2.10 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.2.10
+  store i32 %vecext.2.10, ptr addrspace(1) %arrayidx72.2.10, align 4, !tbaa !16
+  %vecext.3.10 = extractelement <4 x i32> %sums.sroa.42.1, i64 3
+  %add69.3.10 = or disjoint i64 %mul56.10, %160
+  %add71.3.10 = or disjoint i64 %add69.3.10, %conv70
+  %arrayidx72.3.10 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.3.10
+  store i32 %vecext.3.10, ptr addrspace(1) %arrayidx72.3.10, align 4, !tbaa !16
+  %mul56.11 = or disjoint i64 %153, 2816
+  %vecext.11 = extractelement <4 x i32> %sums.sroa.46.1, i64 0
+  %add69.11 = or disjoint i64 %mul56.11, %154
+  %add71.11 = or disjoint i64 %add69.11, %conv70
+  %arrayidx72.11 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.11
+  store i32 %vecext.11, ptr addrspace(1) %arrayidx72.11, align 4, !tbaa !16
+  %vecext.1.11 = extractelement <4 x i32> %sums.sroa.46.1, i64 1
+  %add69.1.11 = or disjoint i64 %mul56.11, %156
+  %add71.1.11 = or disjoint i64 %add69.1.11, %conv70
+  %arrayidx72.1.11 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.1.11
+  store i32 %vecext.1.11, ptr addrspace(1) %arrayidx72.1.11, align 4, !tbaa !16
+  %vecext.2.11 = extractelement <4 x i32> %sums.sroa.46.1, i64 2
+  %add69.2.11 = or disjoint i64 %mul56.11, %158
+  %add71.2.11 = or disjoint i64 %add69.2.11, %conv70
+  %arrayidx72.2.11 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.2.11
+  store i32 %vecext.2.11, ptr addrspace(1) %arrayidx72.2.11, align 4, !tbaa !16
+  %vecext.3.11 = extractelement <4 x i32> %sums.sroa.46.1, i64 3
+  %add69.3.11 = or disjoint i64 %mul56.11, %160
+  %add71.3.11 = or disjoint i64 %add69.3.11, %conv70
+  %arrayidx72.3.11 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.3.11
+  store i32 %vecext.3.11, ptr addrspace(1) %arrayidx72.3.11, align 4, !tbaa !16
+  %mul56.12 = or disjoint i64 %153, 3072
+  %vecext.12 = extractelement <4 x i32> %sums.sroa.50.1, i64 0
+  %add69.12 = or disjoint i64 %mul56.12, %154
+  %add71.12 = or disjoint i64 %add69.12, %conv70
+  %arrayidx72.12 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.12
+  store i32 %vecext.12, ptr addrspace(1) %arrayidx72.12, align 4, !tbaa !16
+  %vecext.1.12 = extractelement <4 x i32> %sums.sroa.50.1, i64 1
+  %add69.1.12 = or disjoint i64 %mul56.12, %156
+  %add71.1.12 = or disjoint i64 %add69.1.12, %conv70
+  %arrayidx72.1.12 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.1.12
+  store i32 %vecext.1.12, ptr addrspace(1) %arrayidx72.1.12, align 4, !tbaa !16
+  %vecext.2.12 = extractelement <4 x i32> %sums.sroa.50.1, i64 2
+  %add69.2.12 = or disjoint i64 %mul56.12, %158
+  %add71.2.12 = or disjoint i64 %add69.2.12, %conv70
+  %arrayidx72.2.12 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.2.12
+  store i32 %vecext.2.12, ptr addrspace(1) %arrayidx72.2.12, align 4, !tbaa !16
+  %vecext.3.12 = extractelement <4 x i32> %sums.sroa.50.1, i64 3
+  %add69.3.12 = or disjoint i64 %mul56.12, %160
+  %add71.3.12 = or disjoint i64 %add69.3.12, %conv70
+  %arrayidx72.3.12 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.3.12
+  store i32 %vecext.3.12, ptr addrspace(1) %arrayidx72.3.12, align 4, !tbaa !16
+  %mul56.13 = or disjoint i64 %153, 3328
+  %vecext.13 = extractelement <4 x i32> %sums.sroa.54.1, i64 0
+  %add69.13 = or disjoint i64 %mul56.13, %154
+  %add71.13 = or disjoint i64 %add69.13, %conv70
+  %arrayidx72.13 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.13
+  store i32 %vecext.13, ptr addrspace(1) %arrayidx72.13, align 4, !tbaa !16
+  %vecext.1.13 = extractelement <4 x i32> %sums.sroa.54.1, i64 1
+  %add69.1.13 = or disjoint i64 %mul56.13, %156
+  %add71.1.13 = or disjoint i64 %add69.1.13, %conv70
+  %arrayidx72.1.13 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.1.13
+  store i32 %vecext.1.13, ptr addrspace(1) %arrayidx72.1.13, align 4, !tbaa !16
+  %vecext.2.13 = extractelement <4 x i32> %sums.sroa.54.1, i64 2
+  %add69.2.13 = or disjoint i64 %mul56.13, %158
+  %add71.2.13 = or disjoint i64 %add69.2.13, %conv70
+  %arrayidx72.2.13 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.2.13
+  store i32 %vecext.2.13, ptr addrspace(1) %arrayidx72.2.13, align 4, !tbaa !16
+  %vecext.3.13 = extractelement <4 x i32> %sums.sroa.54.1, i64 3
+  %add69.3.13 = or disjoint i64 %mul56.13, %160
+  %add71.3.13 = or disjoint i64 %add69.3.13, %conv70
+  %arrayidx72.3.13 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.3.13
+  store i32 %vecext.3.13, ptr addrspace(1) %arrayidx72.3.13, align 4, !tbaa !16
+  %mul56.14 = or disjoint i64 %153, 3584
+  %vecext.14 = extractelement <4 x i32> %sums.sroa.58.1, i64 0
+  %add69.14 = or disjoint i64 %mul56.14, %154
+  %add71.14 = or disjoint i64 %add69.14, %conv70
+  %arrayidx72.14 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.14
+  store i32 %vecext.14, ptr addrspace(1) %arrayidx72.14, align 4, !tbaa !16
+  %vecext.1.14 = extractelement <4 x i32> %sums.sroa.58.1, i64 1
+  %add69.1.14 = or disjoint i64 %mul56.14, %156
+  %add71.1.14 = or disjoint i64 %add69.1.14, %conv70
+  %arrayidx72.1.14 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.1.14
+  store i32 %vecext.1.14, ptr addrspace(1) %arrayidx72.1.14, align 4, !tbaa !16
+  %vecext.2.14 = extractelement <4 x i32> %sums.sroa.58.1, i64 2
+  %add69.2.14 = or disjoint i64 %mul56.14, %158
+  %add71.2.14 = or disjoint i64 %add69.2.14, %conv70
+  %arrayidx72.2.14 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.2.14
+  store i32 %vecext.2.14, ptr addrspace(1) %arrayidx72.2.14, align 4, !tbaa !16
+  %vecext.3.14 = extractelement <4 x i32> %sums.sroa.58.1, i64 3
+  %add69.3.14 = or disjoint i64 %mul56.14, %160
+  %add71.3.14 = or disjoint i64 %add69.3.14, %conv70
+  %arrayidx72.3.14 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.3.14
+  store i32 %vecext.3.14, ptr addrspace(1) %arrayidx72.3.14, align 4, !tbaa !16
+  %mul56.15 = or disjoint i64 %153, 3840
+  %vecext.15 = extractelement <4 x i32> %sums.sroa.62.1, i64 0
+  %add69.15 = or disjoint i64 %mul56.15, %154
+  %add71.15 = or disjoint i64 %add69.15, %conv70
+  %arrayidx72.15 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.15
+  store i32 %vecext.15, ptr addrspace(1) %arrayidx72.15, align 4, !tbaa !16
+  %vecext.1.15 = extractelement <4 x i32> %sums.sroa.62.1, i64 1
+  %add69.1.15 = or disjoint i64 %mul56.15, %156
+  %add71.1.15 = or disjoint i64 %add69.1.15, %conv70
+  %arrayidx72.1.15 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.1.15
+  store i32 %vecext.1.15, ptr addrspace(1) %arrayidx72.1.15, align 4, !tbaa !16
+  %vecext.2.15 = extractelement <4 x i32> %sums.sroa.62.1, i64 2
+  %add69.2.15 = or disjoint i64 %mul56.15, %158
+  %add71.2.15 = or disjoint i64 %add69.2.15, %conv70
+  %arrayidx72.2.15 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.2.15
+  store i32 %vecext.2.15, ptr addrspace(1) %arrayidx72.2.15, align 4, !tbaa !16
+  %vecext.3.15 = extractelement <4 x i32> %sums.sroa.62.1, i64 3
+  %add69.3.15 = or disjoint i64 %mul56.15, %160
+  %add71.3.15 = or disjoint i64 %add69.3.15, %conv70
+  %arrayidx72.3.15 = getelementptr inbounds i32, ptr addrspace(1) %c.coerce, i64 %add71.3.15
+  store i32 %vecext.3.15, ptr addrspace(1) %arrayidx72.3.15, align 4, !tbaa !16
+  ret void
+}

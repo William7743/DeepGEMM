@@ -1,0 +1,17 @@
+[
+  "/opt/maca/mxgpu_llvm/bin/mxcc",
+  "-O3",
+  "-std=c++17",
+  "-x",
+  "maca",
+  "-offload-arch=xcore1000",
+  "-DMMA_PEAK_UNROLL=1",
+  "-I/opt/maca/include",
+  "-I/opt/maca/include/mcr",
+  "/root/MOE/C500_int8_02All/04_hardware_benchmarks/int8_peak/reports/slice16_long_20261021T115731Z/source_snapshot.cpp",
+  "-L/opt/maca/lib",
+  "-lmcruntime",
+  "-Wl,-rpath,/opt/maca/lib:/opt/mxdriver/lib",
+  "-o",
+  "/root/MOE/C500_int8_02All/04_hardware_benchmarks/int8_peak/build/int8_mma_peak_long_u1"
+]

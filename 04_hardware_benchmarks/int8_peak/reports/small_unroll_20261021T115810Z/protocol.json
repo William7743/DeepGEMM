@@ -1,0 +1,34 @@
+{
+  "blocks": 6656,
+  "threads": 512,
+  "accumulators": 16,
+  "iterations": 4096,
+  "batch": 4,
+  "samples": 5,
+  "rounds": 3,
+  "unroll_factors": [
+    1,
+    2,
+    4,
+    8,
+    16
+  ],
+  "order": [
+    "r1_u2",
+    "r1_u8",
+    "r1_u1",
+    "r1_u16",
+    "r1_u4",
+    "r2_u8",
+    "r2_u2",
+    "r2_u1",
+    "r2_u16",
+    "r2_u4",
+    "r3_u8",
+    "r3_u1",
+    "r3_u4",
+    "r3_u2",
+    "r3_u16"
+  ],
+  "source_sha256": "c2598cc7511c9c2295bdac63b4594d0d42a3ab1a947ec93424c5a93e3719c9f4"
+}

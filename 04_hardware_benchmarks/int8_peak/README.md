@@ -244,3 +244,38 @@ INT8 输入、INT32 累加；采用 C500 的 `__builtin_mxc_mma_16x16x16i8`。
 
 完整逐点耗时、TOPS、波动和资源数据见 [测试报告](reports/acc_increment_20261021T113720Z/report.md)；
 [汇总 CSV](reports/acc_increment_20261021T113720Z/summary.csv) 与 [原始记录 ZIP](reports/acc_increment_20261021T113720Z/raw_records.zip) 一并保留。
+
+## 小幅展开外层循环
+
+使用编译期开关 `MMA_PEAK_UNROLL=1、2、4、8、16`；默认仍为 1。
+例如 `MMA_PEAK_UNROLL=4 bash build.sh`。每次构建写入 `build/int8_mma_peak`，程序启动时打印编译的展开因子。
+只降低外层循环判断频率，`iterations` 仍表示实际执行的 MMA 轮数，总运算量不变。
+不足整组的轮次由编译器生成尾循环；1、17、4097 轮的校验均通过。
+
+64GB 整卡固定 `blocks=6656、threads=512、accumulators=16、iterations=4096`，每样本 4 个 kernel，
+三轮打乱顺序、每轮每配置 5 个样本，共 75 个正式样本，全部正确。
+
+| 外层展开因子 | 完整 kernel 平均 Event 耗时 ms | TOPS（按平均 Event 耗时） | 相对不展开 |
+|---|---:|---:|---:|
+|1|59.995294|476.492414|+0.0000%|
+|2|59.924395|477.056169|+0.1183%|
+|4|59.921702|477.077609|+0.1228%|
+|8|59.929676|477.014129|+0.1095%|
+|16|59.923451|477.063681|+0.1199%|
+
+展开后只有约 0.1% 提升，2～16 基本处于同一平台；不能把这点变化全部归为循环控制耗时。
+各配置寄存器数均为 100，local bytes=0，优化后 LLVM IR 确认主循环含 16～256 次 MMA 调用且无 load/store。
+未做原生 ISA 反汇编，也未进行数千轮完全展开。
+[完整报告](reports/small_unroll_20261021T115810Z/report.md)、[汇总 CSV](reports/small_unroll_20261021T115810Z/summary.csv)
+及 [原始记录 ZIP](reports/small_unroll_20261021T115810Z/raw_records.zip) 均保留。
+
+## 16GB 切片长时间验证
+
+另在此前 25% compute / 16000 MiB 配额的实例上，使用 `26624 blocks、512 线程、8 累加器、4096 轮、展开因子 1`，
+每样本连续 256 个 kernel，共 3 个样本，各约 30.7 秒，全部校验通过。
+按平均耗时计算：**Event 476.181536 TOPS，CPU 墙钟 476.172948 TOPS**；Event 耗时轮间极差/中位数为 0.0128%。
+这次 Event 与墙钟一致，持续 MMA 吞吐接近此前整卡的 477.047168 / 477.039410 TOPS。
+整卡数字是同启动参数的固定历史参考，并非同一物理卡同轮配对测试。
+不能据此推断平台如何实施 25% 配额，也不能乘四外推。物理卡其他切片负载不受我们控制。
+16GB 服务器原有教学源码和可执行文件未覆盖，新测试使用独立构建产物。
+[长测报告](reports/slice16_long_20261021T115731Z/report.md) 和 [原始记录 ZIP](reports/slice16_long_20261021T115731Z/raw_records.zip) 单独存档。
